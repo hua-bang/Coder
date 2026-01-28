@@ -1,12 +1,11 @@
-import { generateText, tool } from "ai";
-import { CoderAI, DEFAULT_MODEL } from "./config/index";
-import { z } from "zod";
 import generateTextAI from "./ai";
+
+const cwd = process.cwd();
 
 export const run = async () => {
   console.log('Coder Demo Core is running...');
 
-  const prompt = 'What is the weather in San Francisco and what attractions should I visit?'
+  const prompt = `阅读当前目录 README.md 并总结其内容`;
 
   const result = await generateTextAI([
     { role: 'user', content: prompt }

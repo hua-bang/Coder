@@ -1,26 +1,28 @@
-import { generateText, tool, type ModelMessage } from 'ai';
+import { generateText, tool, type ModelMessage, type Tool } from 'ai';
 import { CoderAI, DEFAULT_MODEL } from './config';
 import z from 'zod';
+import { BuiltinTools } from './tools';
+import { generateSystemPrompt } from './prompt';
+
+const BuiltinToolsMap = BuiltinTools.reduce((acc, toolInstance) => {
+  acc[toolInstance.name] = tool(toolInstance as Tool);
+  return acc;
+}, {} as Record<string, Tool>);
 
 export const generateTextAI = (messages: ModelMessage[]): ReturnType<typeof generateText> => {
+
+  const finalMessages = [
+    {
+      role: 'system',
+      content: generateSystemPrompt(),
+    },
+    ...messages,
+  ] as ModelMessage[];
+
   return generateText({
     model: CoderAI.chat(DEFAULT_MODEL),
-    messages,
-    tools: {
-      weather: tool({
-        description: 'Get the weather in a location',
-        inputSchema: z.object({
-          location: z.string().describe('The location to get the weather for'),
-        }),
-        execute: async ({ location }) => ({
-          location,
-          temperature: 72 + Math.floor(Math.random() * 21) - 10,
-        }),
-      }),
-      cityAttractions: tool({
-        inputSchema: z.object({ city: z.string() }),
-      }),
-    },
+    messages: finalMessages,
+    tools: BuiltinToolsMap,
   }) as unknown as ReturnType<typeof generateText>;
 }
 
