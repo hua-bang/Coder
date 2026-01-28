@@ -1,1 +1,3 @@
-console.log("Hello, Coder!");
+import { run } from "./core";
+
+run();
