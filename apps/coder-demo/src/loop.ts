@@ -2,7 +2,11 @@ import type { AssistantModelMessage, ModelMessage, ToolModelMessage } from "ai";
 import generateTextAI from "./ai";
 import { MAX_TURNS } from "./config";
 
-async function loop(prompt: string) {
+export interface LoopOptions {
+  onResult?: (result: any) => void;
+}
+
+async function loop(prompt: string, options?: LoopOptions) {
   const userMessage: ModelMessage = {
     role: 'user',
     content: prompt,
@@ -14,7 +18,7 @@ async function loop(prompt: string) {
   while (true) {
     const result = await generateTextAI(messages);
 
-    console.log(`Coder Demo Loop is running with result: ${result}`);
+    options?.onResult?.(result);
 
     count++;
 

@@ -14,20 +14,22 @@
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
         }
-        canvas {
+        #gameCanvas {
             border: 2px solid #333;
             background-color: #fff;
         }
-        .score {
-            position: absolute;
-            top: 20px;
+        #score {
+            text-align: center;
             font-size: 24px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="score">Score: <span id="score">0</span></div>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div id="score">Score: 0</div>
+    </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -50,11 +52,11 @@
         }
 
         function drawSnake() {
-            snake.forEach(segment => drawTile(segment.x, segment.y, '#4CAF50'));
+            snake.forEach(segment => drawTile(segment.x, segment.y, 'green'));
         }
 
         function drawFood() {
-            drawTile(food.x, food.y, '#F44336');
+            drawTile(food.x, food.y, 'red');
         }
 
         function moveSnake() {
@@ -63,7 +65,7 @@
 
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                scoreElement.textContent = score;
+                scoreElement.textContent = `Score: ${score}`;
                 placeFood();
             } else {
                 snake.pop();
@@ -89,38 +91,43 @@
 
             // Wall collision
             if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                gameOver();
+                return true;
             }
 
             // Self collision
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
-                    gameOver();
+                    return true;
                 }
             }
+
+            return false;
         }
 
         function gameOver() {
             clearInterval(gameLoop);
             alert(`Game Over! Your score: ${score}`);
-            resetGame();
         }
 
-        function resetGame() {
-            snake = [{ x: 10, y: 10 }];
-            direction = { x: 0, y: 0 };
-            score = 0;
-            scoreElement.textContent = score;
-            placeFood();
-            gameLoop = setInterval(game, gameSpeed);
-        }
-
-        function game() {
+        function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
             drawSnake();
             drawFood();
             moveSnake();
-            checkCollision();
+
+            if (checkCollision()) {
+                gameOver();
+            }
+        }
+
+        function startGame() {
+            snake = [{ x: 10, y: 10 }];
+            direction = { x: 0, y: 0 };
+            score = 0;
+            scoreElement.textContent = `Score: ${score}`;
+            placeFood();
+            gameLoop = setInterval(update, gameSpeed);
         }
 
         document.addEventListener('keydown', event => {
@@ -140,7 +147,7 @@
             }
         });
 
-        resetGame();
+        startGame();
     </script>
 </body>
 </html>
