@@ -48,11 +48,12 @@ async function loop(context: Context, options?: LoopOptions) {
     count++;
 
     if ((!result.toolCalls?.length && result.text) || count >= MAX_TURNS) {
+      messages.push({
+        role: 'assistant',
+        content: result.text || '',
+      });
+
       if (!await checkLoopFinish(result, { messages })) {
-        messages.push({
-          role: 'assistant',
-          content: result.text || '',
-        });
         continue;
       }
       return result.text || 'Max turns reached';
