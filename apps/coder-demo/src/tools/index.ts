@@ -3,8 +3,7 @@ import WriteTool from './write';
 import LsTool from './ls';
 import BashTool from './bash';
 import TavilyTool from './tavily';
-import SkillSearchTool from './skill-search';
-import SkillGetTool from './skill-get';
+import SkillTool from './skill';
 
 const BuiltinTools = [
   ReadTool,
@@ -12,8 +11,7 @@ const BuiltinTools = [
   LsTool,
   BashTool,
   TavilyTool,
-  SkillSearchTool,
-  SkillGetTool,
+  SkillTool,
 ] as const;
 
 export {
@@ -22,7 +20,6 @@ export {
   LsTool,
   BashTool,
   TavilyTool,
-  SkillSearchTool,
-  SkillGetTool,
   BuiltinTools,
+  SkillTool,
 };

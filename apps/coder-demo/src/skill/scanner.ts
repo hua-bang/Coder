@@ -1,6 +1,5 @@
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import { readFileSync } from 'fs';
-import { join, resolve } from 'path';
 import matter from 'gray-matter';
 import type { SkillInfo, SkillFrontmatter } from './types';
 import { homedir } from 'os';
@@ -10,7 +9,7 @@ import { homedir } from 'os';
  * @param cwd 工作目录
  * @returns 技能信息列表
  */
-export async function scanSkills(cwd: string): Promise<SkillInfo[]> {
+export function scanSkills(cwd: string): SkillInfo[] {
   const skills: SkillInfo[] = [];
 
   // 扫描路径配置
@@ -24,7 +23,7 @@ export async function scanSkills(cwd: string): Promise<SkillInfo[]> {
 
   for (const { base, pattern } of scanPaths) {
     try {
-      const files = await glob(pattern, { cwd: base, absolute: true });
+      const files = globSync(pattern, { cwd: base, absolute: true });
 
       for (const filePath of files) {
         try {

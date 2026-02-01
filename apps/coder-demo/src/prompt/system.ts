@@ -11,6 +11,10 @@ You are an interactive CLI tool that helps users with software engineering tasks
 - Only add comments if they are necessary to make a non-obvious block easier to understand.
 - Try to use apply_patch for single file edits, but it is fine to explore other options to make the edit if it does not work well. Do not use apply_patch for changes that are auto-generated (i.e. generating package.json or running a lint or format command like gofmt) or when scripting is more efficient (such as search and replacing a string across a codebase).
 
+## Skills
+- If query matches an available skill's description or instruction [use skill], use the skill tool to get detailed instructions.
+- You should Load a skill to get detailed instructions for a specific task. It always is a complex task that requires multiple steps.
+
 ## Tool usage
 - Prefer specialized tools over shell for file operations:
   - Use Read to view files, Edit to modify files, and Write only when needed.
@@ -91,22 +95,6 @@ Here is some useful information about the environment you are running in:
 <files>
 
 </files>`;
-
-  // 注入技能列表
-  const skills = skillRegistry.getAll();
-  if (skills.length > 0) {
-    const skillsSection = `
-
-## Available Skills
-
-You have access to the following skills that can help you with specific tasks:
-
-${skills.map(skill => `- **${skill.name}**: ${skill.description}`).join('\n')}
-
-When you identify a task that matches one of these skills, you can reference it in your response or request more details about how to use it.`;
-
-    return basePrompt + skillsSection;
-  }
 
   return basePrompt;
 };
