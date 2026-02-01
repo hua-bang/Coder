@@ -25,7 +25,7 @@ export const generateTextAI = (messages: ModelMessage[]): ReturnType<typeof gene
   }) as unknown as ReturnType<typeof generateText>;
 }
 
-export const generateObject = async <T extends z.ZodSchema>(messages: ModelMessage[], schema: T) => {
+export const generateObject = async <T extends z.ZodSchema>(messages: ModelMessage[], schema: T, description: string) => {
   // 使用 tool calling 的方式来实现结构化输出
   const result = await generateText({
     model: CoderAI.chat(DEFAULT_MODEL),
@@ -37,7 +37,10 @@ export const generateObject = async <T extends z.ZodSchema>(messages: ModelMessa
         execute: async (input: any) => input,
       })
     },
-    toolChoice: 'required', // 强制使用 tool
+    toolChoice: {
+      type: 'tool',
+      toolName: 'respond',
+    }
   });
 
   // 返回 tool call 的结果

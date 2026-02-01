@@ -30,7 +30,7 @@ async function checkLoopFinish(result: { text?: string }, context: { messages: M
 
   const res = await generateObject(messages, z.object({
     finish: z.boolean().describe('Indicates whether the loop should finish or continue'),
-  }));
+  }), 'You should only respond with a JSON object containing a boolean field "finish". The value should be true if the loop should finish, or false if it should continue.');
 
   return res.finish;
 }
@@ -54,9 +54,9 @@ async function loop(context: Context, options?: LoopOptions) {
           content: result.text || '',
         });
 
-        // if (!await checkLoopFinish(result, { messages })) {
-        //   continue;
-        // }
+        if (!await checkLoopFinish(result, { messages })) {
+          continue;
+        }
         return result.text || 'Max turns reached';
       }
 

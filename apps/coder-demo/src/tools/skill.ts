@@ -11,6 +11,7 @@ const getSkillsPrompt = (availableSkills: SkillInfo[]) => {
     "Skills provide specialized knowledge and step-by-step guidance.",
     "Use this when a task matches an available skill's description.",
     "Only the skills listed here are available:",
+    "[!important] You should follow the skill's step-by-step guidance. If the skill is not complete, ask the user for more information.",
     "<available_skills>",
     ...availableSkills.flatMap((skill) => [
       `  <skill>`,
@@ -36,7 +37,7 @@ const SkillTool: Tool<
     if (!skill) {
       throw new Error(`Skill ${name} not found`);
     }
-    return { name: skill.name, content: skill.content };
+    return skill;
   },
 };
 
