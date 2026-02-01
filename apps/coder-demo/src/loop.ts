@@ -1,6 +1,6 @@
 import { type AssistantModelMessage, type ModelMessage, type ToolModelMessage, type Tool, Output } from "ai";
 import generateTextAI, { generateObject } from "./ai";
-import { MAX_TURNS } from "./config";
+import { MAX_ERROR_COUNT, MAX_TURNS } from "./config";
 import { z } from "zod";
 import type { Context } from "./typings";
 
@@ -39,6 +39,7 @@ async function loop(context: Context, options?: LoopOptions) {
 
   const { messages } = context;
   let count = 0;
+  let error_count = 0;
 
   while (true) {
     try {
@@ -97,6 +98,10 @@ async function loop(context: Context, options?: LoopOptions) {
         role: 'assistant',
         content: `I encountered an error while processing your request. Please try again later. Error: ${error}`,
       });
+      error_count++;
+      if (error_count >= MAX_ERROR_COUNT) {
+        return 'Max error count reached. Exiting loop.';
+      }
       continue;
     }
   }

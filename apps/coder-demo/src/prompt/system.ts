@@ -1,5 +1,7 @@
+import { skillRegistry } from '../skill/registry';
 
-export const generateSystemPrompt = () => `
+export const generateSystemPrompt = () => {
+  const basePrompt = `
 You are Coder, the best coding agent on the planet.
 
 You are an interactive CLI tool that helps users with software engineering tasks. Use the instructions below and the tools available to you to assist the user.
@@ -87,8 +89,26 @@ Here is some useful information about the environment you are running in:
   Today's date: ${new Date().toLocaleDateString()}
 </env>
 <files>
-  
-</files>
-`;
+
+</files>`;
+
+  // 注入技能列表
+  const skills = skillRegistry.getAll();
+  if (skills.length > 0) {
+    const skillsSection = `
+
+## Available Skills
+
+You have access to the following skills that can help you with specific tasks:
+
+${skills.map(skill => `- **${skill.name}**: ${skill.description}`).join('\n')}
+
+When you identify a task that matches one of these skills, you can reference it in your response or request more details about how to use it.`;
+
+    return basePrompt + skillsSection;
+  }
+
+  return basePrompt;
+};
 
 export default generateSystemPrompt;
