@@ -25,25 +25,30 @@ export const generateTextAI = (messages: ModelMessage[]): ReturnType<typeof gene
   }) as unknown as ReturnType<typeof generateText>;
 }
 
-export const generateObject = async <T extends z.ZodSchema>(messages: ModelMessage[], schema: T) => {
+export const generateObject = async <T extends z.ZodSchema>(messages: ModelMessage[], schema: T, description: string) => {
   // 使用 tool calling 的方式来实现结构化输出
   const result = await generateText({
     model: CoderAI.chat(DEFAULT_MODEL),
     messages: messages,
     tools: {
       respond: tool({
-        description: 'Respond with structured data',
+        description,
         inputSchema: schema,
         execute: async (input: any) => input,
       })
     },
-    toolChoice: 'required', // 强制使用 tool
+    toolChoice: {
+      type: 'tool',
+      toolName: 'respond',
+    }
   });
 
   // 返回 tool call 的结果
   if (result.toolCalls && result.toolCalls.length > 0) {
     return result!.toolCalls[0]!.input as z.infer<T>;
   }
+
+  console.log(result);
 
   throw new Error('No structured output generated');
 }

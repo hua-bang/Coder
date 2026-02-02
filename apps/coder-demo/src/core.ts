@@ -1,9 +1,14 @@
 import * as readline from 'readline';
 import loop from "./loop";
 import type { Context } from "./typings";
+import { skillRegistry } from "./skill";
 
 export const run = async () => {
   console.log('Coder Demo Core is running...');
+
+  // 初始化技能注册表
+  await skillRegistry.initialize(process.cwd());
+
   console.log('Type your messages and press Enter. Type "exit" to quit.\n');
 
   const context: Context = {
