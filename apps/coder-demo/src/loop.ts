@@ -23,7 +23,7 @@ async function checkLoopFinish(result: { text?: string }, context: { messages: M
     assistanceMessage,
     {
       role: 'user',
-      content: `Based on the below response, should the loop finish now? Please respond with a JSON object containing a boolean field "finish"`
+      content: `Based on the below response, should the loop finish now? [!important] Must use the tool "respond" to respond with a JSON object containing a boolean field "finish"`,
     },
   ];
 
