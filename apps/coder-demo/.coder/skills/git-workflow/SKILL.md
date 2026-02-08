@@ -1,16 +1,25 @@
 ---
 name: git-workflow
 description: Standard git workflow for handling staged changes - checkout new branch, add, commit, and push
-description_zh: 处理已暂存代码的标准 git 工作流程 - 创建新分支、添加、提交和推送
-version: 1.0.0
+description_zh: 处理已暂存代码的标准 git 工作流程 - 检查分支名称、创建新分支、添加、提交和推送
+version: 1.1.0
 author: Coder Team
 ---
 
 # Git Workflow Skill
 
-这个 skill 提供了一个完整的 git 工作流程，用于处理当前工作目录中的更改。
+这个 skill 提供了一个完整的 git 工作流程，包括智能分支名称检查和自动创建合适的分支。
 
 ## 工作流程步骤
+
+### 0. 检查当前分支名称
+```bash
+git branch --show-current
+```
+
+**分支名称检查规则：**
+- ✅ 合适名称：`feature/*`, `fix/*`, `refactor/*`, `hotfix/*`, `docs/*`
+- ❌ 不合适名称：`master`, `main`, `dev`, `develop`, 无意义名称
 
 ### 1. 检查当前状态
 ```bash
@@ -21,15 +30,26 @@ git status
 - 未跟踪的文件 (untracked files)
 - 已暂存的文件 (staged files)
 
-### 2. 创建并切换到新分支
+### 2. 智能分支创建
+根据当前分支名称和更改内容自动决定：
+
+**如果不合适，创建新分支：**
 ```bash
-git checkout -b <branch-name>
+# 基于更改类型自动命名
+git checkout -b <new-branch-name>
 ```
-建议使用描述性的分支名称：
-- `feature/<feature-name>` - 新功能
-- `fix/<bug-description>` - 修复
-- `refactor/<refactor-area>` - 重构
-- `hotfix/<critical-fix>` - 紧急修复
+
+**分支命名规则：**
+- **功能开发**: `feature/<功能描述>`
+  - 示例: `feature/user-authentication`, `feature/dark-mode`
+- **Bug修复**: `fix/<问题描述>`
+  - 示例: `fix/login-validation-error`, `fix/memory-leak`
+- **重构**: `refactor/<重构区域>`
+  - 示例: `refactor/auth-service`, `refactor/state-management`
+- **热修复**: `hotfix/<严重问题>`
+  - 示例: `hotfix/security-vulnerability`, `hotfix/crash-on-startup`
+- **文档**: `docs/<文档类型>`
+  - 示例: `docs/api-guide`, `docs/deployment-instructions`
 
 ### 3. 添加更改到暂存区
 ```bash
@@ -53,106 +73,145 @@ git commit -m "<commit-message>"
 - ...
 ```
 
-类型包括：
-- `feat` - 新功能
-- `fix` - 修复
-- `refactor` - 重构
-- `docs` - 文档
-- `style` - 格式调整
-- `test` - 测试
-- `chore` - 构建/工具
-
 ### 5. 推送到远程仓库
 ```bash
 git push origin <branch-name>
 ```
 
-## 使用场景
+## 自动分支命名示例
 
-### 场景1：处理工作目录更改
-当工作目录有未暂存的更改时：
-1. 运行 `git status` 查看更改
-2. 创建功能分支
-3. 选择性添加文件
-4. 提交并推送
+### 场景1：从 master 分支开始
+```bash
+$ git branch --show-current
+master  # ❌ 不合适
 
-### 场景2：处理已暂存的更改
-当已经有文件在暂存区时：
-1. 直接创建新分支
-2. 继续添加其他需要提交的文件
-3. 提交所有暂存的更改
-4. 推送
+# 根据更改内容自动创建：
+# - 如果有新增功能文件 → feature/new-compaction-system
+# - 如果修复bug → fix/memory-leak-issue
+# - 如果重构 → refactor/error-handling
+```
 
-### 场景3：紧急修复
-对于紧急修复：
-1. 基于主分支创建 hotfix 分支
-2. 只添加修复相关的文件
-3. 简短但清晰的提交消息
-4. 立即推送
+### 场景2：从已有功能分支继续
+```bash
+$ git branch --show-current
+feature/user-auth  # ✅ 合适，继续使用
+```
 
-## 最佳实践
-
-### 分支命名
-- 使用小写字母和连字符
-- 保持简洁但描述性
-- 遵循项目约定
-
-### 提交消息
-- 首行不超过 50 字符
-- 使用现在时态
-- 首字母小写
-- 不包含句号
-
-### 文件选择
-- 避免提交无关文件
-- 检查是否包含敏感信息
-- 确保测试通过
-
-## 示例工作流
+## 分支检查自动化脚本
 
 ```bash
-# 1. 检查状态
+#!/bin/bash
+# 分支名称检查脚本
+
+current_branch=$(git branch --show-current)
+echo "当前分支: $current_branch"
+
+# 检查是否合适
+if [[ "$current_branch" =~ ^(master|main|dev|develop)$ ]] || [[ "$current_branch" == "" ]]; then
+    echo "❌ 当前分支名称不合适"
+    
+    # 分析更改内容建议分支名
+    if git diff --name-only | grep -q "test"; then
+        branch_type="test"
+    elif git diff --name-only | grep -q "fix\|bug\|patch"; then
+        branch_type="fix"
+    elif git diff --name-only | grep -q "docs\|README"; then
+        branch_type="docs"
+    elif git diff --name-only | grep -q "refactor\|restructure"; then
+        branch_type="refactor"
+    else
+        branch_type="feature"
+    fi
+    
+    # 生成描述性名称
+    timestamp=$(date +%Y%m%d-%H%M)
+    suggested_name="${branch_type}/changes-${timestamp}"
+    
+    echo "建议分支名: $suggested_name"
+    read -p "创建新分支? [y/N]: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        git checkout -b "$suggested_name"
+    fi
+else
+    echo "✅ 当前分支名称合适"
+fi
+```
+
+## 完整工作流程示例
+
+```bash
+#!/bin/bash
+# 完整 git 工作流程
+
+echo "=== Git 工作流程开始 ==="
+
+# 检查当前分支
+current_branch=$(git branch --show-current)
+echo "当前分支: $current_branch"
+
+# 检查分支名称是否合适
+if [[ "$current_branch" =~ ^(master|main|dev|develop)$ ]] || [[ "$current_branch" == "" ]]; then
+    echo "❌ 当前分支不合适，创建新分支..."
+    
+    # 询问用户分支类型和名称
+    read -p "分支类型 (feature/fix/refactor/hotfix/docs): " branch_type
+    read -p "分支描述: " branch_desc
+    
+    new_branch="${branch_type}/${branch_desc// /-}"
+    git checkout -b "$new_branch"
+    echo "✅ 已创建并切换到: $new_branch"
+else
+    echo "✅ 继续使用当前分支: $current_branch"
+fi
+
+# 检查状态
+echo "=== 检查更改 ==="
 git status
 
-# 2. 创建分支
-git checkout -b feature/user-authentication
+# 添加文件
+read -p "添加所有更改? [y/N]: " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    git add .
+else
+    echo "请手动添加需要的文件: git add <files>"
+    exit 1
+fi
 
-# 3. 添加文件
-git add src/auth/ src/middleware/
+# 提交
+read -p "提交消息: " commit_msg
+git commit -m "$commit_msg"
 
-# 4. 提交
-git commit -m "feat: add JWT-based user authentication
+# 推送
+git push origin "$(git branch --show-current)"
 
-- Implement login/logout endpoints
-- Add JWT token validation middleware
-- Update user model with auth fields
-- Add refresh token mechanism"
-
-# 5. 推送
-git push origin feature/user-authentication
+echo "=== Git 工作流程完成 ==="
 ```
 
-## 常见问题和解决方案
+## 快速命令参考
 
-### 问题1：推送被拒绝
 ```bash
-git push --set-upstream origin <branch-name>
-```
+# 一键检查并创建合适分支
+branch_check() {
+    current=$(git branch --show-current)
+    if [[ "$current" =~ ^(master|main|dev|develop)$ ]]; then
+        echo "从 $current 创建功能分支..."
+        read -p "分支描述: " desc
+        git checkout -b "feature/${desc// /-}"
+    else
+        echo "当前分支合适: $current"
+    fi
+}
 
-### 问题2：需要合并远程更改
-```bash
-git pull origin <branch-name>
-```
-
-### 问题3：提交消息需要修改
-```bash
-git commit --amend
+# 完整流程
+alias gitflow='branch_check && git status && git add . && git commit && git push'
 ```
 
 ## 验证步骤
 
 完成每个步骤后验证：
-1. `git status` - 确认分支和暂存状态
-2. `git log --oneline -5` - 查看最新提交
-3. `git branch` - 确认当前分支
-4. 远程仓库网页确认分支已推送
+1. `git branch --show-current` - 确认分支名称合适
+2. `git status` - 确认分支和暂存状态
+3. `git log --oneline -3` - 查看最新提交
+4. `git branch -a` - 确认远程分支已创建
