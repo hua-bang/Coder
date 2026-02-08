@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Engine } from '@coder/engine';
 import { skillPlugin } from '@coder/skills';
 import * as readline from 'readline';

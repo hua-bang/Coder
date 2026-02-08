@@ -2,7 +2,7 @@ import z from "zod";
 import { readdirSync } from "fs";
 import type { Tool } from "../../shared/types";
 
-const LsTool: Tool<
+export const LsTool: Tool<
   { path?: string },
   { files: string[] }
 > = {

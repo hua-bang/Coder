@@ -1,9 +1,9 @@
 import z from "zod";
 import { readFileSync } from "fs";
 import type { Tool } from "../../shared/types";
-import { truncateOutput } from "./utils.js";
+import { truncateOutput } from "./utils";
 
-const ReadTool: Tool<
+export const ReadTool: Tool<
   { filePath: string },
   { content: string }
 > = {

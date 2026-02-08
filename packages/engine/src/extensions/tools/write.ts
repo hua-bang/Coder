@@ -2,7 +2,7 @@ import z from "zod";
 import { writeFileSync } from "fs";
 import type { Tool } from "../../shared/types";
 
-const WriteTool: Tool<
+export const WriteTool: Tool<
   { filePath: string; content: string },
   { success: boolean }
 > = {

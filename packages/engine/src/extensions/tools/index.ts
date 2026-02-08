@@ -3,7 +3,7 @@ import { WriteTool } from './write.js';
 import { LsTool } from './ls.js';
 import { BashTool } from './bash.js';
 import { TavilyTool } from './tavily.js';
-import { SkillTool } from './skill.js';
+// import { SkillTool } from './skill.js';
 
 export const BuiltinTools = [
   ReadTool,
@@ -11,7 +11,6 @@ export const BuiltinTools = [
   LsTool,
   BashTool,
   TavilyTool,
-  SkillTool,
 ] as const;
 
 export const BuiltinToolsMap = BuiltinTools.reduce((acc, toolInstance) => {
@@ -25,5 +24,4 @@ export {
   LsTool,
   BashTool,
   TavilyTool,
-  SkillTool,
 };

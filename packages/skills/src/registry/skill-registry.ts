@@ -1,11 +1,11 @@
-import type { SkillInfo } from './types';
+import type { SkillInfo } from './skill-types';
 import { scanSkills } from './scanner';
 
 /**
  * 技能注册表（单例模式）
  * 在应用启动时扫描并缓存所有技能
  */
-class SkillRegistry {
+export class SkillRegistry {
   private skills: Map<string, SkillInfo> = new Map();
   private initialized = false;
 
@@ -89,3 +89,4 @@ class SkillRegistry {
 export const skillRegistry = new SkillRegistry();
 
 export default skillRegistry;
+

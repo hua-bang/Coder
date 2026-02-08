@@ -1,8 +1,8 @@
 import z from "zod";
 import type { Tool } from "../../shared/types";
-import { truncateOutput } from "./utils.js";
+import { truncateOutput } from "./utils";
 
-const TavilyTool: Tool<
+export const TavilyTool: Tool<
   { query: string; maxResults?: number },
   { results: Array<{ title: string; url: string; content: string; score?: number }> }
 > = {
@@ -14,7 +14,7 @@ const TavilyTool: Tool<
   }),
   execute: async ({ query, maxResults = 5 }) => {
     const apiKey = process.env.TAVILY_API_KEY;
-    
+
     if (!apiKey) {
       throw new Error('TAVILY_API_KEY environment variable is not set');
     }
@@ -40,7 +40,7 @@ const TavilyTool: Tool<
     }
 
     const data = await response.json();
-    
+
     return {
       results: data.results?.map((result: any) => ({
         title: result.title || '',

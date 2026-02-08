@@ -1,6 +1,7 @@
 import { generateText, streamText, tool, type ModelMessage, type StepResult, type Tool } from 'ai';
 import { CoderAI, DEFAULT_MODEL, COMPACT_SUMMARY_MAX_TOKENS, OPENAI_REASONING_EFFORT } from '../config';
 import z from 'zod';
+import { generateSystemPrompt } from '../prompt';
 
 const providerOptions = OPENAI_REASONING_EFFORT
   ? { openai: { reasoningEffort: OPENAI_REASONING_EFFORT } }
@@ -10,7 +11,7 @@ export const generateTextAI = (messages: ModelMessage[], tools: Record<string, T
   const finalMessages = [
     {
       role: 'system',
-      content: 'You are a helpful coding assistant.',
+      content: generateSystemPrompt(),
     },
     ...messages,
   ] as ModelMessage[];
@@ -33,7 +34,7 @@ export const streamTextAI = (messages: ModelMessage[], tools: Record<string, Too
   const finalMessages = [
     {
       role: 'system',
-      content: 'You are a helpful coding assistant.',
+      content: generateSystemPrompt(),
     },
     ...messages,
   ] as ModelMessage[];
