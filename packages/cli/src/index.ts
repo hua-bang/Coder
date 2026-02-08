@@ -12,9 +12,41 @@ class CoderCLI {
     this.context = { messages: [] };
   }
 
+  // Command callback - handles /xxx commands
+  private async handleCommand(command: string, args: string[]): Promise<void> {
+    console.log(`\n🎯 Command executed: ${command}`);
+    console.log(`Arguments: ${args.join(', ')}`);
+    
+    // Example command handling - you can customize these
+    switch (command.toLowerCase()) {
+      case 'help':
+        console.log('\n📋 Available commands:');
+        console.log('/help - Show this help message');
+        console.log('/clear - Clear conversation history');
+        console.log('/status - Show current status');
+        console.log('/exit - Exit the application');
+        break;
+      case 'clear':
+        this.context.messages = [];
+        console.log('\n🧹 Conversation history cleared!');
+        break;
+      case 'status':
+        console.log(`\n📊 Status: ${this.context.messages.length} messages in context`);
+        break;
+      case 'exit':
+        console.log('Goodbye!');
+        process.exit(0);
+        break;
+      default:
+        console.log(`\n⚠️ Unknown command: ${command}`);
+        console.log('Type /help to see available commands');
+    }
+  }
+
   async start() {
     console.log('🚀 Coder CLI is running...');
-    console.log('Type your messages and press Enter. Type "exit" to quit.\n');
+    console.log('Type your messages and press Enter. Type "exit" to quit.');
+    console.log('Commands starting with "/" will trigger command mode.\n');
 
     await this.engine.loadPlugin(skillPlugin);
 
@@ -37,20 +69,47 @@ class CoderCLI {
     });
 
     const processInput = async (input: string) => {
-      if (input.trim().toLowerCase() === 'exit') {
+      const trimmedInput = input.trim();
+      
+      if (trimmedInput.toLowerCase() === 'exit') {
         console.log('Goodbye!');
         rl.close();
         process.exit(0);
       }
 
-      if (!input.trim()) {
+      if (!trimmedInput) {
         rl.prompt();
         return;
       }
 
+      // Check if input starts with / (command mode)
+      if (trimmedInput.startsWith('/')) {
+        const commandLine = trimmedInput.substring(1); // Remove the /
+        const parts = commandLine.split(/\s+/).filter(part => part.length > 0);
+        
+        if (parts.length === 0) {
+          console.log('\n⚠️ Please provide a command after "/"');
+          rl.prompt();
+          return;
+        }
+
+        const command = parts[0];
+        const args = parts.slice(1);
+
+        try {
+          await this.handleCommand(command, args);
+        } catch (error) {
+          console.error('\n❌ Error executing command:', error);
+        }
+        
+        rl.prompt();
+        return;
+      }
+
+      // Regular message processing
       this.context.messages.push({
         role: 'user',
-        content: input.trim(),
+        content: trimmedInput,
       });
 
       console.log('\n🔄 Processing...\n');
