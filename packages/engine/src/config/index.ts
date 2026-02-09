@@ -10,9 +10,9 @@ export const CoderAI = createOpenAI({
 
 export const DEFAULT_MODEL = process.env.OPENAI_MODEL || 'novita/deepseek/deepseek_v3';
 
-export const MAX_TURNS = 50;
+export const MAX_TURNS = 100;
 export const MAX_ERROR_COUNT = 3;
-export const MAX_STEPS = 25;
+export const MAX_STEPS = 100;
 export const MAX_TOOL_OUTPUT_LENGTH = 30_000;
 
 export const CONTEXT_WINDOW_TOKENS = Number(process.env.CONTEXT_WINDOW_TOKENS ?? 64_000);
