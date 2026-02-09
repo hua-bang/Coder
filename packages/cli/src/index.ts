@@ -1,5 +1,5 @@
 import { Engine } from '@coder/engine';
-import { skillPlugin } from '@coder/skills';
+import { skillRegistryPlugin } from '@coder/skills';
 import * as readline from 'readline';
 import type { Context } from '@coder/engine';
 import { SessionCommands } from './session-commands.js';
@@ -10,7 +10,17 @@ class CoderCLI {
   private sessionCommands: SessionCommands;
 
   constructor() {
-    this.engine = new Engine({ plugins: [skillPlugin] });
+    this.engine = new Engine({
+      enginePlugins: {
+        plugins: [skillRegistryPlugin],
+        dirs: ['.coder/engine-plugins', '~/.coder/engine-plugins'],
+        scan: true
+      },
+      userConfigPlugins: {
+        dirs: ['.coder/config', '~/.coder/config'],
+        scan: true
+      }
+    });
     this.context = { messages: [] };
     this.sessionCommands = new SessionCommands();
   }
@@ -133,7 +143,7 @@ class CoderCLI {
     console.log('Commands starting with "/" will trigger command mode.\n');
 
     await this.sessionCommands.initialize();
-    await this.engine.loadPlugin(skillPlugin);
+    await this.engine.initialize();
 
     // Auto-create a new session
     await this.sessionCommands.createSession();
@@ -158,7 +168,7 @@ class CoderCLI {
 
     const processInput = async (input: string) => {
       const trimmedInput = input.trim();
-      
+
       if (trimmedInput.toLowerCase() === 'exit') {
         console.log('💾 Saving current session...');
         await this.sessionCommands.saveContext(this.context);
@@ -175,7 +185,7 @@ class CoderCLI {
       if (trimmedInput.startsWith('/')) {
         const commandLine = trimmedInput.substring(1);
         const parts = commandLine.split(/\s+/).filter(part => part.length > 0);
-        
+
         if (parts.length === 0) {
           console.log('\n⚠️ Please provide a command after "/"');
           rl.prompt();
@@ -258,5 +268,5 @@ class CoderCLI {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const cli = new CoderCLI();
-  cli.start().catch(console.error);
+  cli.start();
 }

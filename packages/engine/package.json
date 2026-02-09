@@ -22,15 +22,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "ai": "^6.0.57",
     "@ai-sdk/openai": "^3.0.21",
-    "zod": "^4.3.6",
-    "dotenv": "^17.2.3"
+    "ai": "^6.0.57",
+    "dotenv": "^17.2.3",
+    "glob": "^11.0.0",
+    "yaml": "^2.8.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^25.0.10",
     "tsup": "^8.0.0",
-    "vitest": "^1.0.0",
-    "@types/node": "^25.0.10"
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
   }
 }
