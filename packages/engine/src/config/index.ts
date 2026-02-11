@@ -22,3 +22,7 @@ export const KEEP_LAST_TURNS = Number(process.env.KEEP_LAST_TURNS ?? 6);
 export const COMPACT_SUMMARY_MAX_TOKENS = Number(process.env.COMPACT_SUMMARY_MAX_TOKENS ?? 1200);
 export const MAX_COMPACTION_ATTEMPTS = Number(process.env.MAX_COMPACTION_ATTEMPTS ?? 2);
 export const OPENAI_REASONING_EFFORT = process.env.OPENAI_REASONING_EFFORT;
+
+// Clarification settings
+export const CLARIFICATION_TIMEOUT = Number(process.env.CLARIFICATION_TIMEOUT ?? 300_000); // 5 minutes
+export const CLARIFICATION_ENABLED = process.env.CLARIFICATION_ENABLED !== 'false';

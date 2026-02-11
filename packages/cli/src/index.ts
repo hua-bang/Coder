@@ -4,11 +4,13 @@ import { mcpPlugin } from '@coder/mcp-plugin';
 import * as readline from 'readline';
 import type { Context } from '@coder/engine';
 import { SessionCommands } from './session-commands.js';
+import { InputManager } from './input-manager.js';
 
 class CoderCLI {
   private engine: Engine;
   private context: Context;
   private sessionCommands: SessionCommands;
+  private inputManager: InputManager;
 
   constructor() {
     this.engine = new Engine({
@@ -24,6 +26,7 @@ class CoderCLI {
     });
     this.context = { messages: [] };
     this.sessionCommands = new SessionCommands();
+    this.inputManager = new InputManager();
   }
 
   private async handleCommand(command: string, args: string[]): Promise<void> {
@@ -159,6 +162,14 @@ class CoderCLI {
     let isProcessing = false;
 
     process.on('SIGINT', () => {
+      // Cancel any pending clarification request
+      if (this.inputManager.hasPendingRequest()) {
+        this.inputManager.cancel('User interrupted with Ctrl+C');
+        process.stdout.write('\n[Abort] Clarification cancelled.\n');
+        rl.prompt();
+        return;
+      }
+
       if (isProcessing && currentAbortController && !currentAbortController.signal.aborted) {
         currentAbortController.abort();
         process.stdout.write('\n[Abort] Request cancelled.\n');
@@ -169,6 +180,13 @@ class CoderCLI {
 
     const processInput = async (input: string) => {
       const trimmedInput = input.trim();
+
+      // Check if this input is answering a pending clarification request
+      if (this.inputManager.handleUserInput(trimmedInput)) {
+        // Input was consumed by the clarification request
+        // Don't prompt immediately - the agent will continue processing
+        return;
+      }
 
       if (trimmedInput.toLowerCase() === 'exit') {
         console.log('💾 Saving current session...');
@@ -232,6 +250,10 @@ class CoderCLI {
           },
           onStepFinish: (step) => {
             process.stdout.write(`\n📋 Step finished: ${step.finishReason}\n`);
+          },
+          onClarificationRequest: async (request) => {
+            // Handle clarification request through InputManager
+            return await this.inputManager.requestInput(request);
           },
         });
 

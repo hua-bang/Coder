@@ -1,10 +1,23 @@
 import type { FlexibleSchema, ModelMessage } from "ai";
 
+export interface ClarificationRequest {
+  id: string;
+  question: string;
+  context?: string;
+  defaultAnswer?: string;
+  timeout: number;
+}
+
+export interface ToolExecutionContext {
+  onClarificationRequest?: (request: ClarificationRequest) => Promise<string>;
+  abortSignal?: AbortSignal;
+}
+
 export interface Tool<Input = any, Output = any> {
   name: string;
   description: string;
   inputSchema: FlexibleSchema<Input>;
-  execute: (input: Input) => Promise<Output>;
+  execute: (input: Input, context?: ToolExecutionContext) => Promise<Output>;
 }
 
 export interface Context {

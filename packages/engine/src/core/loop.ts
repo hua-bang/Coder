@@ -1,5 +1,5 @@
-import { Tool, type StepResult } from "ai";
-import type { Context } from "../shared/types";
+import { type StepResult } from "ai";
+import type { Context, ClarificationRequest, Tool } from "../shared/types";
 import { streamTextAI } from "../ai";
 import { maybeCompactContext } from "../context";
 import {
@@ -13,6 +13,7 @@ export interface LoopOptions {
   onToolCall?: (toolCall: any) => void;
   onToolResult?: (toolResult: any) => void;
   onStepFinish?: (step: StepResult<any>) => void;
+  onClarificationRequest?: (request: ClarificationRequest) => Promise<string>;
   abortSignal?: AbortSignal;
 
   tools?: Record<string, Tool>; // 允许传入工具覆盖默认工具
@@ -34,8 +35,16 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
       }
 
       const tools = options?.tools || {}; // 允许传入工具覆盖默认工具
+
+      // Prepare tool execution context
+      const toolExecutionContext = {
+        onClarificationRequest: options?.onClarificationRequest,
+        abortSignal: options?.abortSignal
+      };
+
       const result = streamTextAI(context.messages, tools, {
         abortSignal: options?.abortSignal,
+        toolExecutionContext,
         onStepFinish: (step) => {
           options?.onStepFinish?.(step);
         },

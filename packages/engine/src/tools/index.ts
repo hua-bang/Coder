@@ -3,6 +3,7 @@ import { WriteTool } from './write';
 import { LsTool } from './ls';
 import { BashTool } from './bash';
 import { TavilyTool } from './tavily';
+import { ClarifyTool } from './clarify';
 import { Tool } from 'ai';
 // import { SkillTool } from './skill;
 
@@ -12,6 +13,7 @@ export const BuiltinTools = [
   LsTool,
   BashTool,
   TavilyTool,
+  ClarifyTool,
 ] as const;
 
 export const BuiltinToolsMap = BuiltinTools.reduce((acc, toolInstance) => {
@@ -32,4 +34,5 @@ export {
   LsTool,
   BashTool,
   TavilyTool,
+  ClarifyTool,
 };

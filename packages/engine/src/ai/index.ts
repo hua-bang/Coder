@@ -2,6 +2,7 @@ import { generateText, streamText, tool, type ModelMessage, type StepResult, typ
 import { CoderAI, DEFAULT_MODEL, COMPACT_SUMMARY_MAX_TOKENS, OPENAI_REASONING_EFFORT } from '../config';
 import z from 'zod';
 import { generateSystemPrompt } from '../prompt';
+import type { Tool as CoderTool, ToolExecutionContext } from '../shared/types';
 
 
 const providerOptions = OPENAI_REASONING_EFFORT
@@ -29,9 +30,32 @@ export interface StreamOptions {
   abortSignal?: AbortSignal;
   onStepFinish?: (event: StepResult<any>) => void;
   onChunk?: (event: { chunk: any }) => void;
+  toolExecutionContext?: ToolExecutionContext;
 }
 
-export const streamTextAI = (messages: ModelMessage[], tools: Record<string, Tool>, options?: StreamOptions) => {
+/**
+ * Wraps tools to inject ToolExecutionContext before execution
+ */
+export const wrapToolsWithContext = (
+  tools: Record<string, CoderTool>,
+  context?: ToolExecutionContext
+): Record<string, Tool> => {
+  const wrappedTools: Record<string, Tool> = {};
+
+  for (const [name, tool] of Object.entries(tools)) {
+    wrappedTools[name] = {
+      ...tool,
+      execute: async (input: any) => {
+        // Call the original execute with context
+        return await tool.execute(input, context);
+      }
+    } as Tool;
+  }
+
+  return wrappedTools;
+};
+
+export const streamTextAI = (messages: ModelMessage[], tools: Record<string, CoderTool>, options?: StreamOptions) => {
 
   const finalMessages = [
     {
@@ -41,10 +65,15 @@ export const streamTextAI = (messages: ModelMessage[], tools: Record<string, Too
     ...messages,
   ] as ModelMessage[];
 
+  // Wrap tools with execution context if provided
+  const wrappedTools = options?.toolExecutionContext
+    ? wrapToolsWithContext(tools, options.toolExecutionContext)
+    : tools;
+
   return streamText({
     model: CoderAI.chat(DEFAULT_MODEL),
     messages: finalMessages,
-    tools,
+    tools: wrappedTools as Record<string, Tool>,
     providerOptions,
     abortSignal: options?.abortSignal,
     onStepFinish: options?.onStepFinish,
