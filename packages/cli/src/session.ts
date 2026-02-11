@@ -4,9 +4,14 @@ import { homedir } from 'os';
 import { randomUUID } from 'crypto';
 
 export interface SessionMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant' | 'system' | 'clarification';
   content: string;
   timestamp: number;
+  metadata?: {
+    clarificationType?: 'question' | 'answer';
+    clarificationId?: string;
+    [key: string]: any;
+  };
 }
 
 export interface Session {

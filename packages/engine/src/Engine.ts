@@ -69,7 +69,8 @@ export class Engine {
       tools: this.tools,
       onToolCall: (toolCall) => {
         options?.onToolCall?.(toolCall);
-      }
+      },
+      onClarificationRequest: options?.onClarificationRequest,
     });
   }
 
