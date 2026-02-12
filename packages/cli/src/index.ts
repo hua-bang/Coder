@@ -259,6 +259,12 @@ class CoderCLI {
             // Handle clarification request through InputManager
             return await this.inputManager.requestInput(request);
           },
+          onCompacted: (newMessages) => {
+            this.context.messages = newMessages;
+          },
+          onResponse: (messages) => {
+            this.context.messages.push(...messages)
+          },
         });
 
         if (!sawText && result) {
