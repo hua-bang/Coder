@@ -10,6 +10,7 @@ import type { Context } from "../shared/types";
 type CompactResult = {
   didCompact: boolean;
   reason?: string;
+  newMessages?: ModelMessage[];
 };
 
 const ensureSummaryPrefix = (summary: string): string => {
@@ -115,12 +116,11 @@ export const maybeCompactContext = async (
     ];
 
     if (estimateTokens(nextMessages) > COMPACT_TARGET) {
-      context.messages = takeLastTurns(messages, KEEP_LAST_TURNS);
-      return { didCompact: true, reason: 'summary-too-large' };
+      const newMessages = takeLastTurns(messages, KEEP_LAST_TURNS);
+      return { didCompact: true, reason: 'summary-too-large', newMessages };
     }
 
-    context.messages = nextMessages;
-    return { didCompact: true };
+    return { didCompact: true, newMessages: nextMessages };
   } catch (error) {
     const pruned = pruneMessages({
       messages,
@@ -128,7 +128,7 @@ export const maybeCompactContext = async (
       toolCalls: 'all',
       emptyMessages: 'remove',
     });
-    context.messages = takeLastTurns(pruned, KEEP_LAST_TURNS);
-    return { didCompact: true, reason: 'fallback' };
+    const newMessages = takeLastTurns(pruned, KEEP_LAST_TURNS);
+    return { didCompact: true, reason: 'fallback', newMessages };
   }
 };

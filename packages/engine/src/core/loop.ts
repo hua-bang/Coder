@@ -1,4 +1,4 @@
-import { type StepResult } from "ai";
+import { ToolSet, type StepResult, type ModelMessage } from "ai";
 import type { Context, ClarificationRequest, Tool } from "../shared/types";
 import { streamTextAI } from "../ai";
 import { maybeCompactContext } from "../context";
@@ -14,6 +14,8 @@ export interface LoopOptions {
   onToolResult?: (toolResult: any) => void;
   onStepFinish?: (step: StepResult<any>) => void;
   onClarificationRequest?: (request: ClarificationRequest) => Promise<string>;
+  onCompacted?: (newMessages: ModelMessage[]) => void;
+  onResponse?: (messages: StepResult<ToolSet>['response']['messages']) => void;
   abortSignal?: AbortSignal;
 
   tools?: Record<string, Tool>; // 允许传入工具覆盖默认工具
@@ -27,9 +29,13 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
   while (true) {
     try {
       if (compactionAttempts < MAX_COMPACTION_ATTEMPTS) {
-        const { didCompact } = await maybeCompactContext(context);
+        const { didCompact, newMessages } = await maybeCompactContext(context);
         if (didCompact) {
           compactionAttempts++;
+
+          if (newMessages) {
+            options?.onCompacted?.(newMessages)
+          }
           continue;
         }
       }
@@ -71,7 +77,8 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
 
       for (const step of steps) {
         if (step.response?.messages?.length) {
-          context.messages.push(...step.response.messages);
+          const messages = [...step.response.messages];
+          options?.onResponse?.(messages);
         }
       }
 
@@ -81,9 +88,12 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
 
       if (finishReason === 'length') {
         if (compactionAttempts < MAX_COMPACTION_ATTEMPTS) {
-          const { didCompact } = await maybeCompactContext(context, { force: true });
+          const { didCompact, newMessages } = await maybeCompactContext(context, { force: true });
           if (didCompact) {
             compactionAttempts++;
+            if (newMessages) {
+              options?.onCompacted?.(newMessages)
+            }
             continue;
           }
         }
