@@ -86,7 +86,7 @@ MCP 能力清单
 ├── ✅ HTTP transport 连接 MCP 服务器
 ├── ✅ 自动工具发现（mcp_{server}_{tool} 命名空间）
 ├── ✅ 服务注册（context.registerService("mcp:name")）
-├── 🔄 Stdio transport 支持（本地进程 MCP 服务器）
+├── ✅ Stdio transport 支持（本地进程 MCP 服务器）
 ├── 🔄 MCP 服务器健康检查与重连机制
 ├── 🔄 MCP 工具调用超时配置
 └── ❌ MCP Resources / Prompts 支持（MCP 协议完整实现）
@@ -484,7 +484,7 @@ Web UI 能力
 | MCP 基础集成（HTTP transport） | 扩展性 | P0 | ✅ | High |
 | Skills 系统（SKILL.md + 6 内置） | 扩展性 | P0 | ✅ | High |
 | Sub-Agent 委托（.md 配置） | 扩展性 | P0 | ✅ | Medium |
-| MCP Stdio transport | 扩展性 | P1 | 🔄 | High |
+| MCP Stdio transport | 扩展性 | P1 | ✅ | High |
 | Sub-Agent 并行执行 | 扩展性 | P1 | 🔄 | Medium |
 | Skill 参数化 | 扩展性 | P1 | 🔄 | Medium |
 | **TODO/TASK 跟踪系统** | 任务管理 | P2 | ❌ | Medium |
@@ -520,7 +520,7 @@ Web UI 能力
 ## 下一步行动（Near-term Actions）
 
 ### 立即可做（本周）
-1. **MCP Stdio transport**：扩展 `mcp-plugin` 支持本地进程 MCP 服务器
+1. ~~**MCP Stdio transport**：扩展 `mcp-plugin` 支持本地进程 MCP 服务器~~ ✅ 已完成
 2. **Doom Loop 检测**：在 `loop.ts` 中添加相同工具调用检测
 3. **Sub-agent 结果结构化**：为 sub-agent 返回值定义 JSON schema
 
