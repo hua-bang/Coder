@@ -1,5 +1,5 @@
 import { ToolSet, type StepResult, type ModelMessage } from "ai";
-import type { Context, ClarificationRequest, Tool } from "../shared/types";
+import type { Context, ClarificationRequest, Tool, LLMProviderFactory } from "../shared/types";
 import { streamTextAI } from "../ai";
 import { maybeCompactContext } from "../context";
 import {
@@ -19,6 +19,11 @@ export interface LoopOptions {
   abortSignal?: AbortSignal;
 
   tools?: Record<string, Tool>; // 允许传入工具覆盖默认工具
+
+  /** Custom LLM provider factory. Overrides the default provider when set. */
+  provider?: LLMProviderFactory;
+  /** Model name passed to the provider. Overrides DEFAULT_MODEL when set. */
+  model?: string;
 }
 
 export async function loop(context: Context, options?: LoopOptions): Promise<string> {
@@ -29,7 +34,10 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
   while (true) {
     try {
       if (compactionAttempts < MAX_COMPACTION_ATTEMPTS) {
-        const { didCompact, newMessages } = await maybeCompactContext(context);
+        const { didCompact, newMessages } = await maybeCompactContext(context, {
+          provider: options?.provider,
+          model: options?.model,
+        });
         if (didCompact) {
           compactionAttempts++;
 
@@ -51,6 +59,8 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
       const result = streamTextAI(context.messages, tools, {
         abortSignal: options?.abortSignal,
         toolExecutionContext,
+        provider: options?.provider,
+        model: options?.model,
         onStepFinish: (step) => {
           options?.onStepFinish?.(step);
         },
@@ -88,7 +98,11 @@ export async function loop(context: Context, options?: LoopOptions): Promise<str
 
       if (finishReason === 'length') {
         if (compactionAttempts < MAX_COMPACTION_ATTEMPTS) {
-          const { didCompact, newMessages } = await maybeCompactContext(context, { force: true });
+          const { didCompact, newMessages } = await maybeCompactContext(context, {
+          force: true,
+          provider: options?.provider,
+          model: options?.model,
+        });
           if (didCompact) {
             compactionAttempts++;
             if (newMessages) {

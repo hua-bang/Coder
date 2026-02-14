@@ -2,14 +2,21 @@ import { generateText, streamText, tool, type ModelMessage, type StepResult, typ
 import { CoderAI, DEFAULT_MODEL, COMPACT_SUMMARY_MAX_TOKENS, OPENAI_REASONING_EFFORT } from '../config';
 import z from 'zod';
 import { generateSystemPrompt } from '../prompt';
-import type { Tool as CoderTool, ToolExecutionContext } from '../shared/types';
+import type { Tool as CoderTool, ToolExecutionContext, LLMProviderFactory } from '../shared/types';
 
 
 const providerOptions = OPENAI_REASONING_EFFORT
   ? { openai: { reasoningEffort: OPENAI_REASONING_EFFORT } }
   : undefined;
 
-export const generateTextAI = (messages: ModelMessage[], tools: Record<string, Tool>) => {
+export const generateTextAI = (
+  messages: ModelMessage[],
+  tools: Record<string, Tool>,
+  options?: { provider?: LLMProviderFactory; model?: string }
+) => {
+  const provider = options?.provider ?? CoderAI;
+  const model = options?.model ?? DEFAULT_MODEL;
+
   const finalMessages = [
     {
       role: 'system',
@@ -19,7 +26,7 @@ export const generateTextAI = (messages: ModelMessage[], tools: Record<string, T
   ] as ModelMessage[];
 
   return generateText({
-    model: CoderAI(DEFAULT_MODEL),
+    model: provider(model),
     messages: finalMessages,
     tools,
     providerOptions,
@@ -31,6 +38,10 @@ export interface StreamOptions {
   onStepFinish?: (event: StepResult<any>) => void;
   onChunk?: (event: { chunk: any }) => void;
   toolExecutionContext?: ToolExecutionContext;
+  /** Custom LLM provider. Falls back to the default CoderAI provider when not set. */
+  provider?: LLMProviderFactory;
+  /** Model name to pass to the provider. Falls back to DEFAULT_MODEL when not set. */
+  model?: string;
 }
 
 /**
@@ -56,6 +67,8 @@ export const wrapToolsWithContext = (
 };
 
 export const streamTextAI = (messages: ModelMessage[], tools: Record<string, CoderTool>, options?: StreamOptions) => {
+  const provider = options?.provider ?? CoderAI;
+  const model = options?.model ?? DEFAULT_MODEL;
 
   const finalMessages = [
     {
@@ -71,7 +84,7 @@ export const streamTextAI = (messages: ModelMessage[], tools: Record<string, Cod
     : tools;
 
   return streamText({
-    model: CoderAI(DEFAULT_MODEL),
+    model: provider(model),
     messages: finalMessages,
     tools: wrappedTools as Record<string, Tool>,
     providerOptions,
@@ -83,8 +96,10 @@ export const streamTextAI = (messages: ModelMessage[], tools: Record<string, Cod
 
 export const summarizeMessages = async (
   messages: ModelMessage[],
-  options?: { maxOutputTokens?: number }
+  options?: { maxOutputTokens?: number; provider?: LLMProviderFactory; model?: string }
 ): Promise<string> => {
+  const provider = options?.provider ?? CoderAI;
+  const model = options?.model ?? DEFAULT_MODEL;
   const SUMMARY_SYSTEM_PROMPT =
     '你是负责压缩对话上下文的助手。请基于给定历史消息，提炼关键事实与决策，避免臆测或扩展。';
 
@@ -102,7 +117,7 @@ export const summarizeMessages = async (
   ].join('\n');
 
   const result = await generateText({
-    model: CoderAI(DEFAULT_MODEL),
+    model: provider(model),
     messages: [
       { role: 'system', content: SUMMARY_SYSTEM_PROMPT },
       ...messages,

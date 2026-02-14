@@ -1,4 +1,18 @@
-import type { FlexibleSchema, ModelMessage } from "ai";
+import type { FlexibleSchema, ModelMessage, LanguageModel } from "ai";
+
+/**
+ * Custom LLM provider factory - receives a model name and returns a LanguageModel.
+ * Use this to plug in any Vercel AI SDK-compatible provider.
+ *
+ * @example
+ * import { createOpenAI } from '@ai-sdk/openai';
+ * const provider: LLMProviderFactory = createOpenAI({ apiKey: '...' }).chat;
+ *
+ * @example
+ * import { createAnthropic } from '@ai-sdk/anthropic';
+ * const provider: LLMProviderFactory = createAnthropic({ apiKey: '...' });
+ */
+export type LLMProviderFactory = (model: string) => LanguageModel;
 
 export interface ClarificationRequest {
   id: string;
