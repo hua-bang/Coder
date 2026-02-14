@@ -1,7 +1,7 @@
-import { Engine } from '@coder/engine';
-import { skillRegistryPlugin } from '@coder/engine/plugins/skill-registry.plugin.js';
+import { Engine } from '@pulse-coder/engine';
+import { skillRegistryPlugin } from '@pulse-coder/engine/plugins/skill-registry.plugin.js';
 import * as readline from 'readline';
-import type { Context } from '@coder/engine';
+import type { Context } from '@pulse-coder/engine';
 import { SessionCommands } from './session-commands.js';
 
 class CoderCLI {
@@ -28,7 +28,7 @@ class CoderCLI {
     await this.sessionCommands.initialize();
     await this.engine.initialize();
     
-    console.log('🚀 Coder CLI with new plugin system');
+    console.log('🚀 Pulse Coder CLI with new plugin system');
     console.log('📊 Plugin status:', this.engine.getPluginStatus());
   }
 

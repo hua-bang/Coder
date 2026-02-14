@@ -1,13 +1,13 @@
-# Coder 三包重构 - 主计划
+# Pulse Coder 三包重构 - 主计划
 
 ## 目标
 将 coder-demo 重构为 **插件化三包架构**，支持第三方 skill/mcp 扩展。
 
 ## 最终架构
 ```
-@coder/engine          # 插件化AI引擎
-@coder/skills          # skill协议实现  
-@coder/cli             # CLI应用入口
+@pulse-coder/engine          # 插件化AI引擎
+@pulse-coder/skills          # skill协议实现  
+@pulse-coder/cli             # CLI应用入口
 ```
 
 ## 迁移路线图
@@ -28,12 +28,12 @@ packages/
   4. `src/compaction.ts` → `engine/src/extensions/context-protocol.ts`
 
 ### 阶段3：技能系统 (Day 5-6)
-- 创建 `@coder/skills` 包
+- 创建 `@pulse-coder/skills` 包
 - 实现 skill 扩展协议
 - 迁移现有技能实现
 
 ### 阶段4：CLI整合 (Day 7)
-- 创建 `@coder/cli` 包
+- 创建 `@pulse-coder/cli` 包
 - 迁移 `src/core.ts`
 - 实现插件配置系统
 
@@ -87,7 +87,7 @@ packages/
 ### 包配置模板
 ```json
 {
-  "name": "@coder/engine",
+  "name": "@pulse-coder/engine",
   "type": "module",
   "exports": {
     ".": "./dist/index.js",

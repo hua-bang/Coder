@@ -57,7 +57,7 @@ interface EngineContext {
 
 #### 创建简单插件
 ```typescript
-import type { EnginePlugin, EngineContext } from '@coder/engine/engine-plugin';
+import type { EnginePlugin, EngineContext } from '@pulse-coder/engine/engine-plugin';
 
 const myPlugin: EnginePlugin = {
   name: 'my-custom-plugin',
@@ -87,9 +87,9 @@ export default myPlugin;
 #### 带依赖的插件
 ```typescript
 const mcpPlugin: EnginePlugin = {
-  name: '@coder/engine-mcp-client',
+  name: '@pulse-coder/engine-mcp-client',
   version: '2.0.0',
-  dependencies: ['@coder/engine-core'],
+  dependencies: ['@pulse-coder/engine-core'],
   
   async beforeInitialize(context) {
     // 检查依赖
@@ -349,7 +349,7 @@ mcp:
 ### 引擎初始化
 
 ```typescript
-import { Engine } from '@coder/engine';
+import { Engine } from '@pulse-coder/engine';
 
 // 基础使用
 const engine = new Engine();

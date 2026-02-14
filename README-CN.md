@@ -1,6 +1,6 @@
-# 🚀 Coder - AI 驱动的编程助手
+# 🚀 Pulse Coder - AI 驱动的编程助手
 
-**Coder** 是一个基于插件的 AI 编程助手，专为开发者设计，提供智能代码生成、重构、调试和项目开发支持。它结合现代 AI 技术与灵活的插件架构，能够适应各种开发场景。
+**Pulse Coder** 是一个基于插件的 AI 编程助手，专为开发者设计，提供智能代码生成、重构、调试和项目开发支持。它结合现代 AI 技术与灵活的插件架构，能够适应各种开发场景。
 
 ## 📖 文档导航
 - [English README](./README.md)
@@ -18,7 +18,7 @@
 ## 📁 项目结构
 
 ```
-Coder/
+pulse-coder/
 ├── 📦 packages/              # 核心包
 │   ├── 🎯 cli/              # 命令行界面
 │   ├── ⚙️ engine/           # AI 引擎核心
@@ -93,7 +93,7 @@ pnpm start
 
 ### 包结构详解
 
-#### 📦 @coder/engine
+#### 📦 @pulse-coder/engine
 **AI 引擎核心**，提供：
 - LLM 集成和对话管理
 - 插件系统支持
@@ -102,7 +102,7 @@ pnpm start
 
 ```typescript
 // 基本使用示例
-import { Engine } from '@coder/engine';
+import { Engine } from '@pulse-coder/engine';
 
 const engine = new Engine({
   plugins: [yourPlugin]
@@ -111,14 +111,14 @@ const engine = new Engine({
 const result = await engine.run(context, options);
 ```
 
-#### 🛠️ @coder/skills
+#### 🛠️ @pulse-coder/skills
 **技能系统**，包含：
 - 代码重构技能
 - 代码审查技能
 - Git 工作流技能
 - 研究分析技能
 
-#### 🎯 @coder/cli
+#### 🎯 @pulse-coder/cli
 **命令行界面**，功能包括：
 - 交互式会话管理
 - 实时对话界面
@@ -153,9 +153,9 @@ const result = await engine.run(context, options);
 pnpm run dev
 
 # 单独启动某个包的开发模式
-pnpm --filter @coder/cli dev
-pnpm --filter @coder/engine dev
-pnpm --filter @coder/skills dev
+pnpm --filter @pulse-coder/cli dev
+pnpm --filter @pulse-coder/engine dev
+pnpm --filter @pulse-coder/skills dev
 ```
 
 ### 🧪 测试
@@ -165,13 +165,13 @@ pnpm --filter @coder/skills dev
 pnpm test
 
 # 运行特定包的测试
-pnpm --filter @coder/engine test
+pnpm --filter @pulse-coder/engine test
 ```
 
 ## 📱 应用示例
 
 ### 🎮 coder-demo
-基础演示应用，展示如何集成 Coder 引擎：
+基础演示应用，展示如何集成 Pulse Coder 引擎：
 
 ```bash
 cd apps/coder-demo
@@ -180,7 +180,7 @@ pnpm dev
 ```
 
 ### 🐍 snake-game
-使用 Coder 构建的贪吃蛇游戏：
+使用 Pulse Coder 构建的贪吃蛇游戏：
 
 ```bash
 cd apps/snake-game
@@ -203,7 +203,7 @@ cd apps/personal-portfolio
 
 ```typescript
 // my-skill.ts
-import { Skill } from '@coder/skills';
+import { Skill } from '@pulse-coder/skills';
 
 export const mySkill: Skill = {
   name: 'my-skill',
@@ -220,7 +220,7 @@ export const mySkill: Skill = {
 
 ### 会话管理
 
-Coder 自动保存所有会话到本地存储，支持：
+Pulse Coder 自动保存所有会话到本地存储，支持：
 - 会话历史查看
 - 上下文恢复
 - 关键词搜索

@@ -2,7 +2,7 @@
 name: code-review
 description: Perform comprehensive code review including code quality, security, performance, and best practices
 version: 1.0.0
-author: Coder Team
+author: Pulse Coder Team
 ---
 
 # Code Review Skill

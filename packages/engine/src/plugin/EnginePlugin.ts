@@ -52,7 +52,9 @@ export interface EnginePluginLoadOptions {
 }
 
 export const DEFAULT_ENGINE_PLUGIN_DIRS = [
+  '.pulse-coder/engine-plugins',
   '.coder/engine-plugins',
+  '~/.pulse-coder/engine-plugins',
   '~/.coder/engine-plugins',
   './plugins/engine'
 ];

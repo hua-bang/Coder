@@ -1,5 +1,5 @@
 /**
- * Built-in Skills Plugin for Coder Engine
+ * Built-in Skills Plugin for Pulse Coder Engine
  * 将技能系统作为引擎内置插件
  */
 
@@ -58,10 +58,12 @@ export class BuiltInSkillRegistry {
     const skills: SkillInfo[] = [];
     
     const scanPaths = [
-      // 项目级技能
+      // 项目级技能（优先 .pulse-coder，兼容旧版 .coder 和 .claude）
+      { base: cwd, pattern: '.pulse-coder/skills/**/SKILL.md' },
       { base: cwd, pattern: '.coder/skills/**/SKILL.md' },
       { base: cwd, pattern: '.claude/skills/**/SKILL.md' },
-      // 用户级技能
+      // 用户级技能（优先 .pulse-coder，兼容旧版 .coder）
+      { base: homedir(), pattern: '.pulse-coder/skills/**/SKILL.md' },
       { base: homedir(), pattern: '.coder/skills/**/SKILL.md' }
     ];
 
@@ -197,7 +199,7 @@ function generateSkillTool(skills: SkillInfo[]): Tool<SkillToolInput, SkillInfo>
  * 内置技能插件
  */
 export const builtInSkillsPlugin: EnginePlugin = {
-  name: '@coder/engine/built-in-skills',
+  name: '@pulse-coder/engine/built-in-skills',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

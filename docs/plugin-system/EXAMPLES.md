@@ -7,7 +7,7 @@
 #### 完整实现
 ```typescript
 // mcp-client.plugin.ts
-import type { EnginePlugin, EngineContext } from '@coder/engine/engine-plugin';
+import type { EnginePlugin, EngineContext } from '@pulse-coder/engine/engine-plugin';
 import { MCPClient } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 
@@ -21,9 +21,9 @@ interface McpPluginConfig {
 }
 
 const mcpClientPlugin: EnginePlugin = {
-  name: '@coder/engine-mcp-client',
+  name: '@pulse-coder/engine-mcp-client',
   version: '1.0.0',
-  dependencies: ['@coder/engine-core'],
+  dependencies: ['@pulse-coder/engine-core'],
   
   async initialize(context) {
     const config = context.getConfig<McpPluginConfig>('mcp') || { servers: [] };
@@ -107,7 +107,7 @@ export default mcpClientPlugin;
 #### 完整实现
 ```typescript
 // sub-agent.plugin.ts
-import type { EnginePlugin, EngineContext } from '@coder/engine/engine-plugin';
+import type { EnginePlugin, EngineContext } from '@pulse-coder/engine/engine-plugin';
 import { SubAgentManager } from './sub-agent-manager.js';
 
 interface SubAgentConfig {
@@ -119,7 +119,7 @@ interface SubAgentConfig {
 }
 
 const subAgentPlugin: EnginePlugin = {
-  name: '@coder/engine-sub-agent',
+  name: '@pulse-coder/engine-sub-agent',
   version: '2.0.0',
   
   async initialize(context) {
@@ -172,10 +172,10 @@ export default subAgentPlugin;
 #### HTTP 工具类型
 ```typescript
 // http-tool.plugin.ts
-import type { EnginePlugin, EngineContext } from '@coder/engine/engine-plugin';
+import type { EnginePlugin, EngineContext } from '@pulse-coder/engine/engine-plugin';
 
 const httpToolPlugin: EnginePlugin = {
-  name: '@coder/engine-http-tool',
+  name: '@pulse-coder/engine-http-tool',
   version: '1.0.0',
   
   async initialize(context) {

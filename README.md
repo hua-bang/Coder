@@ -1,6 +1,6 @@
-# 🚀 Coder - AI-Powered Coding Assistant
+# 🚀 Pulse Coder - AI-Powered Coding Assistant
 
-**Coder** is a plugin-based AI coding assistant designed for developers, providing intelligent code generation, refactoring, debugging, and project development support. It combines modern AI technology with a flexible plugin architecture to adapt to various development scenarios.
+**Pulse Coder** is a plugin-based AI coding assistant designed for developers, providing intelligent code generation, refactoring, debugging, and project development support. It combines modern AI technology with a flexible plugin architecture to adapt to various development scenarios.
 
 ## 📖 Documentation
 - [English README](./README.md) ← Current document
@@ -18,7 +18,7 @@
 ## 📁 Project Structure
 
 ```
-Coder/
+pulse-coder/
 ├── 📦 packages/              # Core packages
 │   ├── 🎯 cli/              # Command line interface
 │   ├── ⚙️ engine/           # AI engine core
@@ -93,7 +93,7 @@ pnpm start
 
 ### Package Structure Details
 
-#### 📦 @coder/engine
+#### 📦 @pulse-coder/engine
 **AI engine core**, providing:
 - LLM integration and conversation management
 - Plugin system support
@@ -102,7 +102,7 @@ pnpm start
 
 ```typescript
 // Basic usage example
-import { Engine } from '@coder/engine';
+import { Engine } from '@pulse-coder/engine';
 
 const engine = new Engine({
   plugins: [yourPlugin]
@@ -111,14 +111,14 @@ const engine = new Engine({
 const result = await engine.run(context, options);
 ```
 
-#### 🛠️ @coder/skills
+#### 🛠️ @pulse-coder/skills
 **Skill system**, including:
 - Code refactoring skills
 - Code review skills
 - Git workflow skills
 - Research analysis skills
 
-#### 🎯 @coder/cli
+#### 🎯 @pulse-coder/cli
 **Command line interface**, features include:
 - Interactive session management
 - Real-time dialogue interface
@@ -153,9 +153,9 @@ After starting CLI, you can use the following commands:
 pnpm run dev
 
 # Start development mode for specific package
-pnpm --filter @coder/cli dev
-pnpm --filter @coder/engine dev
-pnpm --filter @coder/skills dev
+pnpm --filter @pulse-coder/cli dev
+pnpm --filter @pulse-coder/engine dev
+pnpm --filter @pulse-coder/skills dev
 ```
 
 ### 🧪 Testing
@@ -165,13 +165,13 @@ pnpm --filter @coder/skills dev
 pnpm test
 
 # Run tests for specific package
-pnpm --filter @coder/engine test
+pnpm --filter @pulse-coder/engine test
 ```
 
 ## 📱 Application Examples
 
 ### 🎮 coder-demo
-Basic demo application showing how to integrate Coder engine:
+Basic demo application showing how to integrate Pulse Coder engine:
 
 ```bash
 cd apps/coder-demo
@@ -180,7 +180,7 @@ pnpm dev
 ```
 
 ### 🐍 snake-game
-Snake game built with Coder:
+Snake game built with Pulse Coder:
 
 ```bash
 cd apps/snake-game
@@ -203,7 +203,7 @@ Create custom skill plugins:
 
 ```typescript
 // my-skill.ts
-import { Skill } from '@coder/skills';
+import { Skill } from '@pulse-coder/skills';
 
 export const mySkill: Skill = {
   name: 'my-skill',
@@ -220,7 +220,7 @@ export const mySkill: Skill = {
 
 ### Session Management
 
-Coder automatically saves all sessions to local storage, supporting:
+Pulse Coder automatically saves all sessions to local storage, supporting:
 - Session history viewing
 - Context recovery
 - Keyword search

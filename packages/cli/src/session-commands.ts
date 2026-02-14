@@ -1,5 +1,5 @@
 import { SessionManager } from './session.js';
-import type { Context } from '@coder/engine';
+import type { Context } from '@pulse-coder/engine';
 
 export class SessionCommands {
   private sessionManager: SessionManager;

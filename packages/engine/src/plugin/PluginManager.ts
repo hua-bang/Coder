@@ -66,7 +66,9 @@ export class PluginManager {
     // 2. 目录扫描的插件
     if (options.scan !== false) {
       const scanPaths = options.dirs || [
+        '.pulse-coder/engine-plugins',
         '.coder/engine-plugins',
+        '~/.pulse-coder/engine-plugins',
         '~/.coder/engine-plugins'
       ];
 
@@ -202,7 +204,9 @@ export class PluginManager {
     // 2. 目录扫描的配置
     if (options.scan !== false) {
       const scanPaths = options.dirs || [
+        '.pulse-coder/config',
         '.coder/config',
+        '~/.pulse-coder/config',
         '~/.coder/config'
       ];
 
@@ -333,7 +337,7 @@ export class PluginManager {
     ];
 
     for (const capability of requiredCapabilities) {
-      if (!this.enginePlugins.has(capability) && !this.enginePlugins.has(`@coder/engine-${capability}`)) {
+      if (!this.enginePlugins.has(capability) && !this.enginePlugins.has(`@pulse-coder/engine-${capability}`)) {
         this.logger.warn(`Missing core capability: ${capability}`);
       }
     }

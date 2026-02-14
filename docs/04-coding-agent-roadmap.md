@@ -1,6 +1,6 @@
 # Coding Agent 能力建设 Roadmap
 
-> 基于对当前 Coder 实现与业界最佳实践的综合分析，规划 Coding Agent 的演进路线。
+> 基于对当前 Pulse Coder 实现与业界最佳实践的综合分析，规划 Coding Agent 的演进路线。
 
 ## 总览
 
@@ -215,7 +215,7 @@ interface TaskItem {
 }
 
 export const TaskTrackingPlugin: EnginePlugin = {
-  name: '@coder/task-tracking',
+  name: '@pulse-coder/task-tracking',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

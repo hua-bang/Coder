@@ -1,8 +1,8 @@
-# @coder/engine 双轨插件系统设计文档
+# @pulse-coder/engine 双轨插件系统设计文档
 
 ## 概述
 
-@coder/engine 采用分层插件架构，提供两套完全隔离的插件系统：
+@pulse-coder/engine 采用分层插件架构，提供两套完全隔离的插件系统：
 
 1. **引擎开发插件系统** - 为引擎开发者提供核心能力扩展
 2. **用户配置插件系统** - 为终端用户提供个性化配置能力
@@ -11,7 +11,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    @coder/engine                        │
+│                    @pulse-coder/engine                        │
 │  ┌─────────────────────┐    ┌─────────────────────┐    │
 │  │  引擎开发插件系统    │    │  用户配置插件系统    │    │
 │  │                     │    │                     │    │
@@ -104,9 +104,9 @@ API传入     版本兼容    注册能力    事件监听
 ```typescript
 // mcp-client.plugin.js
 export default {
-  name: '@coder/engine-mcp-client',
+  name: '@pulse-coder/engine-mcp-client',
   version: '1.0.0',
-  dependencies: ['@coder/engine-core'],
+  dependencies: ['@pulse-coder/engine-core'],
   
   async initialize(context) {
     const mcpClient = new MCPClient();
@@ -124,7 +124,7 @@ export default {
 ```typescript
 // sub-agent.plugin.js
 export default {
-  name: '@coder/engine-sub-agent',
+  name: '@pulse-coder/engine-sub-agent',
   version: '1.0.0',
   
   async initialize(context) {
@@ -312,10 +312,10 @@ coder-plugin dev path/to/plugin
 ### 类型支持
 ```typescript
 // 引擎插件类型声明
-import type { EnginePlugin, EngineContext } from '@coder/engine/engine-plugin';
+import type { EnginePlugin, EngineContext } from '@pulse-coder/engine/engine-plugin';
 
 // 用户配置类型声明
-import type { UserConfig } from '@coder/engine/user-config';
+import type { UserConfig } from '@pulse-coder/engine/user-config';
 ```
 
 ## 迁移路径
@@ -355,7 +355,7 @@ describe('User Config Validation', () => {
 
 ### 引擎插件发布
 ```bash
-npm publish @coder/engine-plugin-mcp
+npm publish @pulse-coder/engine-plugin-mcp
 # 或
 # 分发到 .coder/engine-plugins/
 ```

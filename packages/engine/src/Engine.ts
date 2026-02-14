@@ -85,7 +85,7 @@ export class Engine {
 
     return {
       plugins: [...builtInPluginList, ...userPluginList],
-      dirs: userPlugins.dirs || ['.coder/engine-plugins', '~/.coder/engine-plugins'],
+      dirs: userPlugins.dirs || ['.pulse-coder/engine-plugins', '.coder/engine-plugins', '~/.pulse-coder/engine-plugins', '~/.coder/engine-plugins'],
       scan: userPlugins.scan !== false // 默认启用扫描
     };
   }

@@ -4,12 +4,12 @@
 
 ```typescript
 // 插件主入口 src/index.ts
-import { EnginePlugin } from '@coder/engine';
+import { EnginePlugin } from '@pulse-coder/engine';
 import { loadMCPConfig } from './config-loader';
 import { createHTTPTransport } from './transport';
 
 export const mcpPlugin: EnginePlugin = {
-  name: '@coder/mcp-plugin',
+  name: '@pulse-coder/mcp-plugin',
   version: '1.0.0',
   
   async initialize(context) {
@@ -93,9 +93,9 @@ export function createHTTPTransport(config: HTTPTransportConfig) {
 
 ```json
 {
-  "name": "@coder/mcp-plugin",
+  "name": "@pulse-coder/mcp-plugin",
   "version": "1.0.0",
-  "description": "Lightweight MCP plugin for Coder engine",
+  "description": "Lightweight MCP plugin for Pulse Coder engine",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -106,7 +106,7 @@ export function createHTTPTransport(config: HTTPTransportConfig) {
   },
   "dependencies": {
     "@ai-sdk/mcp": "^latest",
-    "@coder/engine": "workspace:*"
+    "@pulse-coder/engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -168,7 +168,7 @@ cd mcp-plugin
 
 ### 2. 安装依赖
 ```bash
-npm install @ai-sdk/mcp @coder/engine
+npm install @ai-sdk/mcp @pulse-coder/engine
 ```
 
 ### 3. 添加到 CLI 依赖
@@ -176,7 +176,7 @@ npm install @ai-sdk/mcp @coder/engine
 ```json
 {
   "dependencies": {
-    "@coder/mcp-plugin": "workspace:*"
+    "@pulse-coder/mcp-plugin": "workspace:*"
   }
 }
 ```
@@ -184,7 +184,7 @@ npm install @ai-sdk/mcp @coder/engine
 ### 4. 注册插件
 在 CLI 的 engine 初始化中添加：
 ```typescript
-import { mcpPlugin } from '@coder/mcp-plugin';
+import { mcpPlugin } from '@pulse-coder/mcp-plugin';
 
 // 在 Engine 构造函数中
 this.engine = new Engine({
@@ -208,7 +208,7 @@ npx @modelcontextprotocol/server-everything --port 3000
 echo '{"servers":{"test":{"url":"http://localhost:3000/mcp"}}}' > .coder/mcp.json
 ```
 
-### 3. 启动 Coder CLI
+### 3. 启动 Pulse Coder CLI
 启动后应该能看到：
 ```
 ✅ MCP server "test" loaded (X tools)

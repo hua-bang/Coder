@@ -126,7 +126,9 @@ export interface UserConfigPluginLoadOptions {
  * 默认用户配置插件目录
  */
 export const DEFAULT_USER_CONFIG_PLUGIN_DIRS = [
+  '.pulse-coder/config',
   '.coder/config',
+  '~/.pulse-coder/config',
   '~/.coder/config',
   './config'
 ];
