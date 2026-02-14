@@ -1,4 +1,4 @@
-import type { Context, Tool, LLMProviderFactory } from './shared/types';
+import type { Context, Tool, LLMProviderFactory, SystemPromptOption, ToolHooks, ILogger } from './shared/types';
 import type { LoopOptions } from './core/loop';
 import type { EnginePluginLoadOptions } from './plugin/EnginePlugin.js';
 import type { UserConfigPluginLoadOptions } from './plugin/UserConfigPlugin.js';
@@ -62,6 +62,50 @@ export interface EngineOptions {
    * });
    */
   tools?: Record<string, Tool>;
+
+  /**
+   * 自定义 System Prompt，三种形式：
+   * - `string` — 完全替换内置 prompt
+   * - `() => string` — 工厂函数，每次请求调用（支持动态 prompt）
+   * - `{ append: string }` — 在内置 prompt 末尾追加业务上下文
+   *
+   * @example
+   * const engine = new Engine({
+   *   systemPrompt: { append: '公司规范：所有变量使用 camelCase。禁止使用 any 类型。' },
+   * });
+   */
+  systemPrompt?: SystemPromptOption;
+
+  /**
+   * Tool 执行钩子，在每次工具调用前/后触发。
+   * - `onBeforeToolCall` 可以修改入参，或抛错来拦截调用。
+   * - `onAfterToolCall` 可以修改返回值（如脱敏、截断）。
+   *
+   * @example
+   * const engine = new Engine({
+   *   hooks: {
+   *     onBeforeToolCall: (name, input) => {
+   *       if (name === 'bash') throw new Error('bash 工具已被禁用');
+   *     },
+   *     onAfterToolCall: (name, input, output) => {
+   *       auditLogger.log({ name, input, output });
+   *       return output;
+   *     },
+   *   },
+   * });
+   */
+  hooks?: ToolHooks;
+
+  /**
+   * 自定义日志实现。未设置时使用 console.*。
+   * 兼容 winston / pino 等主流日志库。
+   *
+   * @example
+   * import pino from 'pino';
+   * const logger = pino();
+   * const engine = new Engine({ logger });
+   */
+  logger?: ILogger;
 }
 
 /**
@@ -75,7 +119,7 @@ export class Engine {
   private config: Record<string, any> = {};
 
   constructor(options?: EngineOptions) {
-    this.pluginManager = new PluginManager();
+    this.pluginManager = new PluginManager(options?.logger);
 
     // 初始化全局配置
     this.config = options?.config || {};
@@ -87,7 +131,8 @@ export class Engine {
    * 自动包含内置插件
    */
   async initialize(): Promise<void> {
-    console.log('Initializing engine...', this.config);
+    const log = this.options.logger ?? console;
+    log.info('Initializing engine...');
 
     // 准备插件列表：内置插件 + 用户配置插件
     const allEnginePlugins = this.prepareEnginePlugins();
@@ -141,9 +186,11 @@ export class Engine {
     return loop(context, {
       ...options,
       tools: this.tools,
-      // Engine 级别的 provider/model 作为默认值；调用方通过 options 传入可在单次调用中覆盖
+      // Engine 级别选项作为默认值；调用方通过 options 传入可在单次调用中覆盖
       provider: options?.provider ?? this.options.llmProvider,
       model: options?.model ?? this.options.model,
+      systemPrompt: options?.systemPrompt ?? this.options.systemPrompt,
+      hooks: options?.hooks ?? this.options.hooks,
       onToolCall: (toolCall) => {
         options?.onToolCall?.(toolCall);
       },

@@ -2,17 +2,26 @@ import { generateText, streamText, tool, type ModelMessage, type StepResult, typ
 import { CoderAI, DEFAULT_MODEL, COMPACT_SUMMARY_MAX_TOKENS, OPENAI_REASONING_EFFORT } from '../config';
 import z from 'zod';
 import { generateSystemPrompt } from '../prompt';
-import type { Tool as CoderTool, ToolExecutionContext, LLMProviderFactory } from '../shared/types';
+import type { Tool as CoderTool, ToolExecutionContext, LLMProviderFactory, SystemPromptOption } from '../shared/types';
 
 
 const providerOptions = OPENAI_REASONING_EFFORT
   ? { openai: { reasoningEffort: OPENAI_REASONING_EFFORT } }
   : undefined;
 
+/** Resolve a SystemPromptOption into a final string. */
+const resolveSystemPrompt = (option: SystemPromptOption | undefined): string => {
+  const base = generateSystemPrompt();
+  if (!option) return base;
+  if (typeof option === 'string') return option;
+  if (typeof option === 'function') return option();
+  return `${base}\n\n${option.append}`;
+};
+
 export const generateTextAI = (
   messages: ModelMessage[],
   tools: Record<string, Tool>,
-  options?: { provider?: LLMProviderFactory; model?: string }
+  options?: { provider?: LLMProviderFactory; model?: string; systemPrompt?: SystemPromptOption }
 ) => {
   const provider = options?.provider ?? CoderAI;
   const model = options?.model ?? DEFAULT_MODEL;
@@ -20,7 +29,7 @@ export const generateTextAI = (
   const finalMessages = [
     {
       role: 'system',
-      content: generateSystemPrompt(),
+      content: resolveSystemPrompt(options?.systemPrompt),
     },
     ...messages,
   ] as ModelMessage[];
@@ -42,6 +51,8 @@ export interface StreamOptions {
   provider?: LLMProviderFactory;
   /** Model name to pass to the provider. Falls back to DEFAULT_MODEL when not set. */
   model?: string;
+  /** Custom system prompt. See SystemPromptOption for the three supported forms. */
+  systemPrompt?: SystemPromptOption;
 }
 
 /**
@@ -73,7 +84,7 @@ export const streamTextAI = (messages: ModelMessage[], tools: Record<string, Cod
   const finalMessages = [
     {
       role: 'system',
-      content: generateSystemPrompt(),
+      content: resolveSystemPrompt(options?.systemPrompt),
     },
     ...messages,
   ] as ModelMessage[];
