@@ -4,7 +4,7 @@
 
 ```mermaid
 graph TD
-    A[@pulse-coder/engine Core] --> B[Plugin Manager]
+    A[pulse-coder-engine Core] --> B[Plugin Manager]
     B --> C[Engine Plugin System]
     B --> D[User Config System]
     

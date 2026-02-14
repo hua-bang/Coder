@@ -49,7 +49,7 @@ pnpm start
 ### 🧩 插件架构
 ```typescript
 // 创建新插件
-import { IPlugin } from '@pulse-coder/engine';
+import { IPlugin } from 'pulse-coder-engine';
 
 const myPlugin: IPlugin = {
   name: 'my-extension',

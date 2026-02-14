@@ -337,7 +337,7 @@ export class PluginManager {
     ];
 
     for (const capability of requiredCapabilities) {
-      if (!this.enginePlugins.has(capability) && !this.enginePlugins.has(`@pulse-coder/engine-${capability}`)) {
+      if (!this.enginePlugins.has(capability) && !this.enginePlugins.has(`pulse-coder-engine-${capability}`)) {
         this.logger.warn(`Missing core capability: ${capability}`);
       }
     }

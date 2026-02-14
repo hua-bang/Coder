@@ -1,4 +1,4 @@
-import type { ClarificationRequest } from '@pulse-coder/engine';
+import type { ClarificationRequest } from 'pulse-coder-engine';
 
 interface PendingRequest {
   request: ClarificationRequest;

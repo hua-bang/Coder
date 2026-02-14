@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { PulseAgent } from '@pulse-coder/engine';
+import { PulseAgent } from 'pulse-coder-engine';
 import { openai } from '@ai-sdk/openai';
 import dotenv from 'dotenv';
 

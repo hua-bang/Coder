@@ -25,7 +25,7 @@ export async function loadMCPConfig(cwd: string): Promise<MCPPluginConfig> {
   try {
     const content = readFileSync(configPath, 'utf-8');
     const parsed = JSON.parse(content);
-    
+
     if (!parsed.servers || typeof parsed.servers !== 'object') {
       console.warn('[MCP] Invalid config: missing "servers" object');
       return { servers: {} };
@@ -46,7 +46,7 @@ function createHTTPTransport(config: { url: string }) {
 }
 
 export const builtInMCPPlugin: EnginePlugin = {
-  name: '@pulse-coder/engine/built-in-mcp',
+  name: 'pulse-coder-engine/built-in-mcp',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

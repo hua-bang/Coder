@@ -4,7 +4,7 @@
 
 ```typescript
 // 插件主入口 src/index.ts
-import { EnginePlugin } from '@pulse-coder/engine';
+import { EnginePlugin } from 'pulse-coder-engine';
 import { loadMCPConfig } from './config-loader';
 import { createHTTPTransport } from './transport';
 
@@ -106,7 +106,7 @@ export function createHTTPTransport(config: HTTPTransportConfig) {
   },
   "dependencies": {
     "@ai-sdk/mcp": "^latest",
-    "@pulse-coder/engine": "workspace:*"
+    "pulse-coder-engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -168,7 +168,7 @@ cd mcp-plugin
 
 ### 2. 安装依赖
 ```bash
-npm install @ai-sdk/mcp @pulse-coder/engine
+npm install @ai-sdk/mcp pulse-coder-engine
 ```
 
 ### 3. 添加到 CLI 依赖

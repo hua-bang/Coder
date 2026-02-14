@@ -1,5 +1,5 @@
 import { SessionManager } from './session.js';
-import type { Context } from '@pulse-coder/engine';
+import type { Context } from 'pulse-coder-engine';
 
 export class SessionCommands {
   private sessionManager: SessionManager;
@@ -52,7 +52,7 @@ export class SessionCommands {
 
   async listSessions(): Promise<void> {
     const sessions = await this.sessionManager.listSessions();
-    
+
     if (sessions.length === 0) {
       console.log('\n📭 No saved sessions found.');
       return;
@@ -60,7 +60,7 @@ export class SessionCommands {
 
     console.log('\n📋 Saved sessions:');
     console.log('='.repeat(80));
-    
+
     sessions.forEach((session, index) => {
       const isActive = session.id === this.currentSessionId ? '✅' : '  ';
       const date = new Date(session.updatedAt).toLocaleString();
@@ -103,7 +103,7 @@ export class SessionCommands {
 
   async searchSessions(query: string): Promise<void> {
     const sessions = await this.sessionManager.searchSessions(query);
-    
+
     if (sessions.length === 0) {
       console.log(`\n🔍 No sessions found matching "${query}"`);
       return;
