@@ -1,7 +1,7 @@
 {
-  "name": "coder",
+  "name": "pulse-coder",
   "version": "1.0.0",
-  "description": "Plugin-based AI coding assistant",
+  "description": "Plugin-based AI coding assistant - Pulse Coder",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.28.0",
@@ -13,7 +13,7 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
-    "start": "pnpm --filter @coder/cli start",
+    "start": "pnpm --filter @pulse-coder/cli start",
     "clean": "pnpm -r clean"
   },
   "devDependencies": {

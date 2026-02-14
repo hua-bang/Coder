@@ -52,9 +52,9 @@ cd mcp-plugin
 # 创建 package.json
 cat > package.json << 'EOF'
 {
-  "name": "@coder/mcp-plugin",
+  "name": "@pulse-coder/mcp-plugin",
   "version": "1.0.0",
-  "description": "Lightweight MCP plugin for Coder engine",
+  "description": "Lightweight MCP plugin for Pulse Coder engine",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -64,7 +64,7 @@ cat > package.json << 'EOF'
   },
   "dependencies": {
     "@ai-sdk/mcp": "^latest",
-    "@coder/engine": "workspace:*"
+    "@pulse-coder/engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -142,13 +142,13 @@ EOF
 
 # 创建主插件文件
 cat > src/index.ts << 'EOF'
-import { EnginePlugin } from '@coder/engine';
+import { EnginePlugin } from '@pulse-coder/engine';
 import { createMCPClient } from '@ai-sdk/mcp';
 import { loadMCPConfig } from './config-loader';
 import { createHTTPTransport } from './transport';
 
 export const mcpPlugin: EnginePlugin = {
-  name: '@coder/mcp-plugin',
+  name: '@pulse-coder/mcp-plugin',
   version: '1.0.0',
   
   async initialize(context) {
@@ -180,7 +180,7 @@ EOF
 cd ../cli
 
 # 更新 package.json 添加依赖
-# 手动添加 "@coder/mcp-plugin": "workspace:*"
+# 手动添加 "@pulse-coder/mcp-plugin": "workspace:*"
 
 # 注册插件到引擎
 # 在 packages/cli/src/index.ts 的 Engine 构造函数中

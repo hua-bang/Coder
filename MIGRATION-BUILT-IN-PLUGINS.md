@@ -2,13 +2,13 @@
 
 ## 概述
 
-本指南描述了如何将 `@coder/mcp-plugin` 和 `@coder/skills` 从独立的包迁移到 `@coder/engine` 的内置插件系统。
+本指南描述了如何将 `@pulse-coder/mcp-plugin` 和 `@pulse-coder/skills` 从独立的包迁移到 `@pulse-coder/engine` 的内置插件系统。
 
 ## 变更摘要
 
 ### 1. 架构变化
-- **之前**: CLI 需要显式引入 `@coder/mcp-plugin` 和 `@coder/skills`
-- **之后**: 这些功能作为 `@coder/engine` 的内置插件自动可用
+- **之前**: CLI 需要显式引入 `@pulse-coder/mcp-plugin` 和 `@pulse-coder/skills`
+- **之后**: 这些功能作为 `@pulse-coder/engine` 的内置插件自动可用
 
 ### 2. 文件结构变化
 ```
@@ -31,9 +31,9 @@ packages/
 
 **之前**:
 ```typescript
-import { Engine } from '@coder/engine';
-import { skillRegistryPlugin } from '@coder/skills';
-import { mcpPlugin } from '@coder/mcp-plugin';
+import { Engine } from '@pulse-coder/engine';
+import { skillRegistryPlugin } from '@pulse-coder/skills';
+import { mcpPlugin } from '@pulse-coder/mcp-plugin';
 
 const engine = new Engine({
   enginePlugins: {
@@ -46,7 +46,7 @@ const engine = new Engine({
 
 **之后**:
 ```typescript
-import { Engine, builtInPlugins } from '@coder/engine';
+import { Engine, builtInPlugins } from '@pulse-coder/engine';
 
 const engine = new Engine({
   enginePlugins: {
@@ -64,7 +64,7 @@ const engine = new Engine();
 
 **直接使用内置插件**:
 ```typescript
-import { Engine, builtInMCPPlugin, builtInSkillsPlugin } from '@coder/engine';
+import { Engine, builtInMCPPlugin, builtInSkillsPlugin } from '@pulse-coder/engine';
 
 // 选择性地使用内置插件
 const engine = new Engine({
@@ -90,7 +90,7 @@ const engine = new Engine({
 ## 向后兼容性
 
 ### 独立包仍然可用
-- `@coder/mcp-plugin` 和 `@coder/skills` 包继续存在
+- `@pulse-coder/mcp-plugin` 和 `@pulse-coder/skills` 包继续存在
 - 现有项目可以继续使用独立包
 - 不会破坏现有集成
 
@@ -118,7 +118,7 @@ npm run dev
 
 ### 使用内置插件的完整配置
 ```typescript
-import { Engine, builtInPlugins } from '@coder/engine';
+import { Engine, builtInPlugins } from '@pulse-coder/engine';
 
 const engine = new Engine({
   enginePlugins: {
@@ -146,6 +146,6 @@ const engine = new Engine({
 
 ## 注意事项
 
-1. **依赖更新**: 需要确保 `@coder/engine` 包含新的依赖（glob, gray-matter, @ai-sdk/mcp）
+1. **依赖更新**: 需要确保 `@pulse-coder/engine` 包含新的依赖（glob, gray-matter, @ai-sdk/mcp）
 2. **类型导出**: 内置插件的类型定义已更新
 3. **配置路径**: 配置文件路径保持不变

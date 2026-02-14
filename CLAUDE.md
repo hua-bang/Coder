@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Coder is a plugin-based AI coding assistant built as a TypeScript monorepo. It provides an interactive CLI that uses OpenAI-compatible LLMs with a modular skill/plugin system for code generation, review, refactoring, and research tasks.
+Pulse Coder is a plugin-based AI coding assistant built as a TypeScript monorepo. It provides an interactive CLI that uses OpenAI-compatible LLMs with a modular skill/plugin system for code generation, review, refactoring, and research tasks.
 
 ## Build & Development Commands
 
@@ -12,14 +12,14 @@ Coder is a plugin-based AI coding assistant built as a TypeScript monorepo. It p
 pnpm install              # Install all dependencies (requires pnpm 10.28.0)
 pnpm run build            # Build all packages (engine -> skills -> cli)
 pnpm run dev              # Watch mode for all packages
-pnpm start                # Run the CLI (@coder/cli)
+pnpm start                # Run the CLI (@pulse-coder/cli)
 pnpm test                 # Run all tests (vitest)
 pnpm run clean            # Remove dist directories
 
 # Per-package commands
-pnpm --filter @coder/engine build   # Build just engine
-pnpm --filter @coder/engine test    # Test just engine
-pnpm --filter @coder/cli dev        # Dev mode for CLI
+pnpm --filter @pulse-coder/engine build   # Build just engine
+pnpm --filter @pulse-coder/engine test    # Test just engine
+pnpm --filter @pulse-coder/cli dev        # Dev mode for CLI
 ```
 
 Build tool is tsup (ESM-only, target ES2022). Each package has its own `tsup.config.ts`.
@@ -30,9 +30,9 @@ Build tool is tsup (ESM-only, target ES2022). Each package has its own `tsup.con
 
 Three core packages with a dependency chain: **engine** <- **skills** <- **cli**
 
-- **`packages/engine`** (`@coder/engine`) - Core AI engine: LLM integration via Vercel AI SDK, agent loop, context compaction, built-in tools, plugin system, and configuration
-- **`packages/skills`** (`@coder/skills`) - Skill plugin system: discovers and loads `SKILL.md` files from `.coder/skills/` directories, converts them to tools via a registry/scanner pattern
-- **`packages/cli`** (`@coder/cli`) - Interactive CLI: readline interface, session management (save/load/resume/search), command system (`/new`, `/resume`, `/sessions`, etc.)
+- **`packages/engine`** (`@pulse-coder/engine`) - Core AI engine: LLM integration via Vercel AI SDK, agent loop, context compaction, built-in tools, plugin system, and configuration
+- **`packages/skills`** (`@pulse-coder/skills`) - Skill plugin system: discovers and loads `SKILL.md` files from `.coder/skills/` directories, converts them to tools via a registry/scanner pattern
+- **`packages/cli`** (`@pulse-coder/cli`) - Interactive CLI: readline interface, session management (save/load/resume/search), command system (`/new`, `/resume`, `/sessions`, etc.)
 
 ### Agent Loop (`packages/engine/src/core/loop.ts`)
 

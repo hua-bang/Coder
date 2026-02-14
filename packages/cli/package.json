@@ -1,11 +1,11 @@
 {
-  "name": "@coder/cli",
+  "name": "@pulse-coder/cli",
   "version": "1.0.0",
-  "description": "CLI interface for Coder",
+  "description": "CLI interface for Pulse Coder",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "coder": "./dist/index.js"
+    "pulse": "./dist/index.js"
   },
   "scripts": {
     "build": "tsup",
@@ -14,7 +14,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@coder/engine": "workspace:*"
+    "@pulse-coder/engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.0.0",

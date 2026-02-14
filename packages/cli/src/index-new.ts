@@ -1,7 +1,7 @@
-import { Engine } from '@coder/engine';
-import { skillRegistryPlugin } from '@coder/engine/plugins/skill-registry.plugin.js';
+import { Engine } from '@pulse-coder/engine';
+import { skillRegistryPlugin } from '@pulse-coder/engine/plugins/skill-registry.plugin.js';
 import * as readline from 'readline';
-import type { Context } from '@coder/engine';
+import type { Context } from '@pulse-coder/engine';
 import { SessionCommands } from './session-commands.js';
 
 class CoderCLI {

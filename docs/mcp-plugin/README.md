@@ -105,7 +105,7 @@ interface HTTPTransportConfig {
 
 1. 在项目中创建 `.coder/mcp.json`
 2. 配置 MCP 服务器 URL
-3. 启动 Coder CLI，自动加载 MCP 工具
+3. 启动 Pulse Coder CLI，自动加载 MCP 工具
 
 ## 错误处理
 

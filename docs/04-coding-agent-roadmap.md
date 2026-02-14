@@ -215,7 +215,7 @@ interface TaskItem {
 }
 
 export const TaskTrackingPlugin: EnginePlugin = {
-  name: '@coder/task-tracking',
+  name: '@pulse-coder/task-tracking',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

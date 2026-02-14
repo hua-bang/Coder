@@ -197,7 +197,7 @@ function generateSkillTool(skills: SkillInfo[]): Tool<SkillToolInput, SkillInfo>
  * 内置技能插件
  */
 export const builtInSkillsPlugin: EnginePlugin = {
-  name: '@coder/engine/built-in-skills',
+  name: '@pulse-coder/engine/built-in-skills',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

@@ -43,7 +43,7 @@ function createHTTPTransport(config: { url: string }) {
 }
 
 export const builtInMCPPlugin: EnginePlugin = {
-  name: '@coder/engine/built-in-mcp',
+  name: '@pulse-coder/engine/built-in-mcp',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

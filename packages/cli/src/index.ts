@@ -1,6 +1,6 @@
-import { Engine } from '@coder/engine';
+import { Engine } from '@pulse-coder/engine';
 import * as readline from 'readline';
-import type { Context } from '@coder/engine';
+import type { Context } from '@pulse-coder/engine';
 import { SessionCommands } from './session-commands.js';
 import { InputManager } from './input-manager.js';
 
