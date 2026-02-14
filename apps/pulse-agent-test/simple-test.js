@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { PulseAgent } from '@pulse-coder/engine';
+import { PulseAgent } from 'pulse-coder-engine';
 
 async function simpleTest() {
   console.log('🚀 Testing PulseAgent SDK (No AI required)...\n');

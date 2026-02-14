@@ -5,7 +5,7 @@
 
 ## 最终架构
 ```
-@pulse-coder/engine          # 插件化AI引擎
+pulse-coder-engine          # 插件化AI引擎
 @pulse-coder/skills          # skill协议实现  
 @pulse-coder/cli             # CLI应用入口
 ```
@@ -87,7 +87,7 @@ packages/
 ### 包配置模板
 ```json
 {
-  "name": "@pulse-coder/engine",
+  "name": "pulse-coder-engine",
   "type": "module",
   "exports": {
     ".": "./dist/index.js",

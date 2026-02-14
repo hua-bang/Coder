@@ -56,7 +56,7 @@ export class BuiltInSkillRegistry {
    */
   private async scanSkills(cwd: string): Promise<SkillInfo[]> {
     const skills: SkillInfo[] = [];
-    
+
     const scanPaths = [
       // 项目级技能（优先 .pulse-coder，兼容旧版 .coder 和 .claude）
       { base: cwd, pattern: '.pulse-coder/skills/**/SKILL.md' },
@@ -70,7 +70,7 @@ export class BuiltInSkillRegistry {
     for (const { base, pattern } of scanPaths) {
       try {
         const files = globSync(pattern, { cwd: base, absolute: true });
-        
+
         for (const filePath of files) {
           try {
             const skillInfo = this.parseSkillFile(filePath);
@@ -199,7 +199,7 @@ function generateSkillTool(skills: SkillInfo[]): Tool<SkillToolInput, SkillInfo>
  * 内置技能插件
  */
 export const builtInSkillsPlugin: EnginePlugin = {
-  name: '@pulse-coder/engine/built-in-skills',
+  name: 'pulse-coder-engine/built-in-skills',
   version: '1.0.0',
 
   async initialize(context: EnginePluginContext) {

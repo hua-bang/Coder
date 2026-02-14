@@ -1,6 +1,6 @@
 # PulseAgent SDK 测试项目
 
-一个简单的 Node.js 项目，用于测试 `@pulse-coder/engine` 的 `PulseAgent` 功能。
+一个简单的 Node.js 项目，用于测试 `pulse-coder-engine` 的 `PulseAgent` 功能。
 
 ## 快速开始
 

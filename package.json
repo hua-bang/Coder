@@ -13,7 +13,7 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r dev",
     "test": "pnpm -r test",
-    "start": "pnpm --filter @pulse-coder/cli start",
+    "start": "pnpm --filter pulse-coder-cli start",
     "clean": "pnpm -r clean"
   },
   "devDependencies": {

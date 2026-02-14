@@ -17,8 +17,8 @@ pnpm test                 # Run all tests (vitest)
 pnpm run clean            # Remove dist directories
 
 # Per-package commands
-pnpm --filter @pulse-coder/engine build   # Build just engine
-pnpm --filter @pulse-coder/engine test    # Test just engine
+pnpm --filter pulse-coder-engine build   # Build just engine
+pnpm --filter pulse-coder-engine test    # Test just engine
 pnpm --filter @pulse-coder/cli dev        # Dev mode for CLI
 ```
 
@@ -30,7 +30,7 @@ Build tool is tsup (ESM-only, target ES2022). Each package has its own `tsup.con
 
 Three core packages with a dependency chain: **engine** <- **skills** <- **cli**
 
-- **`packages/engine`** (`@pulse-coder/engine`) - Core AI engine: LLM integration via Vercel AI SDK, agent loop, context compaction, built-in tools, plugin system, and configuration
+- **`packages/engine`** (`pulse-coder-engine`) - Core AI engine: LLM integration via Vercel AI SDK, agent loop, context compaction, built-in tools, plugin system, and configuration
 - **`packages/skills`** (`@pulse-coder/skills`) - Skill plugin system: discovers and loads `SKILL.md` files from `.pulse-coder/skills/` (or `.coder/skills/` for backward compatibility) directories, converts them to tools via a registry/scanner pattern
 - **`packages/cli`** (`@pulse-coder/cli`) - Interactive CLI: readline interface, session management (save/load/resume/search), command system (`/new`, `/resume`, `/sessions`, etc.)
 

@@ -1,6 +1,6 @@
-import { PulseAgent } from '@pulse-coder/engine';
+import { PulseAgent } from 'pulse-coder-engine';
 import * as readline from 'readline';
-import type { Context } from '@pulse-coder/engine';
+import type { Context } from 'pulse-coder-engine';
 import { SessionCommands } from './session-commands.js';
 import { InputManager } from './input-manager.js';
 
@@ -165,39 +165,44 @@ class CoderCLI {
     let currentAbortController: AbortController | null = null;
     let isProcessing = false;
 
+    // Handle SIGINT gracefully
     process.on('SIGINT', () => {
+      if (isProcessing && currentAbortController && !currentAbortController.signal.aborted) {
+        currentAbortController.abort();
+        console.log('\n[Abort] Request cancelled.');
+        return;
+      }
+
       // Cancel any pending clarification request
       if (this.inputManager.hasPendingRequest()) {
         this.inputManager.cancel('User interrupted with Ctrl+C');
-        process.stdout.write('\n[Abort] Clarification cancelled.\n');
+        console.log('\n[Abort] Clarification cancelled.');
         rl.prompt();
         return;
       }
 
-      if (isProcessing && currentAbortController && !currentAbortController.signal.aborted) {
-        currentAbortController.abort();
-        process.stdout.write('\n[Abort] Request cancelled.\n');
-        return;
-      }
-      rl.close();
+      console.log('\n💾 Saving current session...');
+      this.sessionCommands.saveContext(this.context).then(() => {
+        console.log('👋 Goodbye!');
+        process.exit(0);
+      });
     });
 
-    const processInput = async (input: string) => {
+    // Main input handler
+    const handleInput = async (input: string) => {
       const trimmedInput = input.trim();
 
-      // Check if this input is answering a pending clarification request
+      // Handle clarification requests first
       if (this.inputManager.handleUserInput(trimmedInput)) {
-        // Input was consumed by the clarification request
-        // Don't prompt immediately - the agent will continue processing
         return;
       }
 
       if (trimmedInput.toLowerCase() === 'exit') {
         console.log('💾 Saving current session...');
         await this.sessionCommands.saveContext(this.context);
-        console.log('Goodbye!');
+        console.log('👋 Goodbye!');
         rl.close();
-        process.exit(0);
+        return;
       }
 
       if (!trimmedInput) {
@@ -205,6 +210,7 @@ class CoderCLI {
         return;
       }
 
+      // Handle commands
       if (trimmedInput.startsWith('/')) {
         const commandLine = trimmedInput.substring(1);
         const parts = commandLine.split(/\s+/).filter(part => part.length > 0);
@@ -256,30 +262,35 @@ class CoderCLI {
             process.stdout.write(`\n📋 Step finished: ${step.finishReason}\n`);
           },
           onClarificationRequest: async (request) => {
-            // Handle clarification request through InputManager
             return await this.inputManager.requestInput(request);
           },
           onCompacted: (newMessages) => {
             this.context.messages = newMessages;
           },
           onResponse: (messages) => {
-            this.context.messages.push(...messages)
+            this.context.messages.push(...messages);
           },
         });
 
-        if (!sawText && result) {
-          console.log(result);
-        } else {
-          process.stdout.write('\n');
-        }
-
-        // Save session after each message
         if (result) {
+          if (!sawText) {
+            console.log(result);
+          } else {
+            console.log();
+          }
+
           this.context.messages.push({
             role: 'assistant',
             content: result,
           });
+
           await this.sessionCommands.saveContext(this.context);
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.log('\n[Abort] Operation cancelled.');
+        } else {
+          console.error('\n❌ Error:', error.message);
         }
       } finally {
         isProcessing = false;
@@ -288,8 +299,11 @@ class CoderCLI {
       }
     };
 
+    // Start the CLI
     rl.prompt();
-    rl.on('line', processInput);
+    rl.on('line', handleInput);
+
+    // Handle terminal close
     rl.on('close', async () => {
       console.log('\n💾 Saving current session...');
       await this.sessionCommands.saveContext(this.context);
@@ -299,7 +313,9 @@ class CoderCLI {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const cli = new CoderCLI();
-  cli.start();
-}
+// Always start the CLI when executed directly
+const cli = new CoderCLI();
+cli.start().catch(error => {
+  console.error('Failed to start CLI:', error);
+  process.exit(1);
+});

@@ -93,7 +93,7 @@ pnpm start
 
 ### Package Structure Details
 
-#### 📦 @pulse-coder/engine
+#### 📦 pulse-coder-engine
 **AI engine core**, providing:
 - LLM integration and conversation management
 - Plugin system support
@@ -102,7 +102,7 @@ pnpm start
 
 ```typescript
 // Basic usage example
-import { Engine } from '@pulse-coder/engine';
+import { Engine } from 'pulse-coder-engine';
 
 const engine = new Engine({
   plugins: [yourPlugin]
@@ -154,7 +154,7 @@ pnpm run dev
 
 # Start development mode for specific package
 pnpm --filter @pulse-coder/cli dev
-pnpm --filter @pulse-coder/engine dev
+pnpm --filter pulse-coder-engine dev
 pnpm --filter @pulse-coder/skills dev
 ```
 
@@ -165,7 +165,7 @@ pnpm --filter @pulse-coder/skills dev
 pnpm test
 
 # Run tests for specific package
-pnpm --filter @pulse-coder/engine test
+pnpm --filter pulse-coder-engine test
 ```
 
 ## 📱 Application Examples

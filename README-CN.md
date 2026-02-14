@@ -93,7 +93,7 @@ pnpm start
 
 ### 包结构详解
 
-#### 📦 @pulse-coder/engine
+#### 📦 pulse-coder-engine
 **AI 引擎核心**，提供：
 - LLM 集成和对话管理
 - 插件系统支持
@@ -102,7 +102,7 @@ pnpm start
 
 ```typescript
 // 基本使用示例
-import { Engine } from '@pulse-coder/engine';
+import { Engine } from 'pulse-coder-engine';
 
 const engine = new Engine({
   plugins: [yourPlugin]
@@ -154,7 +154,7 @@ pnpm run dev
 
 # 单独启动某个包的开发模式
 pnpm --filter @pulse-coder/cli dev
-pnpm --filter @pulse-coder/engine dev
+pnpm --filter pulse-coder-engine dev
 pnpm --filter @pulse-coder/skills dev
 ```
 
@@ -165,7 +165,7 @@ pnpm --filter @pulse-coder/skills dev
 pnpm test
 
 # 运行特定包的测试
-pnpm --filter @pulse-coder/engine test
+pnpm --filter pulse-coder-engine test
 ```
 
 ## 📱 应用示例

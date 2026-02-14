@@ -6,7 +6,7 @@
 
 ### 测试内容
 1. **类导入测试** ✅
-   - `PulseAgent` 类成功从 `@pulse-coder/engine` 导出
+   - `PulseAgent` 类成功从 `pulse-coder-engine` 导出
    - 保持与 `Engine` 类 100% 兼容
 
 2. **实例化测试** ✅
