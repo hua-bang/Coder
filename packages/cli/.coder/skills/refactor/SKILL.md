@@ -2,7 +2,7 @@
 name: refactor
 description: Refactor code to improve structure, readability, and maintainability without changing behavior
 version: 1.0.0
-author: Coder Team
+author: Pulse Coder Team
 ---
 
 # Code Refactoring Skill

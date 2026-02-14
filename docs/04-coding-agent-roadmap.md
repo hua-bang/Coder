@@ -1,6 +1,6 @@
 # Coding Agent 能力建设 Roadmap
 
-> 基于对当前 Coder 实现与业界最佳实践的综合分析，规划 Coding Agent 的演进路线。
+> 基于对当前 Pulse Coder 实现与业界最佳实践的综合分析，规划 Coding Agent 的演进路线。
 
 ## 总览
 

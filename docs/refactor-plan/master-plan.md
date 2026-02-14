@@ -1,4 +1,4 @@
-# Coder 三包重构 - 主计划
+# Pulse Coder 三包重构 - 主计划
 
 ## 目标
 将 coder-demo 重构为 **插件化三包架构**，支持第三方 skill/mcp 扩展。

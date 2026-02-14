@@ -1,5 +1,5 @@
 /**
- * Built-in MCP Plugin for Coder Engine
+ * Built-in MCP Plugin for Pulse Coder Engine
  * 将 MCP 功能作为引擎内置插件
  */
 
@@ -13,8 +13,11 @@ export interface MCPPluginConfig {
 }
 
 export async function loadMCPConfig(cwd: string): Promise<MCPPluginConfig> {
-  const configPath = path.join(cwd, '.coder', 'mcp.json');
-  
+  // 优先读取 .pulse-coder/mcp.json，兼容旧版 .coder/mcp.json
+  const newConfigPath = path.join(cwd, '.pulse-coder', 'mcp.json');
+  const legacyConfigPath = path.join(cwd, '.coder', 'mcp.json');
+  const configPath = existsSync(newConfigPath) ? newConfigPath : legacyConfigPath;
+
   if (!existsSync(configPath)) {
     return { servers: {} };
   }

@@ -1,6 +1,6 @@
 # @pulse-coder/cli
 
-Coder CLI 是一个智能命令行助手，基于 `@pulse-coder/engine` 构建，自动包含 MCP 和 Skills 功能。
+Pulse Coder CLI 是一个智能命令行助手，基于 `@pulse-coder/engine` 构建，自动包含 MCP 和 Skills 功能。
 
 ## 快速开始
 

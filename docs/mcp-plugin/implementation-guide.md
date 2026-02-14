@@ -208,7 +208,7 @@ npx @modelcontextprotocol/server-everything --port 3000
 echo '{"servers":{"test":{"url":"http://localhost:3000/mcp"}}}' > .coder/mcp.json
 ```
 
-### 3. 启动 Coder CLI
+### 3. 启动 Pulse Coder CLI
 启动后应该能看到：
 ```
 ✅ MCP server "test" loaded (X tools)

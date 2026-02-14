@@ -15,11 +15,11 @@ class CoderCLI {
     this.engine = new Engine({
       enginePlugins: {
         // 只配置扩展插件目录，内置插件会自动加载
-        dirs: ['.coder/engine-plugins', '~/.coder/engine-plugins'],
+        dirs: ['.pulse-coder/engine-plugins', '.coder/engine-plugins', '~/.pulse-coder/engine-plugins', '~/.coder/engine-plugins'],
         scan: true
       },
       userConfigPlugins: {
-        dirs: ['.coder/config', '~/.coder/config'],
+        dirs: ['.pulse-coder/config', '.coder/config', '~/.pulse-coder/config', '~/.coder/config'],
         scan: true
       }
       // 注意：不再需要 plugins: [...] 配置
@@ -142,7 +142,7 @@ class CoderCLI {
   }
 
   async start() {
-    console.log('🚀 Coder CLI is running...');
+    console.log('🚀 Pulse Coder CLI is running...');
     console.log('Type your messages and press Enter. Type "exit" to quit.');
     console.log('Commands starting with "/" will trigger command mode.\n');
 

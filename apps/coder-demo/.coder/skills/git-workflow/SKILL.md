@@ -3,7 +3,7 @@ name: git-workflow
 description: Standard git workflow for handling staged changes on existing branch - add, commit, and push
 description_zh: 在现有分支上处理已暂存代码的标准 git 工作流程 - 添加、提交和推送
 version: 1.2.0
-author: Coder Team
+author: Pulse Coder Team
 ---
 
 # Git Workflow Skill

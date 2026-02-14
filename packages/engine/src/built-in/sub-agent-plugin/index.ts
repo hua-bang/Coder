@@ -15,7 +15,7 @@ interface AgentConfig {
 }
 
 class ConfigLoader {
-  async loadAgentConfigs(configDir = '.coder/agents'): Promise<AgentConfig[]> {
+  async loadAgentConfigs(configDir = '.pulse-coder/agents'): Promise<AgentConfig[]> {
     const configs: AgentConfig[] = [];
 
     try {

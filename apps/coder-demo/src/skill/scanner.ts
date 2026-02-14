@@ -14,10 +14,12 @@ export function scanSkills(cwd: string): SkillInfo[] {
 
   // 扫描路径配置
   const scanPaths = [
-    // 项目级技能
+    // 项目级技能（优先 .pulse-coder，兼容旧版 .coder 和 .claude）
+    { base: cwd, pattern: '.pulse-coder/skills/**/SKILL.md' },
     { base: cwd, pattern: '.coder/skills/**/SKILL.md' },
     { base: cwd, pattern: '.claude/skills/**/SKILL.md' },
-    // 用户级技能
+    // 用户级技能（优先 .pulse-coder，兼容旧版 .coder）
+    { base: homedir(), pattern: '.pulse-coder/skills/**/SKILL.md' },
     { base: homedir(), pattern: '.coder/skills/**/SKILL.md' },
   ];
 

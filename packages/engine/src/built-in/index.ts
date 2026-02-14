@@ -1,5 +1,5 @@
 /**
- * Built-in plugins for Coder Engine
+ * Built-in plugins for Pulse Coder Engine
  * 引擎内置插件集合
  */
 

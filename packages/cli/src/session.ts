@@ -40,7 +40,7 @@ export class SessionManager {
   private sessionsDir: string;
 
   constructor() {
-    this.sessionsDir = path.join(homedir(), '.coder', 'sessions');
+    this.sessionsDir = path.join(homedir(), '.pulse-coder', 'sessions');
   }
 
   async initialize(): Promise<void> {

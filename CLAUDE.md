@@ -31,7 +31,7 @@ Build tool is tsup (ESM-only, target ES2022). Each package has its own `tsup.con
 Three core packages with a dependency chain: **engine** <- **skills** <- **cli**
 
 - **`packages/engine`** (`@pulse-coder/engine`) - Core AI engine: LLM integration via Vercel AI SDK, agent loop, context compaction, built-in tools, plugin system, and configuration
-- **`packages/skills`** (`@pulse-coder/skills`) - Skill plugin system: discovers and loads `SKILL.md` files from `.coder/skills/` directories, converts them to tools via a registry/scanner pattern
+- **`packages/skills`** (`@pulse-coder/skills`) - Skill plugin system: discovers and loads `SKILL.md` files from `.pulse-coder/skills/` (or `.coder/skills/` for backward compatibility) directories, converts them to tools via a registry/scanner pattern
 - **`packages/cli`** (`@pulse-coder/cli`) - Interactive CLI: readline interface, session management (save/load/resume/search), command system (`/new`, `/resume`, `/sessions`, etc.)
 
 ### Agent Loop (`packages/engine/src/core/loop.ts`)
@@ -48,7 +48,7 @@ Plugins implement `IPlugin` with `activate(context)` to register tools. Extensio
 
 ### Skill System (`packages/skills/src/registry/`)
 
-Skills are `SKILL.md` files with YAML frontmatter (`name`, `description`, `version`, `author`) and markdown body. The scanner discovers skills from `.coder/skills/`, `.claude/skills/`, and `~/.coder/skills/`. Six built-in skills live in `packages/cli/.coder/skills/`: branch-naming, code-review, deep-research, git-workflow, mr-generator, refactor.
+Skills are `SKILL.md` files with YAML frontmatter (`name`, `description`, `version`, `author`) and markdown body. The scanner discovers skills from `.pulse-coder/skills/`, `.coder/skills/` (legacy), `.claude/skills/`, and `~/.pulse-coder/skills/` or `~/.coder/skills/`. Six built-in skills live in `packages/cli/.coder/skills/`: branch-naming, code-review, deep-research, git-workflow, mr-generator, refactor.
 
 ### Configuration (`packages/engine/src/config/index.ts`)
 

@@ -28,7 +28,7 @@ class CoderCLI {
     await this.sessionCommands.initialize();
     await this.engine.initialize();
     
-    console.log('🚀 Coder CLI with new plugin system');
+    console.log('🚀 Pulse Coder CLI with new plugin system');
     console.log('📊 Plugin status:', this.engine.getPluginStatus());
   }
 

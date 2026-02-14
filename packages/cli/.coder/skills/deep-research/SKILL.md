@@ -2,7 +2,7 @@
 name: deep-research
 description: Conduct comprehensive multi-round research using iterative web searches to gather, analyze, and synthesize information
 version: 1.0.0
-author: Coder Team
+author: Pulse Coder Team
 ---
 
 # Deep Research Skill

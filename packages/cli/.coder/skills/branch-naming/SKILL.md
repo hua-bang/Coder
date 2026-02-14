@@ -3,7 +3,7 @@ name: branch-naming
 description: Intelligent branch naming based on changes, context, and best practices
 description_zh: 基于更改内容、上下文和最佳实践的智能分支命名
 version: 1.1.0
-author: Coder Team
+author: Pulse Coder Team
 ---
 
 # Branch Naming Skill (增强版)
