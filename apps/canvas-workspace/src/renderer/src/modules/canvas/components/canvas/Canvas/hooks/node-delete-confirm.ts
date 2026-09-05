@@ -54,8 +54,9 @@ export function getNodeDeleteConfirm(
     };
   }
 
-  // No agents: one keystroke can still wipe a whole marquee selection.
-  if (victims.length > 1) {
+  // A whole mindmap contains many topics, even though it is one canvas node.
+  // Confirm its removal just like a multi-node selection.
+  if (victims.length > 1 || victims[0].type === 'mindmap') {
     return {
       titleKey: 'canvas.deleteNodesTitle',
       descriptionKey: 'canvas.deleteNodesDescription',

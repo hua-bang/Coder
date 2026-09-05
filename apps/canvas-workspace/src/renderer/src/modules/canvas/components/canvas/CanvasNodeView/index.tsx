@@ -169,6 +169,9 @@ const CanvasNodeViewComponent = ({
       <MindmapCanvasNode
         classes={viewModel.classes}
         handleClose={viewModel.handleClose}
+        handleAddToChat={onAddToChat ? viewModel.handleAddToChat : undefined}
+        handleFocus={viewModel.handleFocus}
+        focusAction={focusAction}
         handleNodeClick={viewModel.handleNodeClick}
         handleToggleFullscreen={viewModel.handleToggleFullscreen}
         isDragging={isDragging}

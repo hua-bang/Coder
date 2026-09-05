@@ -89,6 +89,18 @@ afterEach(() => {
 });
 
 describe('requestRemoveNodes — coding agent confirmation', () => {
+  it.each([false, true])('requires confirmation to remove a whole mindmap (accepted: %s)', async (accepted) => {
+    const mindmap = node('m1', 'mindmap');
+    const { removeNodes, confirm } = render([mindmap], accepted);
+
+    await act(async () => { await api.requestRemoveNodes([mindmap.id]); });
+
+    expect(confirm).toHaveBeenCalledOnce();
+    expect(confirm.mock.calls[0][0]).toMatchObject({ intent: 'danger' });
+    if (accepted) expect(removeNodes).toHaveBeenCalledWith([mindmap.id]);
+    else expect(removeNodes).not.toHaveBeenCalled();
+  });
+
   it('asks before deleting a lone coding agent, and honours a decline', async () => {
     const agent = node('a1', 'agent');
     const { removeNodes, confirm } = render([agent], false);
