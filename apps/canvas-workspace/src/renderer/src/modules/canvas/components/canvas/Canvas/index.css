@@ -1,7 +1,9 @@
 .canvas-container {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  /* Pan/zoom owns the viewport. Hidden still allows focus-driven native
+   * scrolling, which shifts the grid and chrome away from the canvas edge. */
+  overflow: clip;
   cursor: default;
   background: var(--bg-canvas);
 }

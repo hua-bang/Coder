@@ -9,7 +9,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import type { AgentContextDomReviewComment, AgentContextDomSelectionRef, CanvasNode } from '../../../../../types';
+import type { AgentContextDomReviewComment, AgentContextDomSelectionRef, CanvasNode, IframeNodeData } from '../../../../../types';
 import { useAppShell } from '../../../../../shared/appShell';
 import { useRightDock } from '../../../../../shared/dockPort';
 import { CanvasNodeHeader } from './CanvasNodeHeader';
@@ -112,7 +112,7 @@ export const DefaultCanvasNode = ({
   wrapperStyle,
 }: DefaultCanvasNodeProps) => {
   const { notify } = useAppShell();
-  const { openNodeDetail } = useRightDock();
+  const { openLink, openNodeDetail } = useRightDock();
   const [pluginElementPickerActive, setPluginElementPickerActive] = useState(false);
 
   const handlePluginSelectElement = useCallback((event: MouseEvent) => {
@@ -190,8 +190,15 @@ export const DefaultCanvasNode = ({
   const handleOpenTab = useCallback((event: MouseEvent) => {
     event.stopPropagation();
     if (!workspaceId) return;
+    if (node.type === 'iframe') {
+      const data = node.data as IframeNodeData;
+      if ((!data.mode || data.mode === 'url') && data.url.trim()) {
+        openLink(data.url);
+        return;
+      }
+    }
     openNodeDetail(workspaceId, node.id, node.title.trim() || 'Untitled');
-  }, [node.id, node.title, openNodeDetail, workspaceId]);
+  }, [node.id, node.title, node.type, node.data, openLink, openNodeDetail, workspaceId]);
 
   const frameTitleOnly = node.type === 'frame' && renderMode === 'frame-title';
   const frameBodyOnly = node.type === 'frame' && renderMode === 'frame-body';
