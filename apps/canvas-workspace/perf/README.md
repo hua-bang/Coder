@@ -118,7 +118,7 @@ Scenarios drive input via CDP and read `window.__pulsePerf`:
 |---|---|---|
 | `startup` | parses the `[perf] startup` main-process phase line + renderer marks | informational |
 | `renderer-trace` | reloads the built renderer once under CDP, records lab LCP/CLS, shift count, FCP→Canvas and Canvas→LCP blocking, Long Tasks + CPU counters, and saves a compressed Chrome trace | diagnostic/record-only |
-| `image-memory` | mounts 10 unique 4000×3000 image nodes and sums decoded pixel bytes | `memory.image.decoded_mb` record |
+| `image-memory` | fits 10 unique 4000×3000 image nodes into the current canvas viewport, including when Chat leaves Dock open, then sums decoded preview pixel bytes | `memory.image.decoded_mb` record |
 | `chat-stream` | replays 521 deterministic code/Markdown deltas, then forces one same-content settled rerender | frame rate, Markdown render/cache evidence, Mermaid tail |
 | `typing` | types 120 chars into the first file node | `nodes-array-replace` counter (finding I-1) |
 | `resize` | resizes a node from its bottom-right corner over 90 steps | `nodes-array-replace` + `canvas-save-ipc` counters (finding A2 resize) |
