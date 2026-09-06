@@ -14,6 +14,7 @@ import {
   fingerprintCliTree,
   isBundleCurrent,
   isLauncherCurrent,
+  readLauncherHost,
   unixWrapper,
   windowsWrapper,
 } from './agent-tooling-files';
@@ -68,6 +69,8 @@ export interface AgentToolingManagerOptions {
   skillParents: string[];
   hostExecutable: string;
   platform: NodeJS.Platform;
+  /** Development builds must not take over another app's installed launcher. */
+  preserveLauncherHost?: boolean;
 }
 
 type BundleDescriptor = AgentToolingBundle;
@@ -101,6 +104,15 @@ export function createAgentToolingManager(
       return readStatus(options, cliPath);
     },
     ensureInstalled: async ({ action = 'reconcile' } = {}) => {
+      const existingHost = options.preserveLauncherHost
+        ? await readLauncherHost(cliPath, options.platform) : null;
+      if (existingHost && existingHost !== options.hostExecutable) {
+        const current = await readStatus(options, cliPath);
+        return {
+          ...current, ok: current.installed, applied: false, deferred: true,
+          cliError: current.installed ? null : 'Repair this connection from the installed Pulse Canvas app.',
+        };
+      }
       let bundle: BundleDescriptor;
       try {
         bundle = await readBundle(options.bundleRoot);
@@ -193,7 +205,11 @@ async function readStatus(
   const inspected = active
     ? await inspectActiveInstallation(options, active, cliPath)
     : emptyInstallation(cliPath);
-  return withBundleStatus(inspected, bundle, updatePolicy);
+  const status = withBundleStatus(inspected, bundle, updatePolicy);
+  const existingHost = options.preserveLauncherHost
+    ? await readLauncherHost(cliPath, options.platform) : null;
+  return existingHost && existingHost !== options.hostExecutable
+    ? { ...status, updateAvailable: false } : status;
 }
 
 function withBundleStatus(
@@ -320,9 +336,11 @@ async function inspectInstallation(
   knownResults?: AgentToolingTargetResult[],
 ): Promise<InstallationStatus> {
   const versionEntry = join(bundle.activeDir ?? bundle.cliSourceDir, 'index.cjs');
+  const hostExecutable = (options.preserveLauncherHost
+    ? await readLauncherHost(cliPath, options.platform) : null) ?? options.hostExecutable;
   const expectedWrapper = options.platform === 'win32'
-    ? windowsWrapper(options.hostExecutable, versionEntry)
-    : unixWrapper(options.hostExecutable, versionEntry);
+    ? windowsWrapper(hostExecutable, versionEntry)
+    : unixWrapper(hostExecutable, versionEntry);
   const cliInstalled = await isBundleCurrent(dirname(versionEntry), bundle.fingerprint)
     && await isLauncherCurrent(cliPath, expectedWrapper, options.platform);
   const results = knownResults ?? await Promise.all(

@@ -21,17 +21,22 @@ export const AgentSection = ({ onClose }: AgentSectionProps) => {
   const { t } = useI18n();
   const [status, setStatus] = useState<SkillsStatusResult | null>(null);
   const [lastResults, setLastResults] = useState<SkillTargetResult[] | null>(null);
+  const [checking, setChecking] = useState(true);
   const [installing, setInstalling] = useState(false);
   const [cleaningLegacy, setCleaningLegacy] = useState(false);
   const [changingPolicy, setChangingPolicy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadStatus = useCallback(async () => {
+    setChecking(true);
     try {
       const s = await window.canvasWorkspace.skills.status();
       setStatus(s);
+      setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setChecking(false);
     }
   }, []);
 
@@ -128,15 +133,11 @@ export const AgentSection = ({ onClose }: AgentSectionProps) => {
     }
   }, []);
 
-  const displayResults = [
-    ...(status ? [{ path: status.cliPath, ok: status.cliInstalled }] : []),
-    ...(lastResults ?? status?.results ?? []),
-  ];
   const allInstalled = status?.installed ?? false;
   const legacyDirs = status?.legacyDirs ?? [];
-  const buttonLabel = installing
+  const buttonLabel = !status ? t('chat.retry') : installing
     ? t('agent.installing')
-    : allInstalled
+    : status?.version
       ? t('agent.reinstallSkill')
       : t('agent.installSkill');
   const policyOptions = [
@@ -168,25 +169,34 @@ export const AgentSection = ({ onClose }: AgentSectionProps) => {
                 {t('agent.description')}
               </div>
             </div>
-            <Button variant="primary" size="sm" onClick={() => void install()} disabled={installing}>
+            {!allInstalled && <Button variant="primary" size="sm" onClick={() => void (status ? install() : loadStatus())} disabled={installing || checking}>
               {buttonLabel}
-            </Button>
+            </Button>}
           </div>
 
-          {error && <div className="agent-section-error">{error}</div>}
+          <p className="agent-section-connection-status" data-state={checking ? 'checking' : allInstalled ? 'ready' : status?.version ? 'repair' : 'inactive'} role="status">{checking ? t('agent.checking') : !status ? t('agent.checkFailed') : allInstalled
+            ? t('agent.ready') : status.version ? t('agent.needsRepair') : t('agent.notInstalled')}</p>
+          {!checking && (error || (status?.version && !allInstalled)) && (
+            <div className="agent-section-error">
+              {error ? t('agent.repairFailedHint') : !status?.cliInstalled ? t('agent.launcherRepairHint') : t('agent.skillsRepairHint')}
+            </div>
+          )}
 
+          {!checking && (error || (status?.version && !allInstalled)) && (
+            <Button variant="secondary" size="sm" onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(JSON.stringify({ status, error, lastResults }, null, 2));
+                notify({ tone: 'success', title: t('chat.copied') });
+              } catch (err) {
+                notify({ tone: 'error', title: t('sidebar.copyFailed'), description: String(err) });
+              }
+            }}>{t('agent.copyDiagnostics')}</Button>
+          )}
+          {status && <details className="agent-section-details">
+            <summary>{t('agent.advanced')}</summary>
+            <div className="agent-section-details-content">
           {status && (
             <div className="agent-section-tooling-status">
-              <div className="agent-section-version-row">
-                <div>
-                  <div className="agent-section-version-label">{t('agent.installedVersion')}</div>
-                  <code>{status.version ?? t('agent.notInstalled')}</code>
-                </div>
-                <div>
-                  <div className="agent-section-version-label">{t('agent.bundledVersion')}</div>
-                  <code>{status.bundledVersion ?? t('agent.unavailable')}</code>
-                </div>
-              </div>
               <FieldRow
                 className="agent-section-policy-row"
                 label={t('agent.updatePolicy')}
@@ -209,10 +219,7 @@ export const AgentSection = ({ onClose }: AgentSectionProps) => {
               <div>
                 <div className="agent-section-update-title">{t('agent.updateAvailable')}</div>
                 <div className="agent-section-update-desc">
-                  {t('agent.updateAvailableDescription', {
-                    installed: status.version ?? t('agent.notInstalled'),
-                    bundled: status.bundledVersion ?? t('agent.unavailable'),
-                  })}
+                  {t('agent.updateHint')}
                 </div>
               </div>
               <Button variant="primary" size="sm" onClick={() => void install('update')} disabled={installing}>
@@ -242,35 +249,11 @@ export const AgentSection = ({ onClose }: AgentSectionProps) => {
                   {cleaningLegacy ? t('agent.removing') : t('agent.removeLegacyDirs')}
                 </Button>
               </div>
-              <ul className="agent-section-warning-list">
-                {legacyDirs.map((dir) => (
-                  <li key={dir}>
-                    <code>{dir}</code>
-                  </li>
-                ))}
-              </ul>
             </div>
           )}
 
-          {displayResults.length > 0 && (
-            <ul className="agent-section-results" aria-label={t('agent.targetsAria')}>
-              {displayResults.map((r) => (
-                <li
-                  key={r.path}
-                  className={`agent-section-result${r.ok ? ' agent-section-result--ok' : ' agent-section-result--fail'}`}
-                >
-                  <span className="agent-section-result-icon" aria-hidden>
-                    {r.ok ? '✓' : '✗'}
-                  </span>
-                  <div className="agent-section-result-body">
-                    <code className="agent-section-result-path">{r.path}</code>
-                    {r.error && <div className="agent-section-result-error">{r.error}</div>}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-
+            </div>
+          </details>}
         </div>
       </div>
 

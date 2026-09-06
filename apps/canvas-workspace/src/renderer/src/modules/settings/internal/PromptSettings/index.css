@@ -53,3 +53,7 @@
   border-color: rgba(35, 131, 226, 0.45);
   box-shadow: var(--shadow-focus);
 }
+
+.chat-prompt-footer {
+  justify-content: flex-end;
+}

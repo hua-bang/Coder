@@ -98,7 +98,7 @@ describe('Settings navigation', () => {
     expect(itemLabels).toEqual([
       'Models',
       'Chat',
-      'Agent',
+      'External Agents',
       'Tools & Integrations',
       'General',
       'Experimental',
@@ -121,7 +121,7 @@ describe('Settings navigation', () => {
     expect(host?.textContent).toContain('MCP content');
   });
 
-  it('switches the merged Chat page between reply style and roles', () => {
+  it('hides role editing from Chat settings', () => {
     act(() => {
       root?.render(
         <I18nProvider>
@@ -133,9 +133,8 @@ describe('Settings navigation', () => {
     expect(host?.textContent).toContain('Reply style content');
     const rolesTab = Array.from(host?.querySelectorAll('[role="tab"]') ?? [])
       .find((element) => element.textContent === 'Chat Roles') as HTMLButtonElement | undefined;
-    act(() => rolesTab?.click());
-    expect(host?.textContent).toContain('Roles content');
-    expect(host?.textContent).not.toContain('Reply style content');
+    expect(rolesTab).toBeUndefined();
+    expect(host?.textContent).not.toContain('Roles content');
   });
 
   it('shows lightweight app preferences together on General', () => {

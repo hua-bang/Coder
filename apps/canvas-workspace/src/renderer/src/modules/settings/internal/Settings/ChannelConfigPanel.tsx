@@ -4,7 +4,7 @@ import { useAppShell } from '../../../../shared/appShell';
 import './ChannelConfigPanel.css';
 
 /**
- * Feishu credential editor shown under the "Chat channels" experimental
+ * Feishu credential editor shown under the "Feishu Bot" experimental
  * toggle. Lets the user configure FEISHU_APP_ID / FEISHU_APP_SECRET (and an
  * optional default workspace) from the UI instead of shell env vars. The
  * secret is stored encrypted in the main process and never echoed back.
@@ -57,7 +57,7 @@ export const ChannelConfigPanel = () => {
       setAppSecret('');
       setDirty(false);
       setNeedsRelaunch(true);
-      notify({ tone: 'success', title: 'Feishu credentials saved', description: 'Relaunch to apply.' });
+      notify({ tone: 'success', title: 'Feishu Bot credentials saved', description: 'Relaunch to apply.' });
     } catch (err) {
       notify({ tone: 'error', title: 'Save failed', description: err instanceof Error ? err.message : String(err) });
     } finally {
@@ -95,7 +95,7 @@ export const ChannelConfigPanel = () => {
 
   return (
     <div className="channel-config-panel">
-      <div className="channel-config-title">Feishu credentials</div>
+      <div className="channel-config-title">Feishu Bot credentials</div>
       <div className="channel-config-hint">
         Configure the Feishu app here instead of shell env vars. Stored locally; the secret is
         encrypted. Env vars (FEISHU_APP_ID / FEISHU_APP_SECRET), if set, take precedence.

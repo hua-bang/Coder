@@ -3,6 +3,7 @@ import type { ExperimentalFeatureDef } from '../../../../types';
 import {
   EXPERIMENTAL_FLAG_AGENT_TEAMS,
   EXPERIMENTAL_FLAG_CHANNELS,
+  EXPERIMENTAL_FLAG_PI_AGENT_HARNESS,
 } from '../../../../../../shared/experimental-features';
 import { useAppShell } from '../../../../shared/appShell';
 import { useI18n } from '../../../../i18n';
@@ -16,13 +17,12 @@ interface ExperimentalSectionProps {
 
 export const ExperimentalSection = ({ onClose }: ExperimentalSectionProps) => {
   const { notify, updateToast } = useAppShell();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   // Id of the in-progress "installing tooling" toast, so the async
   // tooling-status push from main can update it in place.
   const toolingToastRef = useRef<string | null>(null);
   const [features, setFeatures] = useState<ExperimentalFeatureDef[]>([]);
   const [values, setValues] = useState<Record<string, boolean>>({});
-  const [path, setPath] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<Record<string, boolean>>({});
@@ -36,7 +36,6 @@ export const ExperimentalSection = ({ onClose }: ExperimentalSectionProps) => {
       if (res.ok) {
         setFeatures(res.features ?? []);
         setValues(res.values ?? {});
-        setPath(res.path ?? '');
         setError(null);
       } else {
         setError(res.error ?? t('experimental.loadFailed'));
@@ -170,11 +169,7 @@ export const ExperimentalSection = ({ onClose }: ExperimentalSectionProps) => {
           <div className="experimental-section-intro-desc">
             {t('experimental.description')}
           </div>
-          {path && (
-            <div className="experimental-section-path">
-              {t('experimental.storedAt')} <code>{path}</code>
-            </div>
-          )}
+
         </div>
 
         {needsReload && (
@@ -199,6 +194,15 @@ export const ExperimentalSection = ({ onClose }: ExperimentalSectionProps) => {
         ) : (
           <ul className="experimental-section-list" aria-label={t('experimental.featuresAria')}>
             {features.map((feature) => {
+              const description = feature.id === EXPERIMENTAL_FLAG_CHANNELS
+                ? language === 'zh'
+                  ? '在飞书中与画布 AI 对话并执行任务。启用后需配置机器人凭据，消息将通过飞书传输。'
+                  : 'Chat with your canvas AI and run tasks from Feishu. Requires bot credentials; messages are sent through Feishu.'
+                : feature.id === EXPERIMENTAL_FLAG_PI_AGENT_HARNESS
+                  ? language === 'zh'
+                    ? '使用 Pi 运行默认助手，保留画布工具、模型设置和对话历史。默认关闭，使用 Engine。'
+                    : 'Run the default assistant with Pi, keeping Canvas tools, model settings, and chat history. Off by default; Engine remains the default runtime.'
+                  : feature.description;
               const enabled = !!values[feature.id];
               const busy = !!pending[feature.id];
               const showChannelConfig =
@@ -208,10 +212,9 @@ export const ExperimentalSection = ({ onClose }: ExperimentalSectionProps) => {
                 <li className="experimental-section-item">
                   <div className="experimental-section-item-body">
                     <div className="experimental-section-item-label">{feature.label}</div>
-                    <div className="experimental-section-item-desc">{feature.description}</div>
+                    <div className="experimental-section-item-desc">{description}</div>
                     <div className="experimental-section-item-meta">
-                      <code>{feature.id}</code>
-                      <span>· {t('experimental.defaultState', {
+                      <span>{t('experimental.defaultState', {
                         state: feature.defaultEnabled ? t('experimental.on') : t('experimental.off'),
                       })}</span>
                     </div>

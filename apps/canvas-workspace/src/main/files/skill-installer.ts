@@ -39,6 +39,7 @@ function getAgentToolingManager(): AgentToolingManager {
     installRoot: join(homedir(), '.pulse-coder'),
     skillParents: SKILL_PARENT_DIRS,
     hostExecutable: process.execPath,
+    preserveLauncherHost: !app.isPackaged,
     platform: process.platform,
   });
   return manager;

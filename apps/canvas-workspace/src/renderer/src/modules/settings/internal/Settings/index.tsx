@@ -19,7 +19,6 @@ import { Drawer, SegmentedControl } from '../../../../components/ui';
 import { ModelsSection } from '../ModelSettings';
 import { useCanvasModels } from '../../../models';
 import { ReplyStyleSection, usePromptProfile } from '../PromptSettings';
-import { RolesSection } from '../RolesSettings';
 import { AgentSection } from './AgentSection';
 import { BrowserSection } from './BrowserSection';
 import { BuiltInToolsSection } from './BuiltInToolsSection';
@@ -113,13 +112,12 @@ const SECTIONS = SECTION_GROUPS.flatMap((group) => group.sections);
 
 interface SettingsTarget {
   page: SettingsPage;
-  chatTab?: ChatSettingsTab;
   toolsTab?: ToolsSettingsTab;
 }
 
 const resolveSettingsTarget = (section: SettingsSection): SettingsTarget => {
   if (section === 'reply-style' || section === 'chat-roles') {
-    return { page: 'chat', chatTab: section };
+    return { page: 'chat' };
   }
   if (section === 'built-in-tools' || section === 'mcp' || section === 'plugins') {
     return { page: 'tools-integrations', toolsTab: section };
@@ -140,7 +138,6 @@ export const Settings = ({ open, initialSection, onClose }: SettingsProps) => {
   const { t } = useI18n();
   const initialTarget = resolveSettingsTarget(initialSection);
   const [activePage, setActivePage] = useState<SettingsPage>(initialTarget.page);
-  const [chatTab, setChatTab] = useState<ChatSettingsTab>(initialTarget.chatTab ?? 'reply-style');
   const [toolsTab, setToolsTab] = useState<ToolsSettingsTab>(initialTarget.toolsTab ?? 'built-in-tools');
   const canvasModels = useCanvasModels();
   const promptProfile = usePromptProfile();
@@ -152,7 +149,6 @@ export const Settings = ({ open, initialSection, onClose }: SettingsProps) => {
     if (!open) return;
     const target = resolveSettingsTarget(initialSection);
     setActivePage(target.page);
-    if (target.chatTab) setChatTab(target.chatTab);
     if (target.toolsTab) setToolsTab(target.toolsTab);
   }, [open, initialSection]);
 
@@ -214,33 +210,13 @@ export const Settings = ({ open, initialSection, onClose }: SettingsProps) => {
             />
           )}
           {activePage === 'chat' && (
-            <div className="settings-merged-page">
-              <div className="settings-merged-tabs">
-                <SegmentedControl
-                  options={[
-                    { id: 'reply-style', label: t('settings.replyStyle.label') },
-                    { id: 'chat-roles', label: t('settings.roles.label') },
-                  ]}
-                  value={chatTab}
-                  onChange={(id) => setChatTab(id as ChatSettingsTab)}
-                  ariaPattern="tab"
-                  ariaLabel={t('settings.chat.tabsAria')}
-                />
-              </div>
-              <div className="settings-merged-content">
-                {chatTab === 'reply-style' ? (
-                  <ReplyStyleSection
-                    profile={promptProfile.profile}
-                    error={promptProfile.error}
-                    onClose={onClose}
-                    onSave={promptProfile.save}
-                    onReset={promptProfile.reset}
-                  />
-                ) : (
-                  <RolesSection onClose={onClose} />
-                )}
-              </div>
-            </div>
+            <ReplyStyleSection
+              profile={promptProfile.profile}
+              error={promptProfile.error}
+              onClose={onClose}
+              onSave={promptProfile.save}
+              onReset={promptProfile.reset}
+            />
           )}
           {activePage === 'agent' && <AgentSection onClose={onClose} />}
           {activePage === 'tools-integrations' && (
