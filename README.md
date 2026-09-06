@@ -37,6 +37,14 @@ Other notable folders: `docs/`, `architecture/`, `examples/`, `scripts/`.
 
 ## Architecture
 
+### Pulse Canvas and Engine
+
+Pulse Canvas owns the product modules and local capabilities; Engine provides a reusable agent runtime. The diagram groups responsibilities around their current code owners.
+
+[![Pulse Canvas and Engine architecture](./architecture/en/pulse-canvas-engine.svg)](./architecture/en/pulse-canvas-engine.svg)
+
+[View full size](./architecture/en/pulse-canvas-engine.svg) · [Editable Excalidraw source](./architecture/zh/pulse-canvas-engine.excalidraw) · [Architecture guide](./architecture/README.md)
+
 ### 1) Engine bootstrap
 `Engine.initialize()` (`packages/engine/src/Engine.ts`) creates a `PluginManager`, loads built-in plugins by default, then merges tools in this order:
 1. built-in tools,
