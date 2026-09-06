@@ -1,0 +1,468 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-29 -2 2141 1349.3" width="2141" height="1349.3" role="img" aria-labelledby="diagram-title diagram-description">
+  <title id="diagram-title">Pulse Canvas 与 Engine：模块与基础能力</title>
+  <desc id="diagram-description">产品模块、Canvas 基础能力、Engine 执行内核与扩展接口。可编辑源文件位于同目录 pulse-canvas-engine.excalidraw。</desc>
+  <!-- Layout source: architecture/zh/pulse-canvas-engine.excalidraw. Keep exports synchronized when editing. -->
+  <rect x="-29" y="-2" width="2141" height="1349.3" fill="#ffffff" />
+  <g id="application">
+    <rect x="220" y="140" width="1510" height="105" rx="12" fill="#eff4fb" stroke="#587ea5" stroke-width="1.8" />
+  </g>
+  <g id="atom-frame">
+    <rect x="220" y="660" width="1510" height="300" rx="12" fill="#f2eef9" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="engine-frame">
+    <rect x="220" y="1000" width="1510" height="210" rx="12" fill="#eef7f1" stroke="#477f6a" stroke-width="1.8" />
+  </g>
+  <g id="extension-frame">
+    <rect x="1780" y="140" width="300" height="1070" rx="12" fill="#eff4fb" stroke="#587ea5" stroke-width="1.8" />
+  </g>
+  <g id="title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="38" text-anchor="start">
+      <tspan x="220" y="64">Pulse Canvas × Engine · 模块与基础能力</tspan>
+    </text>
+  </g>
+  <g id="subtitle">
+    <text fill="#7b8795" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="start">
+      <tspan x="220" y="105">按产品模块、宿主基础机制与独立 Engine 分层</tspan>
+    </text>
+  </g>
+  <g id="app-level">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="28" text-anchor="middle">
+      <tspan x="107" y="205">应用界面</tspan>
+    </text>
+  </g>
+  <g id="business-level">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="28" text-anchor="middle">
+      <tspan x="107" y="464">产品模块</tspan>
+    </text>
+  </g>
+  <g id="atomic-level">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="27" text-anchor="middle">
+      <tspan x="100.5" y="805">原子能力</tspan>
+      <tspan x="100.5" y="840.1">（Canvas）</tspan>
+    </text>
+  </g>
+  <g id="engine-level">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="27" text-anchor="middle">
+      <tspan x="100.5" y="1118">独立运行时</tspan>
+    </text>
+  </g>
+  <g id="app-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" text-anchor="middle">
+      <tspan x="975" y="187">Pulse Canvas 工作空间</tspan>
+    </text>
+  </g>
+  <g id="app-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="975" y="231">工作台 · AI Chat · 内容浏览 · 自动化</tspan>
+    </text>
+  </g>
+  <g id="content-frame">
+    <rect x="220" y="280" width="355" height="350" rx="12" fill="#fcf6e3" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="content-heading">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="26" text-anchor="middle">
+      <tspan x="397.5" y="323">创作与内容</tspan>
+    </text>
+  </g>
+  <g id="product-canvas">
+    <rect x="240" y="360" width="315" height="60" rx="10.0" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-canvas-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="397.5" y="397.7">画布编辑 · Canvas</tspan>
+    </text>
+  </g>
+  <g id="product-note-editor">
+    <rect x="240" y="442" width="315" height="60" rx="10.0" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-note-editor-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="397.5" y="479.7">笔记编辑 · Note Editor</tspan>
+    </text>
+  </g>
+  <g id="product-workspace-nodes">
+    <rect x="240" y="524" width="315" height="60" rx="10.0" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-workspace-nodes-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="397.5" y="561.7">知识节点 / 图谱</tspan>
+    </text>
+  </g>
+  <g id="agent-work-frame">
+    <rect x="605" y="280" width="355" height="350" rx="12" fill="#fcf6e3" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="agent-work-heading">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="26" text-anchor="middle">
+      <tspan x="782.5" y="323">Agent 工作</tspan>
+    </text>
+  </g>
+  <g id="product-chat">
+    <rect x="625" y="352" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-chat-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="782.5" y="385.7">AI Chat · 会话 / 角色</tspan>
+    </text>
+  </g>
+  <g id="product-coding-agent">
+    <rect x="625" y="418" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-coding-agent-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="782.5" y="451.7">Coding Agent · 编码代理</tspan>
+    </text>
+  </g>
+  <g id="product-agent-team">
+    <rect x="625" y="484" width="315" height="52" rx="8.666666666666666" fill="#f7f8fa" stroke="#9aa5b1" stroke-width="1.8" stroke-dasharray="8 6" />
+  </g>
+  <g id="product-agent-team-label">
+    <text fill="#7b8795" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="782.5" y="517.7">Agent Teams · 兼容</tspan>
+    </text>
+  </g>
+  <g id="product-mcp-apps">
+    <rect x="625" y="550" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-mcp-apps-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="782.5" y="583.7">MCP Apps · 内嵌交互</tspan>
+    </text>
+  </g>
+  <g id="workspace-frame">
+    <rect x="990" y="280" width="355" height="350" rx="12" fill="#fcf6e3" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="workspace-heading">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="26" text-anchor="middle">
+      <tspan x="1167.5" y="323">工作空间</tspan>
+    </text>
+  </g>
+  <g id="product-dock">
+    <rect x="1010" y="360" width="315" height="60" rx="10.0" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-dock-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1167.5" y="397.7">Dock / Library</tspan>
+    </text>
+  </g>
+  <g id="product-artifacts">
+    <rect x="1010" y="442" width="315" height="60" rx="10.0" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-artifacts-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1167.5" y="479.7">Artifacts · 产物</tspan>
+    </text>
+  </g>
+  <g id="product-scheduled">
+    <rect x="1010" y="524" width="315" height="60" rx="10.0" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-scheduled-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1167.5" y="561.7">Scheduled · 计划任务</tspan>
+    </text>
+  </g>
+  <g id="configuration-frame">
+    <rect x="1375" y="280" width="355" height="350" rx="12" fill="#fcf6e3" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="configuration-heading">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="26" text-anchor="middle">
+      <tspan x="1552.5" y="323">配置与扩展</tspan>
+    </text>
+  </g>
+  <g id="product-models">
+    <rect x="1395" y="352" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-models-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1552.5" y="385.7">Models · 模型配置</tspan>
+    </text>
+  </g>
+  <g id="product-settings">
+    <rect x="1395" y="418" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-settings-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1552.5" y="451.7">Settings · 设置</tspan>
+    </text>
+  </g>
+  <g id="product-skills">
+    <rect x="1395" y="484" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-skills-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1552.5" y="517.7">Skills · 技能库</tspan>
+    </text>
+  </g>
+  <g id="product-plugin-market">
+    <rect x="1395" y="550" width="315" height="52" rx="8.666666666666666" fill="#ffffff" stroke="#b49a45" stroke-width="1.8" />
+  </g>
+  <g id="product-plugin-market-label">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" text-anchor="middle">
+      <tspan x="1552.5" y="583.7">Plugin Market · 插件市场</tspan>
+    </text>
+  </g>
+  <g id="document-state">
+    <rect x="244" y="691" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="document-state-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="383" y="734.2">文档状态</tspan>
+    </text>
+  </g>
+  <g id="document-state-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="383" y="772.1">事务 · 历史 / Undo</tspan>
+    </text>
+  </g>
+  <g id="storage-sync">
+    <rect x="540" y="691" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="storage-sync-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="679" y="734.2">持久化与同步</tspan>
+    </text>
+  </g>
+  <g id="storage-sync-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="679" y="772.1">原子写入 · Watcher</tspan>
+    </text>
+  </g>
+  <g id="conversation-runtime">
+    <rect x="836" y="691" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="conversation-runtime-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="975" y="734.2">对话运行时</tspan>
+    </text>
+  </g>
+  <g id="conversation-runtime-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="975" y="772.1">队列 · 取消 · 审批</tspan>
+    </text>
+  </g>
+  <g id="context-mentions">
+    <rect x="1132" y="691" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="context-mentions-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="1271" y="734.2">上下文与引用</tspan>
+    </text>
+  </g>
+  <g id="context-mentions-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="1271" y="772.1">上下文组装 · Mentions</tspan>
+    </text>
+  </g>
+  <g id="model-resolution">
+    <rect x="1428" y="691" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="model-resolution-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="1567" y="734.2">模型配置解析</tspan>
+    </text>
+  </g>
+  <g id="model-resolution-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="1567" y="772.1">Provider · 凭据 · 默认项</tspan>
+    </text>
+  </g>
+  <g id="pty-runtime">
+    <rect x="244" y="828" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="pty-runtime-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="383" y="871.2">PTY 运行时</tspan>
+    </text>
+  </g>
+  <g id="pty-runtime-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="383" y="909.1">会话创建 · 输入输出</tspan>
+    </text>
+  </g>
+  <g id="webview-runtime">
+    <rect x="540" y="828" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="webview-runtime-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="679" y="871.2">Webview 运行时</tspan>
+    </text>
+  </g>
+  <g id="webview-runtime-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="679" y="909.1">生命周期 · CDP</tspan>
+    </text>
+  </g>
+  <g id="plugin-runtime">
+    <rect x="836" y="828" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="plugin-runtime-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="975" y="871.2">插件注册与激活</tspan>
+    </text>
+  </g>
+  <g id="plugin-runtime-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="975" y="909.1">Registry · Capabilities</tspan>
+    </text>
+  </g>
+  <g id="capability-runtime">
+    <rect x="1132" y="828" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="capability-runtime-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="1271" y="871.2">Runtime 能力接口</tspan>
+    </text>
+  </g>
+  <g id="capability-runtime-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="1271" y="909.1">能力发现 · 调用 · 策略</tspan>
+    </text>
+  </g>
+  <g id="scheduler">
+    <rect x="1428" y="828" width="278" height="107" rx="12" fill="#ffffff" stroke="#8875ab" stroke-width="1.8" />
+  </g>
+  <g id="scheduler-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="23" text-anchor="middle">
+      <tspan x="1567" y="871.2">任务调度器</tspan>
+    </text>
+  </g>
+  <g id="scheduler-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="1567" y="909.1">到期检查 · Catch-up</tspan>
+    </text>
+  </g>
+  <g id="engine-title">
+    <text fill="#477f6a" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="28" text-anchor="middle">
+      <tspan x="975" y="1046">Engine · 可复用 Agent 执行内核</tspan>
+    </text>
+  </g>
+  <g id="engine-ai">
+    <rect x="244" y="1072" width="349" height="104" rx="12" fill="#ffffff" stroke="#477f6a" stroke-width="1.8" />
+  </g>
+  <g id="engine-ai-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="25" text-anchor="middle">
+      <tspan x="418.5" y="1113.75">模型适配</tspan>
+    </text>
+  </g>
+  <g id="engine-ai-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" text-anchor="middle">
+      <tspan x="418.5" y="1153.25">AI / Provider</tspan>
+    </text>
+  </g>
+  <g id="engine-loop">
+    <rect x="615" y="1072" width="349" height="104" rx="12" fill="#ffffff" stroke="#477f6a" stroke-width="1.8" />
+  </g>
+  <g id="engine-loop-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="25" text-anchor="middle">
+      <tspan x="789.5" y="1113.75">执行循环</tspan>
+    </text>
+  </g>
+  <g id="engine-loop-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" text-anchor="middle">
+      <tspan x="789.5" y="1153.25">Loop · Retry · Abort</tspan>
+    </text>
+  </g>
+  <g id="engine-context">
+    <rect x="986" y="1072" width="349" height="104" rx="12" fill="#ffffff" stroke="#477f6a" stroke-width="1.8" />
+  </g>
+  <g id="engine-context-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="25" text-anchor="middle">
+      <tspan x="1160.5" y="1113.75">上下文处理</tspan>
+    </text>
+  </g>
+  <g id="engine-context-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" text-anchor="middle">
+      <tspan x="1160.5" y="1153.25">Prompt · Compaction</tspan>
+    </text>
+  </g>
+  <g id="engine-tools">
+    <rect x="1357" y="1072" width="349" height="104" rx="12" fill="#ffffff" stroke="#477f6a" stroke-width="1.8" />
+  </g>
+  <g id="engine-tools-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="25" text-anchor="middle">
+      <tspan x="1531.5" y="1113.75">工具与扩展</tspan>
+    </text>
+  </g>
+  <g id="engine-tools-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" text-anchor="middle">
+      <tspan x="1531.5" y="1153.25">Tools · Plugins · Hooks</tspan>
+    </text>
+  </g>
+  <g id="ext-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="28" text-anchor="middle">
+      <tspan x="1930" y="192">接入与扩展</tspan>
+    </text>
+  </g>
+  <g id="canvas-plugins">
+    <rect x="1804" y="260" width="252" height="126" rx="12" fill="#fff" stroke="#587ea5" stroke-width="1.8" />
+  </g>
+  <g id="canvas-plugins-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" text-anchor="middle">
+      <tspan x="1930" y="299.4">Canvas 插件</tspan>
+    </text>
+  </g>
+  <g id="canvas-plugins-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" text-anchor="middle">
+      <tspan x="1930" y="338.6">节点视图</tspan>
+      <tspan x="1930" y="364.6">Routes / Chat Cards</tspan>
+    </text>
+  </g>
+  <g id="agent-tools">
+    <rect x="1804" y="478" width="252" height="126" rx="12" fill="#fff" stroke="#587ea5" stroke-width="1.8" />
+  </g>
+  <g id="agent-tools-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" text-anchor="middle">
+      <tspan x="1930" y="516.1">Agent 工具接入</tspan>
+    </text>
+  </g>
+  <g id="agent-tools-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="21" text-anchor="middle">
+      <tspan x="1930" y="556.3">MCP · Skills</tspan>
+      <tspan x="1930" y="583.6">宿主工具注入</tspan>
+    </text>
+  </g>
+  <g id="external-entry">
+    <rect x="1804" y="696" width="252" height="126" rx="12" fill="#fff" stroke="#587ea5" stroke-width="1.8" />
+  </g>
+  <g id="external-entry-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" text-anchor="middle">
+      <tspan x="1930" y="734.1">外部入口</tspan>
+    </text>
+  </g>
+  <g id="external-entry-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="21" text-anchor="middle">
+      <tspan x="1930" y="774.3">Canvas CLI</tspan>
+      <tspan x="1930" y="801.6">Runtime Control</tspan>
+    </text>
+  </g>
+  <g id="runtime-choice">
+    <rect x="1804" y="914" width="252" height="126" rx="12" fill="#fff" stroke="#587ea5" stroke-width="1.8" />
+  </g>
+  <g id="runtime-choice-title">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="24" text-anchor="middle">
+      <tspan x="1930" y="953.4">对话运行后端</tspan>
+    </text>
+  </g>
+  <g id="runtime-choice-detail">
+    <text fill="#293646" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" text-anchor="middle">
+      <tspan x="1930" y="992.6">Engine / 外部 CLI</tspan>
+      <tspan x="1930" y="1018.6">Pi（实验）</tspan>
+    </text>
+  </g>
+  <g id="teams-note">
+    <text fill="#7b8795" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" text-anchor="middle">
+      <tspan x="1930" y="1129">Agent Teams：</tspan>
+      <tspan x="1930" y="1153.7">默认关闭的兼容模块</tspan>
+    </text>
+  </g>
+  <g id="tech-note">
+    <text fill="#7b8795" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="21" text-anchor="start">
+      <tspan x="220" y="1271">技术：Electron · React · Tiptap    跨进程契约：Shared / Preload / IPC</tspan>
+    </text>
+  </g>
+  <g id="harness-note">
+    <text fill="#7b8795" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="21" text-anchor="start">
+      <tspan x="220" y="1313">研发 Harness：约束 · 知识导航 · 验证</tspan>
+    </text>
+  </g>
+</svg>

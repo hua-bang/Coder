@@ -505,5 +505,10 @@
  * panel's own `flex-direction`/`gap` are moot now that it has a single
  * child). */
 .frame-color-popover {
+  width: max-content;
   padding: 6px 8px;
+}
+
+.frame-color-popover .ui-swatchrow {
+  flex-wrap: nowrap;
 }

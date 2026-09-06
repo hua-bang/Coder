@@ -2,6 +2,44 @@ export const PERF_SEED_NOTE_ID = 'perf-seed-note';
 
 export const PERF_SEED_TRANSFORM = { x: 0, y: 0, scale: 0.8 };
 
+export const buildPerfImageFixture = ({ filePaths, viewport, now }) => {
+  const padding = 24;
+  if (!filePaths.length || !Number.isFinite(viewport?.width) || !Number.isFinite(viewport?.height)
+    || viewport.width <= padding * 2 || viewport.height <= padding * 2) {
+    throw new Error('image-memory fixture requires images and a visible canvas viewport');
+  }
+  // Prefer the existing 0.5 gesture zoom and wrap into more rows when Dock
+  // narrows the canvas. Zooming a fixed five-column grid out also shrinks
+  // the resize scenario's 16px handles below its 8px hit-target threshold.
+  let layout = null;
+  for (let columns = Math.min(5, filePaths.length); columns >= 1; columns--) {
+    const width = (columns - 1) * 220 + 200;
+    const height = (Math.ceil(filePaths.length / columns) - 1) * 180 + 150;
+    const scale = Math.min(0.5, (viewport.width - padding * 2) / width, (viewport.height - padding * 2) / height);
+    if (!layout || scale > layout.scale) layout = { columns, width, height, scale };
+  }
+  const nodes = filePaths.map((filePath, index) => ({
+    id: `perf-image-${index}`,
+    type: 'image',
+    title: `perf 4K image ${index}`,
+    x: 80 + (index % layout.columns) * 220,
+    y: 540 + Math.floor(index / layout.columns) * 180,
+    width: 200,
+    height: 150,
+    updatedAt: now,
+    data: { filePath },
+  }));
+  const { width, height, scale } = layout;
+  return {
+    nodes,
+    transform: {
+      x: (viewport.width - width * scale) / 2 - 80 * scale,
+      y: (viewport.height - height * scale) / 2 - 540 * scale,
+      scale,
+    },
+  };
+};
+
 export const buildPerfSeedNodes = ({
   existingNodes,
   count,

@@ -37,6 +37,14 @@
 
 ## 架构
 
+### Pulse Canvas 与 Engine
+
+Pulse Canvas 负责产品模块与本地能力，Engine 提供可复用的 Agent 执行内核。图中按当前代码的职责归属组织模块。
+
+[![Pulse Canvas 与 Engine 架构图](./architecture/zh/pulse-canvas-engine.svg)](./architecture/zh/pulse-canvas-engine.svg)
+
+[放大查看](./architecture/zh/pulse-canvas-engine.svg) · [可编辑 Excalidraw 源文件](./architecture/zh/pulse-canvas-engine.excalidraw) · [架构说明](./architecture/README.md)
+
 ### 1）Engine 初始化
 `Engine.initialize()`（`packages/engine/src/Engine.ts`）会创建 `PluginManager`，默认加载内置插件，按以下优先级合并工具：
 1. 内置工具

@@ -3,11 +3,14 @@ import type { CanvasNode } from '../../../../../types';
 import type { MergeMindmapTopicRequest } from '../../../mindmap/transfer';
 import { MindmapNodeBody } from '../../node-bodies/MindmapNodeBody';
 import { NodeContextMenu } from '../NodeContextMenu';
-import { CloseButton, FullscreenButton } from './NodeButtons';
+import { AddToChatButton, CloseButton, FocusButton, FullscreenButton } from './NodeButtons';
 
 interface MindmapCanvasNodeProps {
   classes: string;
   handleClose: (e: MouseEvent) => void;
+  handleAddToChat?: (e: MouseEvent) => void;
+  handleFocus?: (e: MouseEvent) => void;
+  focusAction?: { ariaLabel: string; title: string };
   handleNodeClick: (e: MouseEvent) => void;
   handleToggleFullscreen: (e: MouseEvent) => void;
   isDragging: boolean;
@@ -34,6 +37,9 @@ interface MindmapCanvasNodeProps {
 export const MindmapCanvasNode = ({
   classes,
   handleClose,
+  handleAddToChat,
+  handleFocus,
+  focusAction,
   handleNodeClick,
   handleToggleFullscreen,
   isDragging,
@@ -85,10 +91,20 @@ export const MindmapCanvasNode = ({
           readOnly={readOnly}
         />
       </div>
-      {supportsFullscreen ? (
-        <FullscreenButton floating isFullscreen={isFullscreen} onClick={handleToggleFullscreen} />
-      ) : null}
-      {readOnly ? null : <CloseButton floating onClick={handleClose} />}
+      <div className="node-header__actions mindmap-node-actions">
+        {handleAddToChat ? <AddToChatButton onClick={handleAddToChat} /> : null}
+        {supportsFullscreen ? (
+          <FullscreenButton isFullscreen={isFullscreen} onClick={handleToggleFullscreen} />
+        ) : null}
+        {handleFocus ? (
+          <FocusButton
+            ariaLabel={focusAction?.ariaLabel}
+            title={focusAction?.title}
+            onClick={handleFocus}
+          />
+        ) : null}
+        {readOnly ? null : <CloseButton onClick={handleClose} />}
+      </div>
       {mindmapMenu && onExportMindmapImage && (
         <NodeContextMenu
           x={mindmapMenu.x}

@@ -208,8 +208,7 @@ export const ReplyStyleSection = ({
         />
       </div>
 
-      <div className="chat-model-settings-footer">
-        <span>{profile?.path}</span>
+      <div className="chat-model-settings-footer chat-prompt-footer">
         <Button size="sm" onClick={() => void reset()} disabled={saving}>
           {t('prompt.resetDefault')}
         </Button>

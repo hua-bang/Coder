@@ -1,6 +1,25 @@
 import { promises as fs } from 'fs';
 import { createHash, randomUUID } from 'crypto';
-import { basename, dirname, join } from 'path';
+import { basename, dirname, isAbsolute, join, win32 } from 'path';
+
+/** Read only our canonical wrapper; never execute shell text to discover a host. */
+export async function readLauncherHost(cliPath: string, platform: NodeJS.Platform): Promise<string | null> {
+  try {
+    const content = await fs.readFile(cliPath, 'utf8');
+    const match = platform === 'win32'
+      ? content.match(/^@echo off\r\nset "ELECTRON_RUN_AS_NODE=1"\r\n"([^"]+)" "([^"]+)" %\*\r\n$/)
+      : content.match(/^#!\/bin\/sh\nELECTRON_RUN_AS_NODE=1 exec '((?:[^']|'"'"')*)' '((?:[^']|'"'"')*)' "\$@"\n$/);
+    if (!match) return null;
+    const host = match[1].split(`'"'"'`).join("'");
+    const entry = match[2].split(`'"'"'`).join("'");
+    const expected = platform === 'win32' ? windowsWrapper(host, entry) : unixWrapper(host, entry);
+    if (!(platform === 'win32' ? win32.isAbsolute(host) : isAbsolute(host)) || content !== expected) return null;
+    const stat = await fs.stat(host);
+    return stat.isFile() && (platform === 'win32' || (stat.mode & 0o111) !== 0) ? host : null;
+  } catch {
+    return null;
+  }
+}
 
 export const BUNDLE_MARKER = '.pulse-canvas-bundle.json';
 

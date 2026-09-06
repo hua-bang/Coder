@@ -53,6 +53,7 @@ import { aggregateReports } from './scenario-metrics.mjs';
 import {
   PERF_SEED_NOTE_ID,
   PERF_SEED_TRANSFORM,
+  buildPerfImageFixture,
   buildPerfSeedNodes,
 } from './seed-fixture.mjs';
 
@@ -861,7 +862,7 @@ const imageMemoryScenario = async (cdp) => {
   const imageCount = 10;
   const originalWidth = 4000;
   const originalHeight = 3000;
-  await evaluate(cdp, `(async () => {
+  const viewport = await evaluate(cdp, `(async () => {
     const store = window.canvasWorkspace.store;
     const list = await store.list();
     const wsId = list.ids[0];
@@ -884,21 +885,13 @@ const imageMemoryScenario = async (cdp) => {
     const loaded = await store.load(wsId);
     const data = loaded.data ?? {};
     const nodes = (data.nodes ?? []).filter((node) => !node.id.startsWith('perf-image-'));
-    const now = Date.now();
-    for (let index = 0; index < filePaths.length; index++) {
-      nodes.push({
-        id: 'perf-image-' + index,
-        type: 'image',
-        title: 'perf 4K image ' + index,
-        x: 80 + (index % 5) * 220,
-        y: 540 + Math.floor(index / 5) * 180,
-        width: 200,
-        height: 150,
-        updatedAt: now,
-        data: { filePath: filePaths[index] },
-      });
-    }
-    await store.save(wsId, { ...data, nodes, transform: { x: 250, y: 20, scale: 0.5 } });
+    const bounds = [...document.querySelectorAll('.canvas-container')]
+      .map(element => element.getBoundingClientRect())
+      .find(rect => rect.width > 0 && rect.height > 0);
+    const viewport = bounds ? { width: bounds.width, height: bounds.height } : null;
+    const fixture = (${buildPerfImageFixture.toString()})({ filePaths, viewport, now: Date.now() });
+    await store.save(wsId, { ...data, nodes: [...nodes, ...fixture.nodes], transform: fixture.transform });
+    return viewport;
   })()`);
   await evaluate(cdp, 'location.reload()').catch(() => {});
   await cdp.reconnect();
@@ -914,12 +907,13 @@ const imageMemoryScenario = async (cdp) => {
   }
   if (images.length < imageCount || images.some((image) => image.width > 960)) {
     const maxWidth = images.length > 0 ? Math.max(...images.map((image) => image.width)) : 0;
-    throw new Error(`image-memory preview readiness failed: ${images.length}/${imageCount}, max width ${maxWidth}`);
+    throw new Error(`image-memory preview readiness failed: ${images.length}/${imageCount}, max width ${maxWidth}, canvas ${viewport.width}×${viewport.height}`);
   }
   const decodedBytes = images.reduce((sum, image) => sum + image.width * image.height * 4, 0);
   const originalDecodedBytes = imageCount * originalWidth * originalHeight * 4;
   return {
     images: imageCount,
+    viewport,
     decodedMB: Math.round(decodedBytes / 1024 / 1024 * 10) / 10,
     originalDecodedMB: Math.round(originalDecodedBytes / 1024 / 1024 * 10) / 10,
     maxDecodedWidth: Math.max(...images.map((image) => image.width)),

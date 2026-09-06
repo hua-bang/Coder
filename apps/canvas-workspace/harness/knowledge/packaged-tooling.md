@@ -30,6 +30,13 @@ below) — never ship a change that updates one without the other.
 
 ## Production installation must never depend on a source checkout
 
+Development managers preserve a live canonical launcher owned by another
+host: status validates its payload and executable without requiring the dev
+Electron path, and repair/update/reconcile defer to the owning installed app.
+Settings shows connection readiness first. Repair failures expose a short reason
+and copyable diagnostics; versions and target checks are not rendered. Policy,
+shell setup, updates, and legacy cleanup live in collapsed Advanced settings.
+
 Production installation must never depend on a source checkout, `pnpm`, or a
 global link. `resolveBundleRoot()` in `skill-installer.ts` enforces the
 split: a packaged app (`app.isPackaged`) always resolves its bundle from

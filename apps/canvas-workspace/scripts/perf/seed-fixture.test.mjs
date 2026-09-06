@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PERF_SEED_NOTE_ID,
   PERF_SEED_TRANSFORM,
+  buildPerfImageFixture,
   buildPerfSeedNodes,
 } from './seed-fixture.mjs';
 
@@ -50,5 +51,49 @@ describe('performance seed fixture', () => {
     expect(nodes).toHaveLength(10);
     expect(nodes).toContain(existing[0]);
     expect(nodes.filter((node) => node.type === 'iframe')).toHaveLength(3);
+  });
+});
+
+describe('image-memory fixture', () => {
+  const filePaths = Array.from({ length: 10 }, (_, i) => `/tmp/perf-image-${i}.png`);
+
+  it.each([
+    { width: 960, height: 772 },
+    { width: 480, height: 772 },
+    { width: 320, height: 600 },
+    { width: 480, height: 200 },
+  ])('keeps every lazy image visible in a $width×$height canvas', (viewport) => {
+    const { nodes, transform } = buildPerfImageFixture({ filePaths, viewport, now: 123 });
+
+    expect(nodes).toHaveLength(10);
+    expect(new Set(nodes.map(node => node.id)).size).toBe(10);
+    expect(nodes.map(node => node.data.filePath)).toEqual(filePaths);
+    expect(transform.scale).toBeGreaterThan(0);
+    expect(transform.scale).toBeLessThanOrEqual(0.5);
+    for (const node of nodes) {
+      const left = transform.x + node.x * transform.scale;
+      const top = transform.y + node.y * transform.scale;
+      expect(left).toBeGreaterThanOrEqual(24 - 1e-6);
+      expect(top).toBeGreaterThanOrEqual(24 - 1e-6);
+      expect(left + node.width * transform.scale).toBeLessThanOrEqual(viewport.width - 24 + 1e-6);
+      expect(top + node.height * transform.scale).toBeLessThanOrEqual(viewport.height - 24 + 1e-6);
+    }
+  });
+
+  it('rejects a missing or collapsed viewport instead of producing an empty measurement', () => {
+    for (const viewport of [undefined, { width: 0, height: 772 }, { width: 480, height: 48 }]) {
+      expect(() => buildPerfImageFixture({ filePaths, viewport, now: 123 }))
+        .toThrow('visible canvas viewport');
+    }
+    expect(() => buildPerfImageFixture({ filePaths: [], viewport: { width: 480, height: 772 }, now: 123 }))
+      .toThrow('requires images');
+  });
+
+  it('wraps the grid before shrinking the zoom used by later gesture scenarios', () => {
+    for (const viewport of [{ width: 480, height: 772 }, { width: 320, height: 600 }]) {
+      const { transform } = buildPerfImageFixture({ filePaths, viewport, now: 123 });
+      // The resize scenario needs a 16px corner to remain at least 8px wide.
+      expect(transform.scale).toBe(0.5);
+    }
   });
 });

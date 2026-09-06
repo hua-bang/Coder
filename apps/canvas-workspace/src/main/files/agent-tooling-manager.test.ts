@@ -38,6 +38,25 @@ afterEach(async () => {
 });
 
 describe('AgentToolingManager', () => {
+  it('lets development builds inspect an installed host without replacing its bundle', async () => {
+    const root = await createSandbox();
+    const bundleRoot = await writeBundle(root);
+    const hostExecutable = join(root, "Installed App's host");
+    await fs.writeFile(hostExecutable, '#!/bin/sh\n', { mode: 0o755 });
+    const options = { bundleRoot, installRoot: join(root, 'home'), skillParents: [join(root, 'skills')], hostExecutable, platform: 'darwin' as const };
+    const installed = await createAgentToolingManager(options).ensureInstalled();
+    const wrapper = await fs.readFile(installed.cliPath, 'utf8');
+    await writeBundle(root, '2.0.0');
+    const dev = createAgentToolingManager({ ...options, hostExecutable: '/dev/Electron', preserveLauncherHost: true });
+    await expect(dev.status()).resolves.toMatchObject({ installed: true, updateAvailable: false });
+    for (const action of ['repair', 'update', 'reconcile'] as const) {
+      await expect(dev.ensureInstalled({ action })).resolves.toMatchObject({ ok: true, applied: false, version: '1.2.3' });
+      await expect(fs.readFile(installed.cliPath, 'utf8')).resolves.toBe(wrapper);
+    }
+    await fs.rm(hostExecutable);
+    await expect(dev.status()).resolves.toMatchObject({ installed: false, cliInstalled: false });
+  });
+
   it('installs the bundled existing CLI and every skill without Node or pnpm', async () => {
     const root = await createSandbox();
     const bundleRoot = await writeBundle(root);

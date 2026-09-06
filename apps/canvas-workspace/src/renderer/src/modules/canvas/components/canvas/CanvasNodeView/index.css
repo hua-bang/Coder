@@ -149,6 +149,13 @@
   transition: opacity 0.22s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
+.mindmap-node-actions {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 5;
+}
+
 .node-close--floating {
   position: absolute;
   top: 4px;

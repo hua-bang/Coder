@@ -17,7 +17,6 @@ import {
   AddToChatButton,
   CloseButton,
   FocusButton,
-  OpenDetailButton,
   OpenTabButton,
   PluginSelectElementButton,
 } from '../NodeButtons';
@@ -94,7 +93,6 @@ export const CanvasNodeHeader = ({
   handleFocus,
   handleHeaderMouseDown,
   handlePluginSelectElement,
-  handleOpenDetail,
   handleOpenTab,
   handleAddToChat,
   handleAddToCanvas,
@@ -196,10 +194,7 @@ export const CanvasNodeHeader = ({
         <TextColorPicker node={node} onUpdate={onUpdate} />
       )}
       <div className="node-header__actions">
-        {node.type === 'file' ? (
-          <OpenDetailButton onClick={handleOpenDetail} />
-        ) : null}
-        {canOpenTab && isKnowledgeNodeType(node.type) ? (
+        {canOpenTab && node.type !== 'file' && isKnowledgeNodeType(node.type) ? (
           <OpenTabButton
             ariaLabel={t('workspaceNodes.openNodeTab', { title: node.title })}
             nodeTitle={node.title}
@@ -235,4 +230,3 @@ export const CanvasNodeHeader = ({
     </div>
   );
 };
-
