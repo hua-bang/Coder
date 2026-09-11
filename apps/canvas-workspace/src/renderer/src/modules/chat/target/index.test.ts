@@ -117,3 +117,29 @@ describe('ChatTarget broker', () => {
     unregisterBusyPage();
   });
 });
+
+
+describe('file reference delivery', () => {
+  it('queues for the visible page composer and never inserts into hidden dock chat', async () => {
+    const broker = createChatTargetBroker();
+    const insertDockFile = vi.fn();
+    const insertPageFile = vi.fn();
+    broker.register(dockTarget, { insertFile: insertDockFile });
+    broker.register(pageTarget, {});
+    const filePath = '/outside workspace/资料.ts';
+    expect(await broker.deliver({ kind: 'file', filePath })).toMatchObject({ status: 'queued', target: pageTarget });
+    broker.register(pageTarget, { insertFile: insertPageFile });
+    expect(insertPageFile).toHaveBeenCalledWith(filePath);
+    expect(insertDockFile).not.toHaveBeenCalled();
+  });
+});
+
+
+it('queues directory references for the intended page composer without converting them to files', async () => {
+  const broker = createChatTargetBroker();
+  broker.register(pageTarget, {});
+  const insertFile = vi.fn();
+  expect(await broker.deliver({ kind: 'file', filePath: '/root/source', isDirectory: true })).toMatchObject({ status: 'queued' });
+  broker.register(pageTarget, { insertFile });
+  expect(insertFile).toHaveBeenCalledWith('/root/source', true);
+});

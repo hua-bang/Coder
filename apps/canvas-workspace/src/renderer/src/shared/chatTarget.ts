@@ -26,6 +26,7 @@ export interface ChatTarget {
 }
 
 export type ChatInsertion =
+  | { kind: 'file'; filePath: string; isDirectory?: boolean }
   | { kind: 'node'; node: CanvasNode; sourceWorkspaceId?: string }
   | { kind: 'dom-selection'; selection: AgentContextDomSelectionRef }
   | { kind: 'tab'; tab: AgentContextTabRef }
@@ -34,6 +35,7 @@ export type ChatInsertion =
   | { kind: 'focus' };
 
 export interface ChatTargetHandlers {
+  insertFile?: (filePath: string, isDirectory?: boolean) => void;
   insertNode?: (node: CanvasNode, sourceWorkspaceId?: string) => void;
   insertDomSelection?: (selection: AgentContextDomSelectionRef) => void;
   insertTab?: (tab: AgentContextTabRef) => void;

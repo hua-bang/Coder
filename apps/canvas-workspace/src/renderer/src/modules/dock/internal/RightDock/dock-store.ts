@@ -1,3 +1,4 @@
+import { DockFolderEditor } from './dock-folder-editor';
 import { GLOBAL_CHAT_STORE_ID } from '../../../../../../shared/agent-chat';
 /** Framework-free state for the pinned chat plus preview/terminal tabs.
  * Owns activation, dedupe, workspace sessions, closing order, comparison pairing,
@@ -50,6 +51,7 @@ const INITIAL: DockState = {
   mountedWorkspaceIds: new Set<string>(),
 };
 export class DockStore {
+  readonly folderEditor = new DockFolderEditor();
   private state: DockState = INITIAL;
   private listeners = new Set<() => void>();
   private nextLinkOrdinal = 1;
@@ -98,6 +100,32 @@ export class DockStore {
       ? projectTerminalWorkspace(terminalTabsByWorkspace, workspaceId)
       : {};
     this.commit({ terminalTabsByWorkspace, ...projection, ...next });
+  }
+
+  openFolder(folderPath: string): void {
+    const scope = this.state.activeTerminalWorkspaceId;
+    const currentFolder = this.state.tabs.find(tab => tab.kind === 'folder');
+    if (currentFolder?.kind === 'folder' && currentFolder.folderPath !== folderPath
+      && !this.folderEditor.allow(scope, () => { if (this.state.activeTerminalWorkspaceId === scope) this.openFolder(folderPath); })) return;
+    const id = 'folder';
+    const title = folderPath.split(/[\\/]/).filter(Boolean).pop() || folderPath;
+    const existing = this.state.tabs.find(tab => tab.kind === 'folder');
+    const tab: DockPreviewTab = existing?.kind === 'folder' && existing.folderPath === folderPath
+      ? { ...existing, id } : { id, kind: 'folder', title, folderPath };
+    const index = this.state.tabs.findIndex(tab => tab.kind === 'folder');
+    const tabs: DockPreviewTab[] = this.state.tabs.filter(tab => tab.kind !== 'folder');
+    tabs.splice(index < 0 ? tabs.length : index, 0, tab);
+    this.commit({ tabs, activeTabId: id, expanded: true });
+  }
+
+  selectFolderFile(id: string, selectedPath?: string): void {
+    const tab = this.state.tabs.find(tab => tab.id === id);
+    if (tab?.kind === 'folder' && tab.selectedPath === selectedPath) return;
+    const scope = this.state.activeTerminalWorkspaceId;
+    if (!this.folderEditor.allow(scope, () => { if (this.state.activeTerminalWorkspaceId === scope) this.selectFolderFile(id, selectedPath); })) return;
+    this.folderEditor.discard(scope);
+    this.commit({ tabs: this.state.tabs.map(tab => tab.id === id && tab.kind === 'folder'
+      ? { ...tab, selectedPath } : tab) });
   }
 
   openArtifact(workspaceId: string, artifactId: string): void {
@@ -404,6 +432,9 @@ export class DockStore {
   }
 
   close(id: string): void {
+    const scope = this.state.activeTerminalWorkspaceId;
+    if (id === 'folder' && !this.folderEditor.allow(scope, () => { if (this.state.activeTerminalWorkspaceId === scope) this.close(id); })) return;
+    if (id === 'folder') this.folderEditor.discard(scope);
     const index = this.state.tabs.findIndex((tab) => tab.id === id);
     if (index === -1) return;
     const comparisonSurvivorId = getComparisonSurvivorId(this.state, id);

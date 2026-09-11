@@ -1,8 +1,10 @@
-import type { DirEntry } from '../../../shared/files';
+import type { DirEntry, FilePreviewResult, FileSaveRequest, FileSaveResult } from '../../../shared/files';
 
 export type * from '../../../shared/files';
 
 export interface FileApi {
+  savePreview: (request: FileSaveRequest) => Promise<FileSaveResult>;
+  preview: (filePath: string) => Promise<FilePreviewResult>;
   createNote: (
     workspaceId?: string,
     name?: string,
@@ -17,6 +19,7 @@ export interface FileApi {
   listDir: (
     dirPath: string,
     maxDepth?: number,
+    includeHidden?: boolean,
   ) => Promise<{ ok: boolean; entries?: DirEntry[]; error?: string }>;
   openInVSCode: (
     filePath: string,

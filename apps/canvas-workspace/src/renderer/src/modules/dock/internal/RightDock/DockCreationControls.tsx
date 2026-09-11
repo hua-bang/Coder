@@ -33,6 +33,23 @@ const HOVER_CLOSE_DELAY_MS = 240;
 
 export const DockCreationControls = ({ store, workspaces, activeWorkspaceId, showTerminal, newTabTitle, mountedWorkspaceIds, terminalWorkspaceIds }: Props) => {
   const { t } = useI18n();
+  const [folderError, setFolderError] = useState('');
+  const openFolder = async () => {
+    setFolderError('');
+    const scope = store.getSnapshot().activeTerminalWorkspaceId;
+    const boundFolder = workspaces.find(workspace => workspace.id === scope)?.rootFolder;
+    const existing = store.getSnapshot().tabs.find(tab => tab.kind === 'folder');
+    if (boundFolder) { store.openFolder(boundFolder); return; }
+    if (existing) { store.activate(existing.id); return; }
+    try {
+      const result = await window.canvasWorkspace?.dialog.openFolder();
+      if (result?.canceled || scope !== store.getSnapshot().activeTerminalWorkspaceId) return;
+      if (!result?.ok || !result.folderPath) throw new Error(result?.error || t('folder.openFailed'));
+      store.openFolder(result.folderPath);
+    } catch (error) {
+      setFolderError(`${t('folder.openFailed')}: ${String(error)}`);
+    }
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const [nodePickerOpen, setNodePickerOpen] = useState(false);
   const [workspacePickerOpen, setWorkspacePickerOpen] = useState(false);
@@ -98,6 +115,7 @@ export const DockCreationControls = ({ store, workspaces, activeWorkspaceId, sho
               panelId={panelId}
               showTerminal={showTerminal}
               onClose={() => setMenuOpen(false)}
+              onOpenFolder={() => { void openFolder(); }}
               onOpenNode={() => setNodePickerOpen(true)}
               onOpenCanvas={() => setWorkspacePickerOpen(true)}
               onNewWebTab={() => store.newLink(newTabTitle)}
@@ -108,6 +126,7 @@ export const DockCreationControls = ({ store, workspaces, activeWorkspaceId, sho
           </Suspense>
         )}
       </span>
+      {folderError && <span role="alert">{folderError}</span>}
       {nodePickerOpen && (
         <Suspense fallback={null}>
           <NodeDockPicker

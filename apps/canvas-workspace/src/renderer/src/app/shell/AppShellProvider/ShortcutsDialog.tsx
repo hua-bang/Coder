@@ -18,6 +18,7 @@ const SECTION_TITLE_KEY: Record<ShortcutSectionId, I18nKey> = {
 const SECTION_ORDER: ShortcutSectionId[] = ['canvas', 'view', 'selection', 'edit', 'panels'];
 
 export const SHORTCUT_HELP = {
+  'fileEditor.save': { section: 'edit', descriptionKey: 'folder.saveShortcut' },
   'canvas.commandPalette': { section: 'canvas', descriptionKey: 'shortcuts.canvas.commandPalette' },
   'canvas.commandPaletteAlt': { section: 'canvas', descriptionKey: 'shortcuts.canvas.togglePalette' },
   'canvas.find': { section: 'canvas', descriptionKey: 'shortcuts.canvas.find' },

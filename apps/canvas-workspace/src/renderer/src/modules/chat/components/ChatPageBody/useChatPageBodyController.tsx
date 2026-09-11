@@ -122,6 +122,7 @@ export const useChatPageBodyController = ({
     insertDomSelectionMention,
     insertNodeMention,
     insertSkillMention,
+    insertFileMention,
     insertTabMention,
     loading,
     mentionIndex,
@@ -219,6 +220,7 @@ export const useChatPageBodyController = ({
   useRegisterChatTarget(target, {
     insertNode: busyElsewhere || sessionLoading ? undefined : insertNodeMention,
     insertDomSelection: busyElsewhere || sessionLoading ? undefined : insertDomSelectionMention,
+    insertFile: busyElsewhere || sessionLoading ? undefined : insertFileMention,
     insertTab: busyElsewhere || sessionLoading ? undefined : insertTabMention,
     startSkillChat: handleTargetSkillChat, submitDomReview: submitDomReviewComments, focus: focusInput,
   });

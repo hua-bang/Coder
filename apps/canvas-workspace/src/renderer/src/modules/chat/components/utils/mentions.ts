@@ -1,3 +1,4 @@
+import { fileMentionIconMarkup, fileMentionLabel } from './fileMentionPresentation';
 import type { CanvasNode } from '../../../../types';
 import { CANVAS_MENTION_PREFIX, DOM_MENTION_PREFIX, FOLDER_MENTION_PREFIX, PLUGIN_MENTION_PREFIX, ROLE_MENTION_PREFIX, SESSION_MENTION_PREFIX, SKILL_MENTION_PREFIX, TAB_MENTION_PREFIX, TAG_MENTION_PREFIX } from '../ChatMentionPopup/constants';
 import type { MentionItem } from '../../../../types';
@@ -98,6 +99,8 @@ export function renderRoleNameMentions(html: string, roleNames: ReadonlyMap<stri
 }
 
 function resolveMentionFilePath(rootFolder: string | undefined, relativePath: string): string {
+  const absolute = relativePath.trim();
+  if (absolute.startsWith('/') || absolute.startsWith('\\\\') || /^[a-z]:[\\/]/i.test(absolute)) return absolute;
   const root = rootFolder?.trim().replace(/[\\/]+$/, '') ?? '';
   const relative = relativePath.trim().replace(/^[\\/]+/, '').replace(/[\\/]+$/, '');
   return root && relative ? `${root}/${relative}` : '';
@@ -257,6 +260,7 @@ export function createMentionChipElement(item: MentionItem, nodes?: CanvasNode[]
   const classes = ['chat-mention-chip', 'chat-mention-chip--input'];
   if (isWorkspace) classes.push('chat-mention-chip--workspace');
   if (isSkill) classes.push('chat-mention-chip--skill');
+  if (isFile) classes.push('chat-mention-chip--file');
   if (isFolder) classes.push('chat-mention-chip--folder');
   if (isTag) classes.push('chat-mention-chip--tag');
   if (isDom) classes.push('chat-mention-chip--dom');
@@ -268,7 +272,7 @@ export function createMentionChipElement(item: MentionItem, nodes?: CanvasNode[]
     : isSkill
       ? `${SKILL_MENTION_PREFIX}${item.label}`
       : isFolder
-        ? `${FOLDER_MENTION_PREFIX}${item.label.replace(/\/$/, '')}`
+        ? `${FOLDER_MENTION_PREFIX}${item.label.replace(/\/$/, '') || '/'}`
         : isTag
           ? `${TAG_MENTION_PREFIX}${item.label}`
           : isDom
@@ -293,7 +297,7 @@ export function createMentionChipElement(item: MentionItem, nodes?: CanvasNode[]
     if (item.workspaceId) chip.dataset.workspaceId = item.workspaceId;
   } else if ((isFile || isFolder) && item.path) {
     chip.dataset.filePath = item.path;
-    chip.title = 'Open in VS Code';
+    chip.title = item.path;
   } else if (isDom && item.domSelection) {
     writeDomSelectionDataset(chip, item.domSelection);
   }
@@ -301,7 +305,7 @@ export function createMentionChipElement(item: MentionItem, nodes?: CanvasNode[]
   if (!isSkill) {
     const iconSpan = document.createElement('span');
     iconSpan.className = 'chat-mention-chip-icon';
-    iconSpan.innerHTML = isTag
+    iconSpan.innerHTML = isFile ? fileMentionIconMarkup(item.path || item.label) : isTag
       ? '<span class="chat-mention-chip-hash">#</span>'
       : `<svg width="12" height="12" viewBox="0 0 14 14" fill="none">${mentionIconSvg(nodeType)}</svg>`;
     chip.appendChild(iconSpan);
@@ -309,7 +313,7 @@ export function createMentionChipElement(item: MentionItem, nodes?: CanvasNode[]
 
   const labelSpan = document.createElement('span');
   labelSpan.className = 'chat-mention-chip-label';
-  labelSpan.textContent = item.label;
+  labelSpan.textContent = isFile || isFolder ? `${fileMentionLabel(item.path || item.label).replace(/\/$/, '')}${isFolder ? '/' : ''}` : item.label;
   chip.appendChild(labelSpan);
 
   return chip;
@@ -360,11 +364,11 @@ export function renderMdWithMentions(
       const folderLabel = rawLabel.slice(FOLDER_MENTION_PREFIX.length);
       const filePath = resolveMentionFilePath(options?.rootFolder, folderLabel);
       const filePathAttrs = filePath
-        ? ` data-file-path="${escapeHtml(filePath)}" title="Open in VS Code"`
+        ? ` data-file-path="${escapeHtml(filePath)}" title="${escapeHtml(filePath)}"`
         : '';
       const clickableClass = filePath ? ' chat-mention-chip--clickable' : '';
       const interactiveAttrs = filePath ? ' role="button" tabindex="0"' : '';
-      return `<span class="chat-mention-chip chat-mention-chip--folder${clickableClass}" data-node-type="folder"${filePathAttrs}${interactiveAttrs}><span class="chat-mention-chip-icon"><svg width="12" height="12" viewBox="0 0 14 14" fill="none">${mentionIconSvg('folder')}</svg></span><span class="chat-mention-chip-label">${escapeHtml(folderLabel)}/</span></span>`;
+      return `<span class="chat-mention-chip chat-mention-chip--folder${clickableClass}" data-node-type="folder"${filePathAttrs}${interactiveAttrs}><span class="chat-mention-chip-icon"><svg width="12" height="12" viewBox="0 0 14 14" fill="none">${mentionIconSvg('folder')}</svg></span><span class="chat-mention-chip-label">${escapeHtml(fileMentionLabel(folderLabel).replace(/\/$/, ''))}/</span></span>`;
     }
 
     if (rawLabel.startsWith(TAG_MENTION_PREFIX)) {
@@ -407,10 +411,11 @@ export function renderMdWithMentions(
     const nodeId = node?.id ?? '';
     const filePath = node ? '' : resolveMentionFilePath(options?.rootFolder, rawLabel);
     const filePathAttrs = filePath
-      ? ` data-file-path="${escapeHtml(filePath)}" title="Open in VS Code"`
+      ? ` data-file-path="${escapeHtml(filePath)}" title="${escapeHtml(filePath)}"`
       : '';
     const clickableClass = nodeId || filePath ? ' chat-mention-chip--clickable' : '';
     const interactiveAttrs = nodeId || filePath ? ' role="button" tabindex="0"' : '';
+    if (filePath) return `<span class="chat-mention-chip chat-mention-chip--file${clickableClass}" data-node-type="file"${filePathAttrs}${interactiveAttrs}><span class="chat-mention-chip-icon">${fileMentionIconMarkup(filePath)}</span><span class="chat-mention-chip-label">${escapeHtml(fileMentionLabel(filePath))}</span></span>`;
     return `<span class="chat-mention-chip${clickableClass}" data-node-type="${escapeHtml(nodeType)}" data-node-id="${escapeHtml(nodeId)}"${filePathAttrs}${interactiveAttrs}><span class="chat-mention-chip-icon"><svg width="12" height="12" viewBox="0 0 14 14" fill="none">${mentionIconSvg(nodeType)}</svg></span><span class="chat-mention-chip-label">${escapeHtml(rawLabel)}</span></span>`;
   }));
 

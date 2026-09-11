@@ -180,6 +180,7 @@ export const RightDock = ({
   ), []);
   const splitView = useDockSplitView({
     active: splitViewActive,
+    chatPane: splitTabIds?.[0] === CHAT_TAB_ID ? 'left' : splitTabIds?.[1] === CHAT_TAB_ID ? 'right' : undefined,
     dockWidth: width,
     setDockWidth: setChosenWidth,
     clampDockWidth: clampToPolicy,

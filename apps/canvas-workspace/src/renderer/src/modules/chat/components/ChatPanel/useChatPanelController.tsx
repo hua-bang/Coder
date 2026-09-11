@@ -120,6 +120,7 @@ export const useChatPanelController = ({
     insertDomSelectionMention,
     insertNodeMention,
     insertSkillMention,
+    insertFileMention,
     insertTabMention,
     loading,
     mentionIndex,
@@ -259,6 +260,7 @@ export const useChatPanelController = ({
   useRegisterChatTarget(chatTargetActive ? chatTarget : null, {
     insertNode: busyElsewhere || sessionLoading ? undefined : insertNodeMention,
     insertDomSelection: busyElsewhere || sessionLoading ? undefined : insertDomSelectionMention,
+    insertFile: busyElsewhere || sessionLoading ? undefined : insertFileMention,
     insertTab: busyElsewhere || sessionLoading ? undefined : insertTabMention,
     submitDomReview: submitDomReviewComments,
     focus: focusInput,

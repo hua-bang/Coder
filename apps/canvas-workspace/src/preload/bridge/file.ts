@@ -11,14 +11,18 @@ export const createFileApi = (ipcRenderer: IpcRenderer): FileApi => ({
   createNote: (workspaceId, name) =>
     ipcRenderer.invoke("file:createNote", { workspaceId, name }),
 
+  savePreview: (request) => ipcRenderer.invoke('file:save-preview', request),
+
+  preview: (filePath) => ipcRenderer.invoke('file:preview', { filePath }),
+
   read: (filePath) =>
     ipcRenderer.invoke("file:read", { filePath }),
 
   write: (filePath, content) =>
     ipcRenderer.invoke("file:write", { filePath, content }),
 
-  listDir: (dirPath, maxDepth) =>
-    ipcRenderer.invoke("file:listDir", { dirPath, maxDepth }),
+  listDir: (dirPath, maxDepth, includeHidden) =>
+    ipcRenderer.invoke("file:listDir", { dirPath, maxDepth, includeHidden }),
 
   openInVSCode: (filePath) =>
     ipcRenderer.invoke("file:openInVSCode", { filePath }),

@@ -436,6 +436,10 @@ Guards: `utils/chatPageDockTabs.test.ts`, `utils/mentions.test.ts`,
 `src/renderer/src/modules/chat/components/`, plus
 `RightDock/useDockAgentBridge.test.tsx`.
 
+File mentions show a short basename and type marker while preserving their
+absolute path in the serialized mention and tooltip. Transcript rendering must
+not prepend the workspace root to an already absolute path.
+
 ## Dock width policy
 
 `RightDock/dock-width.ts` (`src/renderer/src/modules/dock/internal/RightDock/dock-width.ts`).
@@ -453,6 +457,12 @@ Guards: `utils/chatPageDockTabs.test.ts`, `utils/mentions.test.ts`,
   **container query**, not a window media query. The dock changes the page's
   actual inline size without changing `window.innerWidth`; viewport-only
   breakpoints therefore miss exactly the squeezed side-by-side state.
+
+Chat comparisons default to a 380px chat pane (or half of the available width
+on smaller docks), giving the remaining width to the file/content pane.
+Manual divider changes retain the chosen chat width as the dock grows; ordinary
+content-to-content comparisons start evenly split. The policy supports chat on
+either side. Guards: `RightDock/__tests__/split-chat-width.test.ts`.
 
 **Two layers, kept separate.**
 
@@ -762,3 +772,11 @@ Primary regression suites live in:
 - `src/renderer/src/modules/chat/attachments/useChatAttachments.test.tsx`
 - `src/main/agent/chat-failure-persistence.test.ts`
 - `src/renderer/src/app/shell/Workbench/__tests__/ChatDockLifecycle.test.tsx`
+
+
+Markdown layout ownership: `.chat-md` owns normal HTML whitespace, and the
+message body owns the readable-width cap. Do not put `white-space: pre-wrap`
+or a second percentage width cap on `.chat-message-content`: folder previews
+can load Markdown CSS before Chat CSS, reversing their previous order and
+turning serialized HTML newlines into blank lines. Code blocks retain their own
+whitespace rule. Guard: `MarkdownContent/__tests__/MarkdownStyleIsolation.test.ts`.

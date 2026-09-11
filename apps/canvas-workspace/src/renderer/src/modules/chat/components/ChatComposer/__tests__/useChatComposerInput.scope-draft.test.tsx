@@ -179,3 +179,25 @@ describe('scope-keyed composer state', () => {
     expect(listSkills).toHaveBeenCalledTimes(2);
   });
 });
+
+
+it('inserts the absolute file reference into the draft without submitting', async () => {
+  onSubmit.mockClear();
+  await renderScope({ kind: 'workspace', workspaceId: 'file-test' });
+  act(() => latest?.insertFileMention('/outside folder/中文.ts'));
+  expect(latest?.input).toContain('@[/outside folder/中文.ts]');
+  expect(latest?.editableRef.current?.querySelector('[data-file-path]')?.getAttribute('data-file-path')).toBe('/outside folder/中文.ts');
+  expect(onSubmit).not.toHaveBeenCalled();
+});
+
+
+it('inserts a folder reference without sending and keeps the absolute directory path', async () => {
+  onSubmit.mockClear();
+  await renderScope({ kind: 'workspace', workspaceId: 'folder-test' });
+  act(() => latest?.insertFileMention('/outside folder/source', true));
+  expect(latest?.input).toContain('@[folder:/outside folder/source]');
+  const chip = latest?.editableRef.current?.querySelector('.chat-mention-chip--folder');
+  expect(chip?.querySelector('.chat-mention-chip-label')?.textContent).toBe('source/');
+  expect(chip?.getAttribute('data-file-path')).toBe('/outside folder/source');
+  expect(onSubmit).not.toHaveBeenCalled();
+});

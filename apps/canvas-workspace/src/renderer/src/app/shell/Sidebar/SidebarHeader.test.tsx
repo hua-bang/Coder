@@ -55,7 +55,7 @@ describe('SidebarHeader', () => {
     const labels = () => [...host!.querySelectorAll('.sidebar-nav-label')]
       .map((element) => element.textContent);
 
-    expect(labels()).toEqual(['Pulse AI', 'Plugins', 'Scheduled']);
+    expect(labels()).toEqual(['Pulse Agent', 'Plugins', 'Scheduled']);
     expect(host.querySelector('[title="Collapse sidebar"]')).not.toBeNull();
     expect(host.querySelector('.sidebar-brand-mark')).toBeNull();
     expect(host.querySelector('.sidebar-nav-item img')?.getAttribute('width')).toBe('20');
@@ -67,6 +67,6 @@ describe('SidebarHeader', () => {
       root?.render(renderHeader(true, true));
     });
 
-    expect(labels()).toEqual(['Pulse AI', 'Nodes', 'Graph', 'Plugins', 'Scheduled']);
+    expect(labels()).toEqual(['Pulse Agent', 'Nodes', 'Graph', 'Plugins', 'Scheduled']);
   });
 });

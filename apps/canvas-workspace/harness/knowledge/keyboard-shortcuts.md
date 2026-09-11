@@ -401,3 +401,12 @@ Primary regression suites live in:
 - `src/renderer/src/modules/coding-agent/components/AgentNodeBody/utils/terminalFocus.test.ts` — the
   stateful hatch: double-Escape, the window boundary, the post-release reset,
   the time-zero sentinel, and the blur sequence
+
+
+## Local file editor
+
+`fileEditor.save` belongs to `file-editor`, with a typed handler table in
+`RightDock/FolderDockTab`. Its capture handler claims Cmd/Ctrl+S only while
+an editable file draft is mounted and focus is inside that surface; webviews,
+terminals, and other editors retain their own ownership. Labels come from the
+registry. CodeMirror owns ordinary text editing keys, indentation, and undo.

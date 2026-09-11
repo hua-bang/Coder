@@ -104,6 +104,70 @@ The workbench has exactly two side regions plus a modal tier:
   centered ones now share the `ui/Modal` shell). These are modal with
   backdrops and sit above both side regions.
 
+## Local folder previews
+
+`RightDock/FolderDockTab` owns one folder preview tab per Dock scope.
+The creation menu opens the workspace-bound root without a picker; an
+unbound scope asks once, then reuses its existing folder tab. Opening a
+different root replaces the same tab and clears its file selection. Opening one never changes the workspace root or agent cwd.
+Selection survives scope switches in memory; folder tabs are not restored
+across application restarts. Directory expansion reads one level, explicitly
+including hidden files, while existing mention-picker listing defaults remain
+unchanged. Refresh reloads expanded directories and the selected preview.
+
+Read-only source files use the existing highlight.js language set with line numbers;
+Markdown switches between rendered content and source, and images reuse the
+image preview service. The main-side `file:preview` contract bounds UTF-8 text
+reads and rejects non-regular, binary, invalid-encoding and oversized files.
+VS Code actions use the existing file helper for either the selected file or
+the root folder (click the root breadcrumb to clear file selection first).
+
+The icon-only conversation action delivers an absolute-path file mention
+through ChatTarget's `file` insertion, shared by page and dock composers.
+Directory rows and the root header expose a hover/focus conversation action.
+It uses the same delivery path with `isDirectory`, preserving a folder mention
+and absolute path; clicking this action does not toggle directory expansion. It
+only updates the draft. First use reveals chat and waits for a same-scope
+composer; navigation cancels pending delivery. Busy page targets queue their own insertion; hidden
+dock chat is never used as fallback. Guards: `FolderDockTab/__tests__/`,
+`RightDock/__tests__/dock-folder-tabs.test.ts`, and the ChatTarget and composer
+scope-draft suites.
+
+Local code/text files open directly in a lazy CodeMirror surface. Markdown
+defaults to rendered preview; its source toggle opens the same editor. There
+is no edit-mode toolbar. A save dot appears only for a dirty draft, and a
+floating Undo/Redo pair appears once editor history exists. Find opens a compact
+upper-right panel with match options, count, previous/next, and close; replacement
+controls are collapsed by default. The panel uses CodeMirror search commands and
+its lifecycle, with React controls mounted through the shared Portal. Native
+`findNext` selects the search field; live query updates must restore the input
+caret/selection and skip navigation during IME composition. Validate sequential
+character entry, not only bulk input.
+
+The editor uses CodeMirror core directly plus a small set of legacy stream
+modes for common source and config formats. Do not restore `language-data` or
+the full React wrapper: both enumerate broad language and editor dependency
+trees, inflating total renderer JS and the packaged ASAR even though the editor
+itself is lazy. The startup-graph boundary test and bundle/package performance
+gates cover both halves of this contract.
+
+The
+`DockStore.folderEditor` state owns one draft per scope, retaining it through
+workspace unmounts. File/root changes and every tab-close path pass its dirty
+check; Save, Discard, and Cancel resolve the deferred transition. Refresh,
+external-editor opening, and adding a file to chat use the same check so they
+do not silently consume stale on-disk text. These drafts are memory-only.
+
+`fileEditor.save` is registry-owned and handled only inside the file editor
+surface. Save uses the byte version returned by `file:preview` and the main
+`file:save-preview` operation. Conflicts and write failures retain the draft.
+Renderer HMR cannot upgrade the main/preload file service: if the preview
+lacks a byte version or `savePreview` is unavailable, show an explicit
+restart-required read-only notice instead of silently displaying uneditable
+code. The editor preserves BOM and CRLF, and the save operation preserves mode bits
+and writes through symlink targets. Guards: `dock-folder-editor.test.ts`,
+`FolderDockTab/__tests__/FolderDockTab.test.tsx`, and `file-save.test.ts`.
+
 ## Rules
 
 1. **No new top-level drawer containers.** A new right-side preview

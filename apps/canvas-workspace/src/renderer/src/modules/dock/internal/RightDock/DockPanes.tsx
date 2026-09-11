@@ -34,6 +34,7 @@ const skillWorkspaceName = (
   return workspaces.find((workspace) => workspace.id === workspaceId)?.name;
 };
 
+const FolderDockTab = lazy(() => import('./FolderDockTab').then(m => ({ default: m.FolderDockTab })));
 const ArtifactTabView = lazy(() => import('../../../artifacts/tab').then((m) => ({ default: m.ArtifactTabView })));
 const LinkTabView = lazy(() => import('../LinkDrawer').then((m) => ({ default: m.LinkTabView })));
 const NodeDetailDockTab = lazy(() => import('./NodeDetailDockTab').then((m) => ({ default: m.NodeDetailDockTab })));
@@ -279,7 +280,11 @@ export const DockPanes = ({
               if (splitActive) store.activate(tab.id);
             }}
           >
-          {tab.kind === 'artifact' ? (
+          {tab.kind === 'folder' ? (
+            <Suspense fallback={null}>
+              <FolderDockTab tab={tab} store={store} active={visible} />
+            </Suspense>
+          ) : tab.kind === 'artifact' ? (
             <>
               {renderTabChatAction(tabRefsById.get(tab.id), activeWorkspaceId, onAddTabToChat)}
               <Suspense fallback={null}>

@@ -119,14 +119,13 @@
   font-size: 14px;
   line-height: 1.6;
   color: #37352f;
-  white-space: pre-wrap;
   word-break: break-word;
-  max-width: 85%;
   /* Chat is read-and-copy surface: keep the rendered text freely
      selectable even inside the Electron canvas, which sets user-select
      to none on some interaction layers. */
   user-select: text;
   -webkit-user-select: text;
+  /* Markdown owns whitespace; the message body owns the reading width. */
 }
 
 .chat-message-content::selection,

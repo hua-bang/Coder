@@ -4,6 +4,9 @@ import { promises as fs } from "fs";
 import { join, basename, resolve, isAbsolute } from "path";
 import { homedir } from "os";
 import { promisify } from "util";
+import { saveFilePreview } from './file-save';
+import type { FileSaveRequest } from '../../shared/files';
+import { readFilePreview } from './file-preview';
 import { ensureImagePreview } from './image-preview';
 import { deleteSavedImage, saveBase64Image } from './image-save';
 
@@ -20,17 +23,18 @@ interface DirEntry {
 const listDirRecursive = async (
   dirPath: string,
   depth: number,
-  maxDepth: number
+  maxDepth: number,
+  includeHidden = false
 ): Promise<DirEntry[]> => {
   const entries = await fs.readdir(dirPath, { withFileTypes: true });
   const result: DirEntry[] = [];
   for (const entry of entries) {
-    if (entry.name.startsWith('.') || IGNORED_DIRS.has(entry.name)) continue;
+    if (!includeHidden && (entry.name.startsWith('.') || IGNORED_DIRS.has(entry.name))) continue;
     if (entry.isDirectory()) {
       const item: DirEntry = { name: entry.name, type: 'dir' };
       if (depth < maxDepth) {
         try {
-          item.children = await listDirRecursive(join(dirPath, entry.name), depth + 1, maxDepth);
+          item.children = await listDirRecursive(join(dirPath, entry.name), depth + 1, maxDepth, includeHidden);
         } catch {
           item.children = [];
         }
@@ -62,6 +66,10 @@ const vscodeUrlForPath = (filePath: string): string => {
 };
 
 export const setupFileManagerIpc = () => {
+  // file:save-preview — compare version and atomically save an edited UTF-8 file.
+  ipcMain.handle('file:save-preview', (_event, request: FileSaveRequest) => saveFilePreview(request));
+  // file:preview — bounded, regular-file-only UTF-8 preview for the Dock browser.
+  ipcMain.handle('file:preview', (_event, payload: { filePath: string }) => readFilePreview(payload.filePath));
   // Create a new note file in the workspace-scoped notes directory
   ipcMain.handle(
     "file:createNote",
@@ -115,9 +123,9 @@ export const setupFileManagerIpc = () => {
   // List directory (recursive, max depth)
   ipcMain.handle(
     "file:listDir",
-    async (_event, payload: { dirPath: string; maxDepth?: number }) => {
+    async (_event, payload: { dirPath: string; maxDepth?: number; includeHidden?: boolean }) => {
       try {
-        const entries = await listDirRecursive(payload.dirPath, 0, payload.maxDepth ?? 3);
+        const entries = await listDirRecursive(payload.dirPath, 0, payload.maxDepth ?? 3, payload.includeHidden === true);
         return { ok: true, entries };
       } catch (err) {
         return { ok: false, error: String(err) };
