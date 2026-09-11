@@ -114,6 +114,14 @@ Selection survives scope switches in memory; folder tabs are not restored
 across application restarts. Directory expansion reads one level, explicitly
 including hidden files, while existing mention-picker listing defaults remain
 unchanged. Refresh reloads expanded directories and the selected preview.
+The root header can create files or folders, and each tree row exposes
+hover/focus actions for rename and moving to the system Trash; directory rows
+also create children. Names are entered inline with Enter/Escape semantics.
+Main-process mutations are confined to the opened root (including real-path
+checks for parent symlinks), never overwrite an existing entry, and reject
+renaming or deleting the root itself. Every mutation passes the existing dirty
+draft guard, refreshes the affected directory, and remaps or clears the selected
+preview when its path changes.
 
 Read-only source files use the existing highlight.js language set with line numbers;
 Markdown switches between rendered content and source, and images reuse the

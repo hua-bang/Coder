@@ -5,7 +5,13 @@ import { join, basename, resolve, isAbsolute } from "path";
 import { homedir } from "os";
 import { promisify } from "util";
 import { saveFilePreview } from './file-save';
-import type { FileSaveRequest } from '../../shared/files';
+import type {
+  FileCreateEntryRequest,
+  FileRenameEntryRequest,
+  FileSaveRequest,
+  FileTrashEntryRequest,
+} from '../../shared/files';
+import { createEntry, renameEntry, trashEntry } from './file-operations';
 import { readFilePreview } from './file-preview';
 import { ensureImagePreview } from './image-preview';
 import { deleteSavedImage, saveBase64Image } from './image-save';
@@ -70,6 +76,10 @@ export const setupFileManagerIpc = () => {
   ipcMain.handle('file:save-preview', (_event, request: FileSaveRequest) => saveFilePreview(request));
   // file:preview — bounded, regular-file-only UTF-8 preview for the Dock browser.
   ipcMain.handle('file:preview', (_event, payload: { filePath: string }) => readFilePreview(payload.filePath));
+  // file:create-entry / file:rename-entry / file:trash-entry — root-confined Folder Dock mutations.
+  ipcMain.handle('file:create-entry', (_event, request: FileCreateEntryRequest) => createEntry(request));
+  ipcMain.handle('file:rename-entry', (_event, request: FileRenameEntryRequest) => renameEntry(request));
+  ipcMain.handle('file:trash-entry', (_event, request: FileTrashEntryRequest) => trashEntry(request, path => shell.trashItem(path)));
   // Create a new note file in the workspace-scoped notes directory
   ipcMain.handle(
     "file:createNote",

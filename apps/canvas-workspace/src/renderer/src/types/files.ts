@@ -1,4 +1,13 @@
-import type { DirEntry, FilePreviewResult, FileSaveRequest, FileSaveResult } from '../../../shared/files';
+import type {
+  DirEntry,
+  FileCreateEntryRequest,
+  FileEntryOperationResult,
+  FilePreviewResult,
+  FileRenameEntryRequest,
+  FileSaveRequest,
+  FileSaveResult,
+  FileTrashEntryRequest,
+} from '../../../shared/files';
 
 export type * from '../../../shared/files';
 
@@ -21,6 +30,9 @@ export interface FileApi {
     maxDepth?: number,
     includeHidden?: boolean,
   ) => Promise<{ ok: boolean; entries?: DirEntry[]; error?: string }>;
+  createEntry: (request: FileCreateEntryRequest) => Promise<FileEntryOperationResult>;
+  renameEntry: (request: FileRenameEntryRequest) => Promise<FileEntryOperationResult>;
+  trashEntry: (request: FileTrashEntryRequest) => Promise<FileEntryOperationResult>;
   openInVSCode: (
     filePath: string,
   ) => Promise<{ ok: boolean; filePath?: string; command?: string; error?: string }>;
