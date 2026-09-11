@@ -11,3 +11,25 @@ export interface DirEntry {
 
 export interface FileSaveRequest { filePath: string; content: string; expectedVersion: string }
 export type FileSaveResult = { ok: true; version: string } | { ok: false; error: string; conflict?: boolean };
+
+export interface FileCreateEntryRequest {
+  rootPath: string;
+  parentPath: string;
+  name: string;
+  kind: 'file' | 'directory';
+}
+
+export interface FileRenameEntryRequest {
+  rootPath: string;
+  entryPath: string;
+  newName: string;
+}
+
+export interface FileTrashEntryRequest {
+  rootPath: string;
+  entryPath: string;
+}
+
+export type FileEntryOperationResult =
+  | { ok: true; path: string }
+  | { ok: false; error: string };

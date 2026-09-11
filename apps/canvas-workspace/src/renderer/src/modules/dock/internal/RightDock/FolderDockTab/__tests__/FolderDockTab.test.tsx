@@ -7,10 +7,10 @@ import { FolderDockTab } from '..';
 import { DockStore } from '../../dock-store';
 import type { FilePreviewResult } from '../../../../../../types';
 
-const { deliver, notify, activeTarget, listeners } = vi.hoisted(() => ({ deliver: vi.fn(), notify: vi.fn(), activeTarget: vi.fn(), listeners: new Set<() => void>() }));
+const { confirm, deliver, notify, activeTarget, listeners } = vi.hoisted(() => ({ confirm: vi.fn(), deliver: vi.fn(), notify: vi.fn(), activeTarget: vi.fn(), listeners: new Set<() => void>() }));
 vi.mock('../../../../../chat', () => ({ useOptionalChatTargetBroker: () => ({ deliver, getActiveTarget: activeTarget, subscribe: (listener: () => void) => { listeners.add(listener); return () => listeners.delete(listener); } }) }));
 vi.mock('../../../../../chat/delivery', () => ({ useChatDeliveryNotifier: () => notify }));
-vi.mock('../../../../../../shared/appShell', () => ({ useAppShell: () => ({ notify }) }));
+vi.mock('../../../../../../shared/appShell', () => ({ useAppShell: () => ({ confirm, notify }) }));
 vi.mock('../CodeEditor', () => ({ CodeEditor: ({ content }: { content: string }) => <textarea aria-label="Code editor" value={content} readOnly /> }));
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 let host: HTMLDivElement;
@@ -19,6 +19,9 @@ let store: DockStore;
 const preview = vi.fn();
 const savePreview = vi.fn();
 const listDir = vi.fn();
+const createEntry = vi.fn();
+const renameEntry = vi.fn();
+const trashEntry = vi.fn();
 const openInVSCode = vi.fn();
 const getImagePreview = vi.fn();
 const originalApi = window.canvasWorkspace;
@@ -28,11 +31,15 @@ beforeEach(() => {
   listeners.clear();
   activeTarget.mockReturnValue({ scopeId: 'workspace' });
   savePreview.mockResolvedValue({ ok: true, version: 'v2' });
+  confirm.mockResolvedValue(true);
+  createEntry.mockImplementation(async ({ parentPath, name }: { parentPath: string; name: string }) => ({ ok: true, path: `${parentPath}/${name}` }));
+  renameEntry.mockImplementation(async ({ entryPath, newName }: { entryPath: string; newName: string }) => ({ ok: true, path: `${entryPath.slice(0, entryPath.lastIndexOf('/'))}/${newName}` }));
+  trashEntry.mockImplementation(async ({ entryPath }: { entryPath: string }) => ({ ok: true, path: entryPath }));
   listDir.mockResolvedValue({ ok: true, entries: [{ name: 'a.ts', type: 'file' }, { name: 'b.md', type: 'file' }] });
   preview.mockResolvedValue({ ok: true, kind: 'text', version: 'v1', content: 'const value = 1;\n' });
   openInVSCode.mockResolvedValue({ ok: true });
   deliver.mockResolvedValue({ status: 'delivered', target: { surface: 'dock' } });
-  Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: { file: { preview, savePreview, listDir, openInVSCode, getImagePreview } } });
+  Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: { file: { preview, savePreview, listDir, createEntry, renameEntry, trashEntry, openInVSCode, getImagePreview } } });
   store = new DockStore();
   store.setActiveWorkspace('workspace');
   store.openFolder('/work');
@@ -49,6 +56,13 @@ const click = async (label: string) => {
   const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(b => b.getAttribute('aria-label') === label || b.textContent === label);
   if (!button) throw new Error(`Missing button: ${label}`);
   await act(async () => button.click());
+};
+const typeIn = async (input: HTMLInputElement, value: string) => {
+  await act(async () => {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+    setter?.call(input, value);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
 };
 
 describe('folder preview interactions', () => {
@@ -182,4 +196,70 @@ it('also offers the opened root directory as a conversation reference', async ()
   await render();
   await click('Add work folder to conversation');
   expect(deliver).toHaveBeenCalledWith({ kind: 'file', filePath: '/work', isDirectory: true });
+});
+
+it('creates files and folders from the opened root with an inline name field', async () => {
+  await render(null);
+  await click('New file');
+  const fileName = host.querySelector<HTMLInputElement>('[aria-label="New file name"]');
+  expect(fileName).not.toBeNull();
+  await typeIn(fileName!, 'draft.md');
+  await act(async () => {
+    fileName!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  });
+  expect(createEntry).toHaveBeenCalledWith({ rootPath: '/work', parentPath: '/work', name: 'draft.md', kind: 'file' });
+  expect(store.getSnapshot().tabs[0]).toMatchObject({ selectedPath: '/work/draft.md' });
+
+  await render(null);
+  await click('New folder');
+  const folderName = host.querySelector<HTMLInputElement>('[aria-label="New folder name"]');
+  await typeIn(folderName!, 'notes');
+  await act(async () => {
+    folderName!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  });
+  expect(createEntry).toHaveBeenCalledWith({ rootPath: '/work', parentPath: '/work', name: 'notes', kind: 'directory' });
+});
+
+it('renames the selected file and keeps the preview on its new path', async () => {
+  await render();
+  await click('Rename a.ts');
+  const input = host.querySelector<HTMLInputElement>('input[aria-label="Rename a.ts"]');
+  expect(input).not.toBeNull();
+  await typeIn(input!, 'renamed.ts');
+  await click('Confirm name');
+  expect(renameEntry).toHaveBeenCalledWith({ rootPath: '/work', entryPath: '/work/a.ts', newName: 'renamed.ts' });
+  expect(store.getSnapshot().tabs[0]).toMatchObject({ selectedPath: '/work/renamed.ts' });
+});
+
+it('remaps a selected descendant after renaming its parent folder', async () => {
+  listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }] });
+  await render('/work/source/inside.ts');
+  await click('Rename source');
+  const input = host.querySelector<HTMLInputElement>('input[aria-label="Rename source"]');
+  expect(input).not.toBeNull();
+  await typeIn(input!, 'renamed-source');
+  await click('Confirm name');
+  expect(renameEntry).toHaveBeenCalledWith({ rootPath: '/work', entryPath: '/work/source', newName: 'renamed-source' });
+  expect(store.getSnapshot().tabs[0]).toMatchObject({ selectedPath: '/work/renamed-source/inside.ts' });
+});
+
+it('confirms trashing an entry and clears a preview that was inside it', async () => {
+  listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }] });
+  await render('/work/source/inside.ts');
+  await click('Move source to Trash');
+  expect(confirm).toHaveBeenCalled();
+  expect(trashEntry).toHaveBeenCalledWith({ rootPath: '/work', entryPath: '/work/source' });
+  expect(store.getSnapshot().tabs[0]).toMatchObject({ selectedPath: undefined });
+});
+
+it('blocks file mutations behind the existing unsaved-draft guard', async () => {
+  await render();
+  act(() => store.folderEditor.edit('workspace', 'unsaved draft'));
+  await click('New file');
+  expect(host.querySelector('input[aria-label="New file name"]')).toBeNull();
+  expect(document.querySelector('[role=dialog]')).not.toBeNull();
+  const discard = [...document.querySelectorAll<HTMLButtonElement>('[role=dialog] button')]
+    .find(button => button.textContent === 'Discard');
+  await act(async () => discard?.click());
+  expect(host.querySelector('input[aria-label="New file name"]')).not.toBeNull();
 });

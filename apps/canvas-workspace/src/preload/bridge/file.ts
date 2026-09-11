@@ -24,6 +24,10 @@ export const createFileApi = (ipcRenderer: IpcRenderer): FileApi => ({
   listDir: (dirPath, maxDepth, includeHidden) =>
     ipcRenderer.invoke("file:listDir", { dirPath, maxDepth, includeHidden }),
 
+  createEntry: (request) => ipcRenderer.invoke('file:create-entry', request),
+  renameEntry: (request) => ipcRenderer.invoke('file:rename-entry', request),
+  trashEntry: (request) => ipcRenderer.invoke('file:trash-entry', request),
+
   openInVSCode: (filePath) =>
     ipcRenderer.invoke("file:openInVSCode", { filePath }),
 

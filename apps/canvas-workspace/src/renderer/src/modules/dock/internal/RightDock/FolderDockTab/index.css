@@ -49,10 +49,24 @@
 .folder-editor-history { position: absolute; right: 14px; bottom: 14px; display: flex; gap: 2px; padding: 4px; background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
 .folder-browser__save-dot { color: var(--text-secondary); }
 
-.folder-browser__directory-row { display: flex; align-items: center; gap: 2px; }
-.folder-browser__directory-row > .folder-browser__tree-row { flex: 1; min-width: 0; }
-.folder-browser__directory-chat { flex-shrink: 0; opacity: 0; pointer-events: none; }
-.folder-browser__directory-row:hover > .folder-browser__directory-chat,
-.folder-browser__directory-row:focus-within > .folder-browser__directory-chat { opacity: 1; pointer-events: auto; }
+.folder-browser__directory-row,
+.folder-browser__entry-row { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.folder-browser__entry-row { position: relative; }
+.folder-browser__entry-row > .folder-browser__tree-row { flex: 1; min-width: 0; }
+.folder-browser__directory-chat,
+.folder-browser__root-actions { flex-shrink: 0; }
+.folder-browser__entry-actions,
+.folder-browser__root-actions,
+.folder-browser__entry-editor-row { display: flex; align-items: center; gap: 2px; }
+.folder-browser__entry-actions { position: absolute; top: 50%; right: 0; transform: translateY(-50%); opacity: 0; pointer-events: none; border-radius: var(--radius-sm); background: var(--surface); }
+.folder-browser__entry-row:hover > .folder-browser__entry-actions,
+.folder-browser__entry-row:focus-within > .folder-browser__entry-actions { opacity: 1; pointer-events: auto; background: var(--surface-subtle); }
 .folder-browser__tree-header > span { flex: 1; min-width: 0; }
-@media (hover: none) { .folder-browser__directory-chat { opacity: 1; pointer-events: auto; } }
+.folder-browser__entry-editor { margin: 2px 2px 6px 22px; }
+.folder-browser__entry-editor-row > .ui-textfield { flex: 1; }
+.folder-browser__entry-editor-row > .ui-btn { flex-shrink: 0; }
+.folder-browser__entry-input.ui-textfield__control { height: 24px; padding: 0 7px; border-color: var(--accent-border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); }
+.folder-browser__entry-error { padding: 4px 2px 0; color: var(--error); font-size: 11px; overflow-wrap: anywhere; }
+@media (hover: none) {
+  .folder-browser__entry-actions { opacity: 1; pointer-events: auto; }
+}
