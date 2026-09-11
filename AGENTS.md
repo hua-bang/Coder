@@ -58,6 +58,8 @@ Include Canvas explicitly when affected: root core build/test excludes it. Full-
 
 Harness edits must pass `node scripts/harness/check-harness.mjs` with `harnessGaps: 0`. Report executed checks, results, and unverified scope; dry-run/structural success is not full acceptance.
 
+Creating or updating a PR/MR is not completion. After each push, inspect the CI run for the current HEAD; do not report success while required checks are running or failing. Read the exact failing job output, reproduce it where practical, fix the root cause, push, and inspect the replacement run. Detailed procedure belongs in the affected workspace validation skill.
+
 ## 6. Failure capture (named failure -> guard)
 
 Before changing a failure-sensitive boundary, read its existing guards:

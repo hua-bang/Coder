@@ -68,7 +68,7 @@ pnpm --filter canvas-workspace test
 pnpm --filter canvas-workspace build
 ```
 
-For interaction or visual changes, use the real-app driver protocol and report the observed scenario. UI showcase baselines are Linux-rendered; follow its README for visual/visual:update rather than comparing fonts across OSes. Dev, isolated-home launch, packaging, and detailed driver command sequences are in package.json and harness/tools/driver/README.md.
+For interaction or visual changes, use the real-app driver protocol and report the observed scenario. After capturing visual evidence, inspect the actual screenshot pixels before accepting or sharing it; screenshot-command success alone is not evidence that the intended surface or state was captured. Check icon size, spacing, compression, clipping, overflow, and layout, and treat any visible regression as unfinished work even when automated tests pass. UI showcase baselines are Linux-rendered; follow its README for visual/visual:update rather than comparing fonts across OSes. Dev, isolated-home launch, packaging, and detailed driver command sequences are in package.json and harness/tools/driver/README.md.
 
 Boundary/UI/file-size guards live under src/main/__tests__; storage/plugin/runtime suites and focused domain tests are selected by validation.yaml. Report executed evidence and remaining manual risk.
 

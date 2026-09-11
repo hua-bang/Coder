@@ -27,3 +27,27 @@ paths as performance-sensitive. For an ordinary localized UI or logic change,
 performance evidence.
 
 Report the commands actually run and any release-only or manual checks skipped.
+
+## Follow Through After a PR/MR Push
+
+Creating or updating a PR/MR is not the end of validation.
+
+1. Record the pushed HEAD commit and inspect the checks or pipeline attached to that
+   exact commit. Do not reuse green results from an older push.
+2. Distinguish passed, running/queued, failed, skipped/cancelled, and required-but-
+   missing checks. If required checks are still running, report that CI is pending
+   rather than claiming completion.
+3. For a failure, read the exact job and step output before proposing a fix. Capture
+   the command, error, measured value, baseline, or threshold that actually failed,
+   then reproduce the same command locally where practical.
+4. Fix the root cause. Do not default to weakening performance thresholds, updating
+   baselines to hide a regression, deleting valid tests, or skipping a required
+   check. Sweep sibling code for the same cause when the failure reveals a repeated
+   pattern.
+5. Run the failed check and the selected Harness acceptance locally, push the fix,
+   then inspect the new HEAD's replacement CI run.
+
+Only report the PR/MR as complete when the current HEAD's required checks pass, the
+user explicitly accepts a pending run, or an external CI failure is documented as a
+blocker with evidence. Include the PR/MR link, current commit, final CI state, local
+evidence, and any remaining running, skipped, or missing checks.

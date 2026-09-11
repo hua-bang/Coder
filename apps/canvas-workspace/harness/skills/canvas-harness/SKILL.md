@@ -54,6 +54,23 @@ pnpm --filter canvas-workspace harness screenshot --json
 pnpm --filter canvas-workspace harness screenshot --method cdp --json
 ```
 
+A successful screenshot command only proves that an image was written. Before
+accepting, uploading, or sharing it, open or analyze that exact file and verify:
+
+- the intended app, workspace, Dock tab, component, and interaction state are visible;
+- the image contains enough surrounding context to identify what it demonstrates;
+- icons retain their intended size and hit area rather than appearing compressed;
+- spacing, text truncation, overlap, clipping, popover placement, and overflow are
+  visually acceptable at the tested width;
+- no unrelated page, stale build, tooltip-only state, or hidden target was captured.
+
+If the image is wrong or reveals a visual defect, correct the app state or UI and
+capture it again. Keep claims narrower than the evidence: an entry-point screenshot
+does not prove a complete create/rename/delete workflow, and behavior or filesystem
+claims still require corresponding runtime assertions. Before publishing externally,
+check for sensitive information, verify the uploaded URL, and describe only what is
+actually visible.
+
 6. Collect logs when startup, navigation, or rendering looks wrong:
 
 ```bash
