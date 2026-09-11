@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import type { EditorState, EditorView } from '@uiw/react-codemirror';
-import { runScopeHandlers } from '@uiw/react-codemirror';
+import type { EditorState } from '@codemirror/state';
+import { EditorView, runScopeHandlers } from '@codemirror/view';
 import { SearchQuery, closeSearchPanel, findNext, findPrevious, getSearchQuery, replaceAll, replaceNext, setSearchQuery } from '@codemirror/search';
 import { ArrowUp, ArrowDown, CaretRight, CaretDown, X } from '@phosphor-icons/react';
 import { Button, TextField } from '../../../../../components/ui';

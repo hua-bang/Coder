@@ -35,7 +35,7 @@
 .folder-browser__image { display: grid; place-items: center; min-height: 200px; padding: 16px; }
 .folder-browser__image img { max-width: 100%; max-height: 70vh; object-fit: contain; }
 .folder-code-editor { position: relative; flex: 1; min-height: 180px; }
-.folder-code-editor > .cm-theme-none { position: absolute; inset: 0; }
+.folder-code-editor__mount { position: absolute; inset: 0; }
 .folder-code-editor .cm-editor { height: 100%; background: var(--surface); color: var(--text); }
 .folder-code-editor .cm-scroller { font: 12px/1.75 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .folder-code-editor .cm-gutters { background: var(--surface); color: var(--text-muted); border-right-color: var(--border-light); }

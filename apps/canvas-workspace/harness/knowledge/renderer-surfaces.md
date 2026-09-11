@@ -142,7 +142,16 @@ controls are collapsed by default. The panel uses CodeMirror search commands and
 its lifecycle, with React controls mounted through the shared Portal. Native
 `findNext` selects the search field; live query updates must restore the input
 caret/selection and skip navigation during IME composition. Validate sequential
-character entry, not only bulk input. The
+character entry, not only bulk input.
+
+The editor uses CodeMirror core directly plus a small set of legacy stream
+modes for common source and config formats. Do not restore `language-data` or
+the full React wrapper: both enumerate broad language and editor dependency
+trees, inflating total renderer JS and the packaged ASAR even though the editor
+itself is lazy. The startup-graph boundary test and bundle/package performance
+gates cover both halves of this contract.
+
+The
 `DockStore.folderEditor` state owns one draft per scope, retaining it through
 workspace unmounts. File/root changes and every tab-close path pass its dirty
 check; Save, Discard, and Cancel resolve the deferred transition. Refresh,

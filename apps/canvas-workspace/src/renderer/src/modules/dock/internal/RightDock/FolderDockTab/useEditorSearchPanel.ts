@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { EditorView } from '@uiw/react-codemirror';
+import type { EditorView } from '@codemirror/view';
 import { search, getSearchQuery } from '@codemirror/search';
 
 /** CodeMirror owns panel lifecycle and query state; React owns its controls. */

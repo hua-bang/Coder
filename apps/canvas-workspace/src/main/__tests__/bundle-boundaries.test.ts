@@ -32,11 +32,10 @@ import { fileURLToPath } from 'url';
 /** Packages that must NEVER be statically imported from the entry graph. */
 const WATCHLIST = [
   // Local code editing is loaded only after opening a file.
-  '@uiw/react-codemirror',
   '@codemirror/view',
   '@codemirror/state',
   '@codemirror/language',
-  '@codemirror/language-data',
+  '@codemirror/legacy-modes',
   '@codemirror/commands',
   '@codemirror/search',
   'mermaid',
@@ -88,11 +87,12 @@ const packageJson = JSON.parse(readFileSync(resolve(srcRoot, '../package.json'),
 };
 
 const RENDERER_ONLY_DEPENDENCIES = [
-  '@uiw/react-codemirror',
   '@codemirror/language',
-  '@codemirror/language-data',
+  '@codemirror/legacy-modes',
   '@codemirror/commands',
   '@codemirror/search',
+  '@codemirror/state',
+  '@codemirror/view',
   '@module-federation/runtime',
   '@tiptap/extension-bubble-menu',
   '@tiptap/extension-code-block-lowlight',

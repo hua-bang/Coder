@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { EditorView } from '@uiw/react-codemirror';
+import type { EditorView } from '@codemirror/view';
 import { findNext } from '@codemirror/search';
 import { findNextWhileTyping } from '../EditorSearchPanel';
 

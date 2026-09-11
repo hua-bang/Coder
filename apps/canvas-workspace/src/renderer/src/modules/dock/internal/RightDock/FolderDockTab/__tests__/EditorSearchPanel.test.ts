@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EditorState } from '@uiw/react-codemirror';
+import { EditorState } from '@codemirror/state';
 import { SearchQuery } from '@codemirror/search';
 import { summarizeSearchMatches } from '../EditorSearchPanel';
 

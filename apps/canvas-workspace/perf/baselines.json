@@ -160,8 +160,8 @@
     },
     "bundle.total_js_kb": {
       "profile": "global-deterministic", "target": 5565, "warning": 5850,
-      "confidence": "high", "basis": "2026-08-29 内联 MCP Apps Host 引入官方 AppBridge/PostMessage transport 与标准 schema，完整 renderer JS 实测 6103KB；依赖已移至 devDependencies，避免 Electron 产物重复携带 SDK node_modules。保留 5565 target 与 5850 warning 作为后续轻量 bridge/code-split 压力，ratchet 落锚到已验证功能载荷。", "asOf": "2026-08-29",
-      "gate": { "kind": "ratchet", "baseline": 6103, "tolerancePct": 3, "scope": "bundle" }
+      "confidence": "high", "basis": "2026-09-11 本地文件工作台增加懒加载的 CodeMirror 编辑、查找与少量常用语言模式，完整 renderer JS 实测 6616KB；删除全量 language-data 后较初版减少 1241KB，启动静态闭包仍为 731KB。保留 5565 target 与 5850 warning 作为后续编辑器瘦身压力，ratchet 仅落锚已验证的延迟加载载荷。", "asOf": "2026-09-11",
+      "gate": { "kind": "ratchet", "baseline": 6616, "tolerancePct": 3, "scope": "bundle" }
     },
     "bundle.main_raw_kb": {
       "profile": "global-deterministic", "target": 550, "warning": 690,
