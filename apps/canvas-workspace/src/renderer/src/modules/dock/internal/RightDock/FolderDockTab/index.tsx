@@ -6,10 +6,11 @@ import {
   Code,
   FilePlus,
   FolderPlus,
+  Plus,
   SidebarSimple,
 } from '@phosphor-icons/react';
 import { FolderIcon } from '../../../../../components/icons';
-import { Button, EmptyState } from '../../../../../components/ui';
+import { Button, EmptyState, Popover } from '../../../../../components/ui';
 import { useI18n } from '../../../../../i18n';
 import { useAppShell } from '../../../../../shared/appShell';
 import { matchShortcut, formatShortcutId } from '../../../../../shortcuts/registry';
@@ -70,8 +71,10 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
   const [revision, setRevision] = useState(0);
   const [mutation, setMutation] = useState<FolderMutation>();
   const [rootEditMode, setRootEditMode] = useState<RootEditMode>(null);
+  const [rootCreateMenuOpen, setRootCreateMenuOpen] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
   const mutationId = useRef(0);
+  const rootCreateButtonRef = useRef<HTMLButtonElement>(null);
   const addDirectory = (directory: string) => editing.guard(() => { void addToChat(directory, true); });
   const path = tab.selectedPath;
   const pathRef = useRef<HTMLElement>(null);
@@ -266,10 +269,21 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
               {available && <Button variant="icon" size="xs" className="folder-browser__directory-chat" disabled={adding}
                 title={t('folder.addDirectory', { name: tab.title })} aria-label={t('folder.addDirectory', { name: tab.title })}
                 onClick={() => addDirectory(tab.folderPath)}><ChatCircle size={14} /></Button>}
-              <Button variant="icon" size="xs" aria-label={t('folder.newFile')} title={t('folder.newFile')}
-                onClick={() => editing.guard(() => setRootEditMode('file'))}><FilePlus size={14} /></Button>
-              <Button variant="icon" size="xs" aria-label={t('folder.newFolder')} title={t('folder.newFolder')}
-                onClick={() => editing.guard(() => setRootEditMode('directory'))}><FolderPlus size={14} /></Button>
+              <Button ref={rootCreateButtonRef} variant="icon" size="xs" aria-label={t('folder.createIn', { name: tab.title })}
+                title={t('folder.createIn', { name: tab.title })} aria-haspopup="menu" aria-expanded={rootCreateMenuOpen}
+                onClick={() => setRootCreateMenuOpen(value => !value)}><Plus size={15} /></Button>
+              {rootCreateMenuOpen && <Popover anchorRef={rootCreateButtonRef} placement="bottom" align="end" gap={4}
+                ariaLabel={t('folder.createIn', { name: tab.title })} className="folder-browser__action-menu"
+                onClose={() => setRootCreateMenuOpen(false)}>
+                <Button size="sm" className="folder-browser__action-menu-item" role="menuitem" onClick={() => {
+                  setRootCreateMenuOpen(false);
+                  editing.guard(() => setRootEditMode('file'));
+                }}><FilePlus size={15} /><span>{t('folder.newFile')}</span></Button>
+                <Button size="sm" className="folder-browser__action-menu-item" role="menuitem" onClick={() => {
+                  setRootCreateMenuOpen(false);
+                  editing.guard(() => setRootEditMode('directory'));
+                }}><FolderPlus size={15} /><span>{t('folder.newFolder')}</span></Button>
+              </Popover>}
               <Button variant="icon" size="xs" aria-label={t('folder.refresh')} title={t('folder.refresh')}
                 onClick={() => editing.guard(() => { editor.discard(scope); setRevision(value => value + 1); })}>
                 <ArrowsClockwise size={14} />

@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CaretDown,
   CaretRight,
   ChatCircle,
+  DotsThree,
   FilePlus,
   FolderPlus,
   PencilSimple,
   Trash,
 } from '@phosphor-icons/react';
-import { Button } from '../../../../../components/ui';
+import { Button, Popover } from '../../../../../components/ui';
 import { useI18n } from '../../../../../i18n';
 import type { DirEntry } from '../../../../../types';
 import { EntryNameInput } from './EntryNameInput';
@@ -48,29 +49,51 @@ const EntryActions = ({ name, path, directory, adding, onAddDirectory, onEdit, o
   requestAction: Props['requestAction'];
 }) => {
   const { t } = useI18n();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const run = (action: () => void) => {
+    setMenuOpen(false);
+    requestAction(action);
+  };
+
   return (
-    <div className="folder-browser__entry-actions">
-      {directory && onAddDirectory && <Button variant="icon" size="xs" disabled={adding}
-        title={t('folder.addDirectory', { name })} aria-label={t('folder.addDirectory', { name })}
-        onClick={onAddDirectory}><ChatCircle size={14} /></Button>}
-      {directory && <>
-        <Button variant="icon" size="xs" aria-label={t('folder.newFileIn', { name })}
-          title={t('folder.newFileIn', { name })} onClick={() => requestAction(() => onEdit('file'))}>
-          <FilePlus size={13} />
-        </Button>
-        <Button variant="icon" size="xs" aria-label={t('folder.newFolderIn', { name })}
-          title={t('folder.newFolderIn', { name })} onClick={() => requestAction(() => onEdit('directory'))}>
-          <FolderPlus size={13} />
-        </Button>
-      </>}
-      <Button variant="icon" size="xs" aria-label={t('folder.renameEntry', { name })}
-        title={t('folder.renameEntry', { name })} onClick={() => requestAction(() => onEdit('rename'))}>
-        <PencilSimple size={13} />
+    <div className={`folder-browser__entry-actions${menuOpen ? ' folder-browser__entry-actions--open' : ''}`}>
+      {directory && <Button variant="icon" size="xs" aria-label={t('folder.newFileIn', { name })}
+        title={t('folder.newFileIn', { name })} onClick={() => run(() => onEdit('file'))}>
+        <FilePlus size={14} />
+      </Button>}
+      <Button ref={menuButtonRef} variant="icon" size="xs" aria-label={t('folder.moreActions', { name })}
+        title={t('folder.moreActions', { name })} aria-expanded={menuOpen} aria-haspopup="menu"
+        onClick={() => setMenuOpen(value => !value)}>
+        <DotsThree size={16} weight="bold" />
       </Button>
-      <Button variant="icon" size="xs" aria-label={t('folder.trashEntry', { name })}
-        title={t('folder.trashEntry', { name })} onClick={() => requestAction(() => onTrash(path, name))}>
-        <Trash size={13} />
-      </Button>
+      {menuOpen && <Popover anchorRef={menuButtonRef} placement="bottom" align="end" gap={4}
+        ariaLabel={t('folder.moreActions', { name })} className="folder-browser__action-menu"
+        onClose={() => setMenuOpen(false)}>
+        {directory && onAddDirectory && <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
+          disabled={adding} onClick={() => { setMenuOpen(false); onAddDirectory(); }}>
+          <ChatCircle size={15} /><span>{t('folder.addDirectory', { name })}</span>
+        </Button>}
+        {directory && <>
+          <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
+            onClick={() => run(() => onEdit('file'))}>
+            <FilePlus size={15} /><span>{t('folder.newFileIn', { name })}</span>
+          </Button>
+          <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
+            onClick={() => run(() => onEdit('directory'))}>
+            <FolderPlus size={15} /><span>{t('folder.newFolderIn', { name })}</span>
+          </Button>
+        </>}
+        <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
+          onClick={() => run(() => onEdit('rename'))}>
+          <PencilSimple size={15} /><span>{t('folder.renameEntry', { name })}</span>
+        </Button>
+        <div className="folder-browser__action-menu-separator" />
+        <Button size="sm" className="folder-browser__action-menu-item folder-browser__action-menu-item--danger" role="menuitem"
+          onClick={() => run(() => onTrash(path, name))}>
+          <Trash size={15} /><span>{t('folder.trashEntry', { name })}</span>
+        </Button>
+      </Popover>}
     </div>
   );
 };

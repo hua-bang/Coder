@@ -58,15 +58,30 @@
 .folder-browser__entry-actions,
 .folder-browser__root-actions,
 .folder-browser__entry-editor-row { display: flex; align-items: center; gap: 2px; }
-.folder-browser__entry-actions { position: absolute; top: 50%; right: 0; transform: translateY(-50%); opacity: 0; pointer-events: none; border-radius: var(--radius-sm); background: var(--surface); }
+.folder-browser__entry-actions { position: absolute; top: 50%; right: 2px; transform: translateY(-50%); opacity: 0; pointer-events: none; flex-shrink: 0; padding-left: 2px; border-radius: var(--radius-sm); background: var(--surface); }
+.folder-browser__entry-actions > .ui-btn,
+.folder-browser__root-actions > .ui-btn { width: 24px; height: 24px; flex: 0 0 24px; }
 .folder-browser__entry-row:hover > .folder-browser__entry-actions,
-.folder-browser__entry-row:focus-within > .folder-browser__entry-actions { opacity: 1; pointer-events: auto; background: var(--surface-subtle); }
+.folder-browser__entry-row:focus-within > .folder-browser__entry-actions,
+.folder-browser__entry-actions--open { opacity: 1; pointer-events: auto; background: var(--surface-subtle); }
 .folder-browser__tree-header > span { flex: 1; min-width: 0; }
 .folder-browser__entry-editor { margin: 2px 2px 6px 22px; }
 .folder-browser__entry-editor-row > .ui-textfield { flex: 1; }
 .folder-browser__entry-editor-row > .ui-btn { flex-shrink: 0; }
 .folder-browser__entry-input.ui-textfield__control { height: 24px; padding: 0 7px; border-color: var(--accent-border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); }
 .folder-browser__entry-error { padding: 4px 2px 0; color: var(--error); font-size: 11px; overflow-wrap: anywhere; }
+.folder-browser__action-menu { position: fixed; z-index: 1000; min-width: 196px; max-width: min(280px, calc(100vw - 16px)); padding: 4px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-sm); }
+.folder-browser__action-menu-item.ui-btn { display: flex; justify-content: flex-start; align-items: center; gap: 8px; width: 100%; min-height: 30px; padding: 6px 9px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text); font: inherit; font-size: 12px; font-weight: 400; text-align: left; cursor: pointer; }
+.folder-browser__action-menu-item > svg { flex: 0 0 15px; color: var(--text-secondary); }
+.folder-browser__action-menu-item > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.folder-browser__action-menu-item:hover,
+.folder-browser__action-menu-item:focus-visible { outline: none; background: var(--surface-subtle); }
+.folder-browser__action-menu-item:disabled { opacity: 0.45; cursor: default; }
+.folder-browser__action-menu-item--danger { color: var(--error); }
+.folder-browser__action-menu-item--danger > svg { color: currentColor; }
+.folder-browser__action-menu-item--danger:hover,
+.folder-browser__action-menu-item--danger:focus-visible { background: color-mix(in srgb, var(--error) 9%, transparent); }
+.folder-browser__action-menu-separator { height: 1px; margin: 4px 2px; background: var(--border-light); }
 @media (hover: none) {
   .folder-browser__entry-actions { opacity: 1; pointer-events: auto; }
 }

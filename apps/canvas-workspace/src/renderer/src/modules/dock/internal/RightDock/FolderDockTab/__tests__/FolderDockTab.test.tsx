@@ -53,7 +53,7 @@ const render = async (path: string | null = '/work/a.ts') => {
   await act(async () => root.render(<I18nProvider><FolderDockTab tab={tab} store={store} active /></I18nProvider>));
 };
 const click = async (label: string) => {
-  const button = [...host.querySelectorAll<HTMLButtonElement>('button')].find(b => b.getAttribute('aria-label') === label || b.textContent === label);
+  const button = [...document.querySelectorAll<HTMLButtonElement>('button')].find(b => b.getAttribute('aria-label') === label || b.textContent === label);
   if (!button) throw new Error(`Missing button: ${label}`);
   await act(async () => button.click());
 };
@@ -186,6 +186,7 @@ it('explains the required restart when an old main process cannot support safe e
 it('adds a collapsed directory without toggling it, preserving the absolute directory identity', async () => {
   listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }] });
   await render();
+  await click('More actions for source');
   await click('Add source folder to conversation');
   expect(deliver).toHaveBeenCalledWith({ kind: 'file', filePath: '/work/source', isDirectory: true });
   expect(host.querySelector('.folder-browser__children')).toBeNull();
@@ -198,8 +199,24 @@ it('also offers the opened root directory as a conversation reference', async ()
   expect(deliver).toHaveBeenCalledWith({ kind: 'file', filePath: '/work', isDirectory: true });
 });
 
+it('keeps narrow tree rows to at most two fixed action buttons and moves commands into a menu', async () => {
+  listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }, { name: 'a.ts', type: 'file' }] });
+  await render();
+  const actionGroups = [...host.querySelectorAll<HTMLElement>('.folder-browser__entry-actions')];
+  expect(actionGroups).toHaveLength(2);
+  expect(actionGroups[0].querySelectorAll(':scope > button')).toHaveLength(2);
+  expect(actionGroups[1].querySelectorAll(':scope > button')).toHaveLength(1);
+  expect(host.querySelector('[aria-label="Rename source"]')).toBeNull();
+  expect(host.querySelector('[aria-label="Move source to Trash"]')).toBeNull();
+  await click('More actions for source');
+  expect(document.querySelector('[role="menu"] [role="menuitem"]')).not.toBeNull();
+  expect(document.querySelector('.folder-browser__action-menu')?.textContent).toContain('Rename source');
+  expect(document.querySelector('.folder-browser__action-menu')?.textContent).toContain('Move source to Trash');
+});
+
 it('creates files and folders from the opened root with an inline name field', async () => {
   await render(null);
+  await click('Create in work');
   await click('New file');
   const fileName = host.querySelector<HTMLInputElement>('[aria-label="New file name"]');
   expect(fileName).not.toBeNull();
@@ -211,6 +228,7 @@ it('creates files and folders from the opened root with an inline name field', a
   expect(store.getSnapshot().tabs[0]).toMatchObject({ selectedPath: '/work/draft.md' });
 
   await render(null);
+  await click('Create in work');
   await click('New folder');
   const folderName = host.querySelector<HTMLInputElement>('[aria-label="New folder name"]');
   await typeIn(folderName!, 'notes');
@@ -222,6 +240,7 @@ it('creates files and folders from the opened root with an inline name field', a
 
 it('renames the selected file and keeps the preview on its new path', async () => {
   await render();
+  await click('More actions for a.ts');
   await click('Rename a.ts');
   const input = host.querySelector<HTMLInputElement>('input[aria-label="Rename a.ts"]');
   expect(input).not.toBeNull();
@@ -234,6 +253,7 @@ it('renames the selected file and keeps the preview on its new path', async () =
 it('remaps a selected descendant after renaming its parent folder', async () => {
   listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }] });
   await render('/work/source/inside.ts');
+  await click('More actions for source');
   await click('Rename source');
   const input = host.querySelector<HTMLInputElement>('input[aria-label="Rename source"]');
   expect(input).not.toBeNull();
@@ -246,6 +266,7 @@ it('remaps a selected descendant after renaming its parent folder', async () => 
 it('confirms trashing an entry and clears a preview that was inside it', async () => {
   listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }] });
   await render('/work/source/inside.ts');
+  await click('More actions for source');
   await click('Move source to Trash');
   expect(confirm).toHaveBeenCalled();
   expect(trashEntry).toHaveBeenCalledWith({ rootPath: '/work', entryPath: '/work/source' });
@@ -255,6 +276,7 @@ it('confirms trashing an entry and clears a preview that was inside it', async (
 it('blocks file mutations behind the existing unsaved-draft guard', async () => {
   await render();
   act(() => store.folderEditor.edit('workspace', 'unsaved draft'));
+  await click('Create in work');
   await click('New file');
   expect(host.querySelector('input[aria-label="New file name"]')).toBeNull();
   expect(document.querySelector('[role=dialog]')).not.toBeNull();
