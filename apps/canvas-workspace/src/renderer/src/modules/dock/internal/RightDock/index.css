@@ -876,3 +876,10 @@
   display: flex;
   flex-direction: column;
 }
+
+/* Folder surfaces share the sidebar glyph and neutral treatment. */
+.right-dock__tab-icon--folder,
+.right-dock__tab--active .right-dock__tab-icon--folder {
+  color: var(--text-secondary);
+  transform: none;
+}

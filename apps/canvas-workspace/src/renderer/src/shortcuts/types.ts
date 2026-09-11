@@ -25,7 +25,8 @@ export type ShortcutOwner =
    * arbitrate is what allows the system clipboard to beat a stale canvas
    * clipboard, which a keydown `preventDefault` made impossible.
    */
-  | 'document';
+  | 'document'
+  | 'file-editor';
 
 export type ShortcutSectionId = 'canvas' | 'view' | 'selection' | 'edit' | 'panels';
 

@@ -390,3 +390,17 @@ describe('chat mention rendering', () => {
     expect(serializeEditable(editable)).toBe('@[role:role-1|产品经理]');
   });
 });
+
+
+it('shows a compact typed file label but retains the full path in the composer and transcript', () => {
+  const path = '/Users/jasper/project/tsconfig.node.json';
+  const chip = createMentionChipElement({ type: 'file', label: path, path });
+  expect(chip.querySelector('.chat-mention-chip-label')?.textContent).toBe('tsconfig.node.json');
+  expect(chip.querySelector('.chat-file-type-icon')?.textContent).toBe('{ }');
+  expect(chip.dataset.filePath).toBe(path);
+  const editable = document.createElement('div'); editable.appendChild(chip);
+  expect(serializeEditable(editable)).toBe(`@[${path}]`);
+  const transcript = document.createElement('div'); transcript.innerHTML = renderMdWithMentions(`@[${path}]`);
+  expect(transcript.querySelector('.chat-mention-chip-label')?.textContent).toBe('tsconfig.node.json');
+  expect(transcript.querySelector('[data-file-path]')?.getAttribute('data-file-path')).toBe(path);
+});

@@ -31,6 +31,14 @@ import { fileURLToPath } from 'url';
 
 /** Packages that must NEVER be statically imported from the entry graph. */
 const WATCHLIST = [
+  // Local code editing is loaded only after opening a file.
+  '@uiw/react-codemirror',
+  '@codemirror/view',
+  '@codemirror/state',
+  '@codemirror/language',
+  '@codemirror/language-data',
+  '@codemirror/commands',
+  '@codemirror/search',
   'mermaid',
   'react-force-graph-2d',
   // C1/C6: evicted by React.lazy-ing the 5 heavy node bodies.
@@ -49,6 +57,8 @@ const WATCHLIST = [
 ];
 
 const DYNAMIC_ONLY_MODULE_SUFFIXES = [
+  '/modules/dock/internal/RightDock/FolderDockTab/index.tsx',
+  '/modules/dock/internal/RightDock/FolderDockTab/CodeEditor.tsx',
   '/modules/settings/internal/Settings/index.tsx',
   '/modules/settings/internal/WorkspaceSettings/index.tsx',
   '/modules/workspace-nodes/internal/NodesPage/index.tsx',
@@ -78,6 +88,11 @@ const packageJson = JSON.parse(readFileSync(resolve(srcRoot, '../package.json'),
 };
 
 const RENDERER_ONLY_DEPENDENCIES = [
+  '@uiw/react-codemirror',
+  '@codemirror/language',
+  '@codemirror/language-data',
+  '@codemirror/commands',
+  '@codemirror/search',
   '@module-federation/runtime',
   '@tiptap/extension-bubble-menu',
   '@tiptap/extension-code-block-lowlight',

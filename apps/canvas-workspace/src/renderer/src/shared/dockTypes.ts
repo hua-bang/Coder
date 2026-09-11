@@ -1,6 +1,7 @@
 import type { CanvasConfigScope, CanvasSkillEntry } from '../types';
 
 export type DockPreviewTab =
+  | { id: string; kind: 'folder'; title: string; folderPath: string; selectedPath?: string }
   | { id: string; kind: 'artifact'; title: string; workspaceId: string; artifactId: string }
   | {
     id: string;

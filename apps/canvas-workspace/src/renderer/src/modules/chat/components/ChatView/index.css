@@ -418,3 +418,11 @@
 .chat-panel-resize--active {
   background: rgba(55, 53, 47, 0.12);
 }
+
+.chat-mention-chip--file { gap: 6px; padding: 3px 8px 3px 6px; background: var(--surface-subtle); border-color: var(--border-light); }
+.chat-mention-chip--file .chat-mention-chip-icon { width: 20px; height: 18px; }
+.chat-mention-chip--file .chat-mention-chip-label { font-weight: 400; }
+.chat-file-type-icon { display: inline-flex; align-items: center; justify-content: center; font: 600 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text-secondary); }
+.chat-file-type-icon--code { color: var(--accent); }
+.chat-file-type-icon--data { color: var(--accent-file); }
+.chat-file-type-icon--document { color: var(--success); }

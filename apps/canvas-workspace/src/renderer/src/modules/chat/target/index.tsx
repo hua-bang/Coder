@@ -35,6 +35,11 @@ export const createChatTargetBroker = (): ChatTargetBroker => {
     registration: RegisteredTarget,
     insertion: ChatInsertion,
   ): boolean => {
+    if (insertion.kind === 'file' && registration.handlers.insertFile) {
+      if (insertion.isDirectory) registration.handlers.insertFile(insertion.filePath, true);
+      else registration.handlers.insertFile(insertion.filePath);
+      return true;
+    }
     if (insertion.kind === 'node' && registration.handlers.insertNode) {
       registration.handlers.insertNode(insertion.node, insertion.sourceWorkspaceId);
       return true;
@@ -126,7 +131,8 @@ export const createChatTargetBroker = (): ChatTargetBroker => {
 
     try {
       if (
-        insertion.kind === 'node'
+        insertion.kind === 'file'
+        || insertion.kind === 'node'
         || insertion.kind === 'dom-selection'
         || insertion.kind === 'tab'
       ) {

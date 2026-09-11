@@ -112,7 +112,17 @@ module through exported session helpers.
 ### `files/`
 
 Local file helper ownership: open/save dialogs, renderer-exposed read/write
-helpers, file watching, skill installation file operations.
+helpers, file watching, skill installation file operations. `file:preview`
+uses `file-preview.ts` for bounded (512 KiB), regular-file-only UTF-8 reads;
+legacy `file:read` is unchanged. `file:listDir` accepts an optional
+`includeHidden` flag for the shallow Dock browser. Guard:
+`src/main/files/file-preview.test.ts`. Text previews include a SHA-256 byte
+version. `file:save-preview` checks that version, stages a sibling temporary
+file, checks again, then atomically replaces the real file. In-app saves are
+serialized per resolved path; external writers do not share that queue, so
+conflict detection is optimistic rather than a cross-process filesystem lock.
+Failed saves preserve the original and clean temporary files. Guard:
+`src/main/files/file-save.test.ts`.
 
 ### `generation/`
 

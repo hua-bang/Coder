@@ -59,5 +59,9 @@ export const useContextMentionInsertions = ({
     });
   }, [appendItem, describeTab]);
 
-  return { insertNodeMention, insertDomSelectionMention, insertTabMention };
+  const insertFileMention = useCallback((filePath: string, isDirectory = false) => {
+    appendItem({ type: isDirectory ? 'folder' : 'file', label: filePath, path: filePath });
+  }, [appendItem]);
+
+  return { insertFileMention, insertNodeMention, insertDomSelectionMention, insertTabMention };
 };

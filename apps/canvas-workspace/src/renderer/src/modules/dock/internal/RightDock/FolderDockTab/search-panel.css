@@ -1,0 +1,36 @@
+/* The editor's native search lifecycle hosts a compact, local floating panel. */
+.folder-code-editor .cm-editor .cm-panels-top {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  left: auto;
+  width: min(590px, calc(100% - 20px));
+  border: none;
+  background: transparent;
+  z-index: 5;
+}
+.file-search {
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-float);
+  font-family: var(--font);
+  font-size: 12px;
+}
+.file-search__row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.file-search__query { display: flex; align-items: center; gap: 2px; flex: 1; min-width: 140px; padding: 2px 3px 2px 0; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.file-search__query:focus-within { border-color: var(--accent); box-shadow: var(--shadow-focus); }
+.file-search__query > .ui-textfield { flex: 1; min-width: 30px; }
+.file-search__query .ui-textfield__control { width: 100%; min-width: 0; height: 28px; padding: 0 7px; border: none; background: transparent; box-shadow: none; font-size: 12px; }
+.file-search__query .ui-textfield__control:focus { outline: none; }
+.file-search__query .ui-btn[aria-pressed="true"] { background: var(--accent-light); color: var(--accent); }
+.file-search__count { min-width: 42px; padding: 0 4px; color: var(--text-secondary); font-size: 11px; white-space: nowrap; }
+.file-search__word { text-decoration: underline; text-underline-offset: 3px; }
+.file-search__replace { display: flex; align-items: center; gap: 6px; margin: 7px 0 0 28px; flex-wrap: wrap; }
+.file-search__replace > .ui-textfield { flex: 1; min-width: 100px; }
+.file-search__replace .ui-textfield__control { height: 28px; font-size: 12px; }
+.folder-code-editor:has(.file-search-host) .folder-editor-history { display: none; }
+
+.file-search__actions { display: flex; align-items: center; flex-shrink: 0; gap: 4px; margin-left: auto; }

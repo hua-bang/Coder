@@ -25,8 +25,9 @@ afterEach(() => {
   mount = null;
 });
 
-const renderControls = () => {
+const renderControls = (rootFolder?: string) => {
   const store = new DockStore();
+  store.setActiveWorkspace('workspace-1');
   const newLink = vi.spyOn(store, 'newLink');
   const newTerminal = vi.spyOn(store, 'newTerminal');
   mount = document.createElement('div');
@@ -36,7 +37,7 @@ const renderControls = () => {
     <I18nProvider>
       <DockCreationControls
         store={store}
-        workspaces={[]}
+        workspaces={[{ id: 'workspace-1', name: 'Workspace', rootFolder }]}
         activeWorkspaceId="workspace-1"
         showTerminal
         newTabTitle="New tab"
@@ -47,7 +48,7 @@ const renderControls = () => {
   ));
   const trigger = mount.querySelector<HTMLButtonElement>('[aria-label="New tab"]');
   if (!trigger) throw new Error('Expected the new-tab menu trigger');
-  return { trigger, newLink, newTerminal };
+  return { trigger, newLink, newTerminal, store };
 };
 
 const waitForMenu = async () => {
@@ -79,10 +80,11 @@ describe('DockCreationControls new-tab trigger', () => {
 
     const menuItems = [...menu.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')];
     expect(menuItems.map((item) => item.textContent)).toEqual([
-      'Open node',
-      'Open canvas',
-      'New terminal',
       'New web tab',
+      'New terminal',
+      'Open folder…',
+      'Open canvas',
+      'Open node',
     ]);
 
     const newTerminalTab = menuItems.find((item) => item.textContent === 'New terminal');
@@ -133,4 +135,57 @@ describe('DockCreationControls new-tab trigger', () => {
     expect(document.querySelector('.right-dock__new-tab-panel')).not.toBeNull();
     expect(newLink).not.toHaveBeenCalled();
   });
+});
+
+
+it('opens a selected folder, while cancellation and scope changes leave tabs untouched', async () => {
+  const original = window.canvasWorkspace;
+  let finish: (value: { ok: boolean; canceled?: boolean; folderPath?: string }) => void = () => undefined;
+  const openFolder = vi.fn(() => new Promise<{ ok: boolean; canceled?: boolean; folderPath?: string }>(resolve => { finish = resolve; }));
+  Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: { dialog: { openFolder } } });
+  try {
+    const { trigger, store } = renderControls();
+    const choose = async () => {
+      act(() => trigger.click());
+      const menu = await waitForMenu();
+      const button = [...menu.querySelectorAll<HTMLButtonElement>('button')].find(b => b.textContent === 'Open folder…');
+      if (!button) throw new Error('Expected folder action');
+      act(() => button.click());
+    };
+    await choose();
+    await act(async () => finish({ ok: true, canceled: true }));
+    expect(store.getSnapshot().tabs).toHaveLength(0);
+    await choose();
+    act(() => store.setActiveWorkspace('other'));
+    await act(async () => finish({ ok: true, folderPath: '/previous-scope' }));
+    expect(store.getSnapshot().tabs).toHaveLength(0);
+    await choose();
+    await act(async () => finish({ ok: true, folderPath: '/project' }));
+    expect(store.getSnapshot().tabs[0]).toMatchObject({ kind: 'folder', folderPath: '/project' });
+    await choose();
+    expect(openFolder).toHaveBeenCalledTimes(3);
+    expect(store.getSnapshot().tabs).toHaveLength(1);
+  } finally {
+    Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: original });
+  }
+});
+
+
+it('opens the bound workspace directory without showing a picker and reuses its single tab', async () => {
+  const original = window.canvasWorkspace;
+  const picker = vi.fn();
+  Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: { dialog: { openFolder: picker } } });
+  try {
+    const { trigger, store } = renderControls('/bound/project');
+    for (let attempt = 0; attempt < 2; attempt++) {
+      act(() => trigger.click());
+      const menu = await waitForMenu();
+      const button = [...menu.querySelectorAll<HTMLButtonElement>('button')].find(b => b.textContent === 'Open folder…');
+      await act(async () => button?.click());
+    }
+    expect(picker).not.toHaveBeenCalled();
+    expect(store.getSnapshot().tabs).toEqual([{ id: 'folder', kind: 'folder', title: 'project', folderPath: '/bound/project' }]);
+  } finally {
+    Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: original });
+  }
 });

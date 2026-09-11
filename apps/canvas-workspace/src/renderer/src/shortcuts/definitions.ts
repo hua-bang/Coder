@@ -10,6 +10,7 @@ import type { ShortcutDefinition, ShortcutOwner } from './types';
  * literal-Ctrl entries are declared before their `mod` neighbours.
  */
 export const SHORTCUTS = {
+  'fileEditor.save': { owner: 'file-editor', bindings: [{ key: 's', mod: true }], editable: 'allow' },
   // ---- Canvas navigation -------------------------------------------------
   'canvas.commandPalette': {
     owner: 'canvas',
