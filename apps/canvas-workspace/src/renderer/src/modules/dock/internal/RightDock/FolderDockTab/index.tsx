@@ -24,6 +24,7 @@ import { FileTypeIcon } from './FileTypeIcon';
 import { UnsavedFileDialog } from './UnsavedFileDialog';
 import { useFileChatAction } from './useFileChatAction';
 import { useFileEditor } from './useFileEditor';
+import { useMutationMessages } from './mutation-messages';
 import './index.css';
 
 const CodeEditor = lazy(() => import('./CodeEditor').then(m => ({ default: m.CodeEditor })));
@@ -61,6 +62,7 @@ const replacePathRoot = (path: string, previousRoot: string, nextRoot: string): 
 
 export const FolderDockTab = ({ tab, store, active }: Props) => {
   const { t } = useI18n();
+  const message = useMutationMessages();
   const { confirm, notify } = useAppShell();
   const editing = useFileEditor(store);
   const { state: editState, editor, scope } = editing;
@@ -133,7 +135,7 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
     setMutation({ id: mutationId.current, parentPath });
   };
 
-  const mutationUnavailable = (): string => t('folder.mutationUnavailable');
+  const mutationUnavailable = (): string => message('mutationUnavailable');
 
   const createEntry = async (parentPath: string, kind: 'file' | 'directory', name: string): Promise<string | undefined> => {
     const operation = window.canvasWorkspace.file.createEntry;
@@ -172,15 +174,15 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
 
   const trashEntry = async (entryPath: string, name: string) => {
     const accepted = await confirm({
-      title: t('folder.trashTitle', { name }),
-      description: t('folder.trashDescription'),
-      confirmLabel: t('folder.trashConfirm'),
+      title: message('trashTitle', { name }),
+      description: message('trashDescription'),
+      confirmLabel: message('trashConfirm'),
       intent: 'danger',
     });
     if (!accepted) return;
     const operation = window.canvasWorkspace.file.trashEntry;
     if (typeof operation !== 'function') {
-      notify({ tone: 'error', title: t('folder.operationFailed'), description: mutationUnavailable() });
+      notify({ tone: 'error', title: message('operationFailed'), description: mutationUnavailable() });
       return;
     }
     try {
@@ -193,7 +195,7 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
       }
       refreshParent(parentFilePath(entryPath));
     } catch (error) {
-      notify({ tone: 'error', title: t('folder.operationFailed'), description: String(error) });
+      notify({ tone: 'error', title: message('operationFailed'), description: String(error) });
     }
   };
 
@@ -269,20 +271,20 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
               {available && <Button variant="icon" size="xs" className="folder-browser__directory-chat" disabled={adding}
                 title={t('folder.addDirectory', { name: tab.title })} aria-label={t('folder.addDirectory', { name: tab.title })}
                 onClick={() => addDirectory(tab.folderPath)}><ChatCircle size={14} /></Button>}
-              <Button ref={rootCreateButtonRef} variant="icon" size="xs" aria-label={t('folder.createIn', { name: tab.title })}
-                title={t('folder.createIn', { name: tab.title })} aria-haspopup="menu" aria-expanded={rootCreateMenuOpen}
+              <Button ref={rootCreateButtonRef} variant="icon" size="xs" aria-label={message('createIn', { name: tab.title })}
+                title={message('createIn', { name: tab.title })} aria-haspopup="menu" aria-expanded={rootCreateMenuOpen}
                 onClick={() => setRootCreateMenuOpen(value => !value)}><Plus size={15} /></Button>
               {rootCreateMenuOpen && <Popover anchorRef={rootCreateButtonRef} placement="bottom" align="end" gap={4}
-                ariaLabel={t('folder.createIn', { name: tab.title })} className="folder-browser__action-menu"
+                ariaLabel={message('createIn', { name: tab.title })} className="folder-browser__action-menu"
                 onClose={() => setRootCreateMenuOpen(false)}>
                 <Button size="sm" className="folder-browser__action-menu-item" role="menuitem" onClick={() => {
                   setRootCreateMenuOpen(false);
                   editing.guard(() => setRootEditMode('file'));
-                }}><FilePlus size={15} /><span>{t('folder.newFile')}</span></Button>
+                }}><FilePlus size={15} /><span>{message('newFile')}</span></Button>
                 <Button size="sm" className="folder-browser__action-menu-item" role="menuitem" onClick={() => {
                   setRootCreateMenuOpen(false);
                   editing.guard(() => setRootEditMode('directory'));
-                }}><FolderPlus size={15} /><span>{t('folder.newFolder')}</span></Button>
+                }}><FolderPlus size={15} /><span>{message('newFolder')}</span></Button>
               </Popover>}
               <Button variant="icon" size="xs" aria-label={t('folder.refresh')} title={t('folder.refresh')}
                 onClick={() => editing.guard(() => { editor.discard(scope); setRevision(value => value + 1); })}>
@@ -291,7 +293,7 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
             </div>
           </div>
           {rootEditMode && <EntryNameInput
-            ariaLabel={t(rootEditMode === 'file' ? 'folder.newFileName' : 'folder.newFolderName')}
+            ariaLabel={message(rootEditMode === 'file' ? 'newFileName' : 'newFolderName')}
             onCancel={() => setRootEditMode(null)}
             onSubmit={async name => {
               const error = await createEntry(tab.folderPath, rootEditMode, name);

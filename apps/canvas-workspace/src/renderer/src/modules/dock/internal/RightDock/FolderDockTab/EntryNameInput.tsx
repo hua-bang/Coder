@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check, X } from '@phosphor-icons/react';
 import { Button, TextField } from '../../../../../components/ui';
-import { useI18n } from '../../../../../i18n';
+import { useMutationMessages } from './mutation-messages';
 
 interface Props {
   ariaLabel: string;
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const EntryNameInput = ({ ariaLabel, initialValue = '', placeholder, onCancel, onSubmit }: Props) => {
-  const { t } = useI18n();
+  const message = useMutationMessages();
   const [name, setName] = useState(initialValue);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -36,9 +36,9 @@ export const EntryNameInput = ({ ariaLabel, initialValue = '', placeholder, onCa
             if (event.key === 'Enter') { event.preventDefault(); void submit(); }
             if (event.key === 'Escape') { event.preventDefault(); onCancel(); }
           }} />
-        <Button variant="icon" size="xs" disabled={submitting} aria-label={t('folder.confirmName')}
+        <Button variant="icon" size="xs" disabled={submitting} aria-label={message('confirmName')}
           onClick={() => { void submit(); }}><Check size={13} /></Button>
-        <Button variant="icon" size="xs" disabled={submitting} aria-label={t('folder.cancelName')}
+        <Button variant="icon" size="xs" disabled={submitting} aria-label={message('cancelName')}
           onClick={onCancel}><X size={13} /></Button>
       </div>
       {error && <div className="folder-browser__entry-error" role="alert">{error}</div>}

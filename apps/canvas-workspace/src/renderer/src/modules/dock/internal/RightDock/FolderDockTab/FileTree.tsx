@@ -14,6 +14,7 @@ import { useI18n } from '../../../../../i18n';
 import type { DirEntry } from '../../../../../types';
 import { EntryNameInput } from './EntryNameInput';
 import { FileTypeIcon } from './FileTypeIcon';
+import { useMutationMessages } from './mutation-messages';
 
 export interface FolderMutation {
   id: number;
@@ -49,6 +50,7 @@ const EntryActions = ({ name, path, directory, adding, onAddDirectory, onEdit, o
   requestAction: Props['requestAction'];
 }) => {
   const { t } = useI18n();
+  const message = useMutationMessages();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const run = (action: () => void) => {
@@ -58,17 +60,17 @@ const EntryActions = ({ name, path, directory, adding, onAddDirectory, onEdit, o
 
   return (
     <div className={`folder-browser__entry-actions${menuOpen ? ' folder-browser__entry-actions--open' : ''}`}>
-      {directory && <Button variant="icon" size="xs" aria-label={t('folder.newFileIn', { name })}
-        title={t('folder.newFileIn', { name })} onClick={() => run(() => onEdit('file'))}>
+      {directory && <Button variant="icon" size="xs" aria-label={message('newFileIn', { name })}
+        title={message('newFileIn', { name })} onClick={() => run(() => onEdit('file'))}>
         <FilePlus size={14} />
       </Button>}
-      <Button ref={menuButtonRef} variant="icon" size="xs" aria-label={t('folder.moreActions', { name })}
-        title={t('folder.moreActions', { name })} aria-expanded={menuOpen} aria-haspopup="menu"
+      <Button ref={menuButtonRef} variant="icon" size="xs" aria-label={message('moreActions', { name })}
+        title={message('moreActions', { name })} aria-expanded={menuOpen} aria-haspopup="menu"
         onClick={() => setMenuOpen(value => !value)}>
         <DotsThree size={16} weight="bold" />
       </Button>
       {menuOpen && <Popover anchorRef={menuButtonRef} placement="bottom" align="end" gap={4}
-        ariaLabel={t('folder.moreActions', { name })} className="folder-browser__action-menu"
+        ariaLabel={message('moreActions', { name })} className="folder-browser__action-menu"
         onClose={() => setMenuOpen(false)}>
         {directory && onAddDirectory && <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
           disabled={adding} onClick={() => { setMenuOpen(false); onAddDirectory(); }}>
@@ -77,21 +79,21 @@ const EntryActions = ({ name, path, directory, adding, onAddDirectory, onEdit, o
         {directory && <>
           <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
             onClick={() => run(() => onEdit('file'))}>
-            <FilePlus size={15} /><span>{t('folder.newFileIn', { name })}</span>
+            <FilePlus size={15} /><span>{message('newFileIn', { name })}</span>
           </Button>
           <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
             onClick={() => run(() => onEdit('directory'))}>
-            <FolderPlus size={15} /><span>{t('folder.newFolderIn', { name })}</span>
+            <FolderPlus size={15} /><span>{message('newFolderIn', { name })}</span>
           </Button>
         </>}
         <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
           onClick={() => run(() => onEdit('rename'))}>
-          <PencilSimple size={15} /><span>{t('folder.renameEntry', { name })}</span>
+          <PencilSimple size={15} /><span>{message('renameEntry', { name })}</span>
         </Button>
         <div className="folder-browser__action-menu-separator" />
         <Button size="sm" className="folder-browser__action-menu-item folder-browser__action-menu-item--danger" role="menuitem"
           onClick={() => run(() => onTrash(path, name))}>
-          <Trash size={15} /><span>{t('folder.trashEntry', { name })}</span>
+          <Trash size={15} /><span>{message('trashEntry', { name })}</span>
         </Button>
       </Popover>}
     </div>
@@ -99,7 +101,7 @@ const EntryActions = ({ name, path, directory, adding, onAddDirectory, onEdit, o
 };
 
 const DirectoryRow = ({ entry, parent, ...props }: Omit<Props, 'path'> & { entry: DirEntry; parent: string }) => {
-  const { t } = useI18n();
+  const message = useMutationMessages();
   const [expanded, setExpanded] = useState(false);
   const [editMode, setEditMode] = useState<EditMode>(null);
   const path = joinFilePath(parent, entry.name);
@@ -128,8 +130,8 @@ const DirectoryRow = ({ entry, parent, ...props }: Omit<Props, 'path'> & { entry
       </div>
       {editMode && <EntryNameInput
         ariaLabel={editMode === 'rename'
-          ? t('folder.renameEntry', { name: entry.name })
-          : t(editMode === 'file' ? 'folder.newFileName' : 'folder.newFolderName')}
+          ? message('renameEntry', { name: entry.name })
+          : message(editMode === 'file' ? 'newFileName' : 'newFolderName')}
         initialValue={editMode === 'rename' ? entry.name : ''}
         onCancel={() => setEditMode(null)}
         onSubmit={submit}
@@ -150,7 +152,7 @@ const FileRow = ({ entry, path, selectedPath, onSelect, onRename, onTrash, reque
   onTrash: Props['onTrash'];
   requestAction: Props['requestAction'];
 }) => {
-  const { t } = useI18n();
+  const message = useMutationMessages();
   const [renaming, setRenaming] = useState(false);
   const filePath = joinFilePath(path, entry.name);
   return <>
@@ -162,7 +164,7 @@ const FileRow = ({ entry, path, selectedPath, onSelect, onRename, onTrash, reque
       <EntryActions name={entry.name} path={filePath} directory={false} onEdit={() => setRenaming(true)}
         onTrash={onTrash} requestAction={requestAction} />
     </div>
-    {renaming && <EntryNameInput ariaLabel={t('folder.renameEntry', { name: entry.name })} initialValue={entry.name}
+    {renaming && <EntryNameInput ariaLabel={message('renameEntry', { name: entry.name })} initialValue={entry.name}
       onCancel={() => setRenaming(false)} onSubmit={async name => {
         const error = await onRename(filePath, name);
         if (!error) setRenaming(false);
