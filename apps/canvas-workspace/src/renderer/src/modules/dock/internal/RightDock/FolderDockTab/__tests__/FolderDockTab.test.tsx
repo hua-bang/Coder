@@ -1,9 +1,14 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs';
 import { act } from 'react';
+import { EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
+import { history, undoDepth } from '@codemirror/commands';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from '../../../../../../i18n';
 import { FolderDockTab } from '..';
+import { syncEditorContent } from '../CodeEditor';
 import { DockStore } from '../../dock-store';
 import type { FilePreviewResult } from '../../../../../../types';
 
@@ -11,7 +16,10 @@ const { confirm, deliver, notify, activeTarget, listeners } = vi.hoisted(() => (
 vi.mock('../../../../../chat', () => ({ useOptionalChatTargetBroker: () => ({ deliver, getActiveTarget: activeTarget, subscribe: (listener: () => void) => { listeners.add(listener); return () => listeners.delete(listener); } }) }));
 vi.mock('../../../../../chat/delivery', () => ({ useChatDeliveryNotifier: () => notify }));
 vi.mock('../../../../../../shared/appShell', () => ({ useAppShell: () => ({ confirm, notify }) }));
-vi.mock('../CodeEditor', () => ({ CodeEditor: ({ content }: { content: string }) => <textarea aria-label="Code editor" value={content} readOnly /> }));
+vi.mock('../CodeEditor', async importOriginal => ({
+  ...await importOriginal<typeof import('../CodeEditor')>(),
+  CodeEditor: ({ content }: { content: string }) => <textarea aria-label="Code editor" value={content} readOnly />,
+}));
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 let host: HTMLDivElement;
 let root: Root;
@@ -25,6 +33,7 @@ const trashEntry = vi.fn();
 const openInVSCode = vi.fn();
 const getImagePreview = vi.fn();
 const originalApi = window.canvasWorkspace;
+const folderDockCss = readFileSync('src/renderer/src/modules/dock/internal/RightDock/FolderDockTab/index.css', 'utf8');
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -45,7 +54,7 @@ beforeEach(() => {
   store.openFolder('/work');
   host = document.createElement('div'); document.body.appendChild(host); root = createRoot(host);
 });
-afterEach(() => { act(() => root.unmount()); host.remove(); Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: originalApi }); });
+afterEach(() => { act(() => root.unmount()); host.remove(); vi.restoreAllMocks(); Object.defineProperty(window, 'canvasWorkspace', { configurable: true, value: originalApi }); });
 const render = async (path: string | null = '/work/a.ts') => {
   act(() => store.selectFolderFile('folder', path ?? undefined));
   const tab = store.getSnapshot().tabs[0];
@@ -199,7 +208,7 @@ it('also offers the opened root directory as a conversation reference', async ()
   expect(deliver).toHaveBeenCalledWith({ kind: 'file', filePath: '/work', isDirectory: true });
 });
 
-it('keeps narrow tree rows to at most two fixed action buttons and moves commands into a menu', async () => {
+it('keeps narrow tree rows to at most two fixed action buttons and moves commands into a dock-layer menu', async () => {
   listDir.mockResolvedValue({ ok: true, entries: [{ name: 'source', type: 'dir' }, { name: 'a.ts', type: 'file' }] });
   await render();
   const actionGroups = [...host.querySelectorAll<HTMLElement>('.folder-browser__entry-actions')];
@@ -210,8 +219,42 @@ it('keeps narrow tree rows to at most two fixed action buttons and moves command
   expect(host.querySelector('[aria-label="Move source to Trash"]')).toBeNull();
   await click('More actions for source');
   expect(document.querySelector('[role="menu"] [role="menuitem"]')).not.toBeNull();
-  expect(document.querySelector('.folder-browser__action-menu')?.textContent).toContain('Rename source');
+  expect(document.querySelector('.folder-browser__action-menu.context-menu--in-dock')?.textContent).toContain('Rename source');
   expect(document.querySelector('.folder-browser__action-menu')?.textContent).toContain('Move source to Trash');
+  expect(folderDockCss).toMatch(/\.folder-browser__action-menu\s*\{[^}]*z-index:\s*var\(--layer-dock-menu\);/s);
+});
+
+it('syncs externally refreshed content into CodeMirror without adding an undo step', () => {
+  const editor = new EditorView({ state: EditorState.create({ doc: 'before', extensions: [history()] }) });
+  expect(syncEditorContent(editor, 'after')).toBe(true);
+  expect(editor.state.doc.toString()).toBe('after');
+  expect(undoDepth(editor.state)).toBe(0);
+  expect(syncEditorContent(editor, 'after')).toBe(false);
+  editor.destroy();
+});
+
+it('refreshes the file tree and a clean selected file while the Folder tab is active', async () => {
+  let refresh: TimerHandler | undefined;
+  vi.spyOn(window, 'setInterval').mockImplementation(((handler: TimerHandler) => {
+    refresh = handler;
+    return 1;
+  }) as typeof window.setInterval);
+  await render();
+  listDir.mockClear();
+  preview.mockClear();
+  listDir.mockResolvedValue({ ok: true, entries: [{ name: 'a.ts', type: 'file' }, { name: 'external.ts', type: 'file' }] });
+  preview.mockResolvedValue({ ok: true, kind: 'text', version: 'v2', content: 'const value = 2;\n' });
+
+  await act(async () => {
+    if (typeof refresh === 'function') refresh();
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+
+  expect(listDir).toHaveBeenCalledWith('/work', 0, true);
+  expect(preview).toHaveBeenCalledWith('/work/a.ts');
+  expect(host.querySelector('.folder-browser__tree')?.textContent).toContain('external.ts');
+  expect(host.querySelector('textarea')?.value).toBe('const value = 2;\n');
 });
 
 it('creates files and folders from the opened root with an inline name field', async () => {

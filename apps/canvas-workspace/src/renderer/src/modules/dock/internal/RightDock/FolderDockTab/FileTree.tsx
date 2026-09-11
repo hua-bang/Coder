@@ -70,7 +70,7 @@ const EntryActions = ({ name, path, directory, adding, onAddDirectory, onEdit, o
         <DotsThree size={16} weight="bold" />
       </Button>
       {menuOpen && <Popover anchorRef={menuButtonRef} placement="bottom" align="end" gap={4}
-        ariaLabel={message('moreActions', { name })} className="folder-browser__action-menu"
+        ariaLabel={message('moreActions', { name })} className="folder-browser__action-menu context-menu--in-dock"
         onClose={() => setMenuOpen(false)}>
         {directory && onAddDirectory && <Button size="sm" className="folder-browser__action-menu-item" role="menuitem"
           disabled={adding} onClick={() => { setMenuOpen(false); onAddDirectory(); }}>
@@ -181,7 +181,6 @@ export const FileTree = (props: Props) => {
 
   useEffect(() => {
     let current = true;
-    setEntries(null);
     setError('');
     void window.canvasWorkspace.file.listDir(props.path, 0, true).then(result => {
       if (!current) return;

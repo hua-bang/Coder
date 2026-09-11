@@ -47,6 +47,8 @@ interface Preview {
 
 type RootEditMode = 'file' | 'directory' | null;
 
+const AUTO_REFRESH_INTERVAL_MS = 2_000;
+
 const parentFilePath = (path: string): string => {
   const index = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
   return index > 0 ? path.slice(0, index) : path;
@@ -90,6 +92,18 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
     revealFile();
     return () => observer.disconnect();
   }, [path]);
+
+  useEffect(() => {
+    if (!active) return;
+    const refresh = () => setRevision(value => value + 1);
+    refresh();
+    const interval = window.setInterval(refresh, AUTO_REFRESH_INTERVAL_MS);
+    window.addEventListener('focus', refresh);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('focus', refresh);
+    };
+  }, [active]);
 
   const segments = path?.slice(tab.folderPath.replace(/[\\/]$/, '').length + 1).split(/[\\/]/) ?? [];
 
@@ -275,7 +289,7 @@ export const FolderDockTab = ({ tab, store, active }: Props) => {
                 title={message('createIn', { name: tab.title })} aria-haspopup="menu" aria-expanded={rootCreateMenuOpen}
                 onClick={() => setRootCreateMenuOpen(value => !value)}><Plus size={15} /></Button>
               {rootCreateMenuOpen && <Popover anchorRef={rootCreateButtonRef} placement="bottom" align="end" gap={4}
-                ariaLabel={message('createIn', { name: tab.title })} className="folder-browser__action-menu"
+                ariaLabel={message('createIn', { name: tab.title })} className="folder-browser__action-menu context-menu--in-dock"
                 onClose={() => setRootCreateMenuOpen(false)}>
                 <Button size="sm" className="folder-browser__action-menu-item" role="menuitem" onClick={() => {
                   setRootCreateMenuOpen(false);

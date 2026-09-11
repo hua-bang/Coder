@@ -70,7 +70,7 @@
 .folder-browser__entry-editor-row > .ui-btn { flex-shrink: 0; }
 .folder-browser__entry-input.ui-textfield__control { height: 24px; padding: 0 7px; border-color: var(--accent-border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); }
 .folder-browser__entry-error { padding: 4px 2px 0; color: var(--error); font-size: 11px; overflow-wrap: anywhere; }
-.folder-browser__action-menu { position: fixed; z-index: 1000; min-width: 196px; max-width: min(280px, calc(100vw - 16px)); padding: 4px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-sm); }
+.folder-browser__action-menu { position: fixed; z-index: var(--layer-dock-menu); min-width: 196px; max-width: min(280px, calc(100vw - 16px)); padding: 4px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); background: var(--surface); box-shadow: var(--shadow-sm); }
 .folder-browser__action-menu-item.ui-btn { display: flex; justify-content: flex-start; align-items: center; gap: 8px; width: 100%; min-height: 30px; padding: 6px 9px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text); font: inherit; font-size: 12px; font-weight: 400; text-align: left; cursor: pointer; }
 .folder-browser__action-menu-item > svg { flex: 0 0 15px; color: var(--text-secondary); }
 .folder-browser__action-menu-item > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

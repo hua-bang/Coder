@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Compartment, EditorState, type Extension } from '@codemirror/state';
+import { Compartment, EditorState, Transaction, type Extension } from '@codemirror/state';
 import {
   EditorView, drawSelection, dropCursor, highlightActiveLine,
   highlightActiveLineGutter, highlightSpecialChars, keymap, lineNumbers,
@@ -21,6 +21,15 @@ import './search-panel.css';
 import { useI18n } from '../../../../../i18n';
 
 interface Props { path: string; content: string; original: string; saving: boolean; onChange: (content: string) => void }
+
+export const syncEditorContent = (view: EditorView, content: string): boolean => {
+  if (view.state.doc.toString() === content) return false;
+  view.dispatch({
+    changes: { from: 0, to: view.state.doc.length, insert: content },
+    annotations: Transaction.addToHistory.of(false),
+  });
+  return true;
+};
 
 const loadLanguage = async (path: string): Promise<Extension> => {
   const extension = path.split('.').pop()?.toLowerCase() ?? '';
@@ -111,6 +120,11 @@ export const CodeEditor = ({ path, content, original, saving, onChange }: Props)
   useEffect(() => {
     viewRef.current?.dispatch({ effects: editable.current.reconfigure(EditorView.editable.of(!saving)) });
   }, [saving]);
+
+  useEffect(() => {
+    const view = viewRef.current;
+    if (view) syncEditorContent(view, content);
+  }, [content]);
 
   useEffect(() => {
     let current = true;
